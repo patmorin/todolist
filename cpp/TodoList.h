@@ -179,13 +179,10 @@ void TodoList<T>::rebuild(int i) {
 template<class T>
 T TodoList<T>::find(T x) {
 	Node *u = sentinel;
-	for (int i = 0; i <= k; i++) {
+	for (int i = 0; i <= k; i++)
 		if (u->next[i] != NULL && u->next[i]->x < x)
 			u = u->next[i];
-		//if (u->next[i] != NULL && u->next[i]->x == x) return u->next[i]->x;
-	}
-	Node *w = u->next[k];
-	return (w == NULL) ? (T)0 : w->x; // FIXME: requirement on T
+	return (u->next[k] == NULL) ? (T)0 : u->next[k]->x;
 }
 
 template<class T>

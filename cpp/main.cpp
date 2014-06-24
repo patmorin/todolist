@@ -230,20 +230,20 @@ int main(int argc, char **argv) {
 	cout << "done" << endl;
 
 	// start with some bigger tests
-	for (size_t delay = 0; delay <= 25; delay += 5) {
+	for (size_t delay = 100; delay <= 100; delay += 5) {
 		Integer::setDelay(delay);
 		cout << "DELAY " << delay << endl;
-		size_t n = 100000;
+		size_t n = 1000000;
 		cout << endl << "Random additions" << endl;
 		test_suite(n, rand_data, rand_search);
-		cout << endl << "Sequential additions" << endl;
+		/*cout << endl << "Sequential additions" << endl;
 		test_suite(n, sequential_data, rand_search);
 		cout << endl << "Requential additions" << endl;
 		test_suite(n, requential_data, rand_search);
 		cout << endl;
 		cout << endl << "Shuffled additions" << endl;
 		test_suite(n, shuffle_data, rand_search);
-		cout << endl;
+		cout << endl;*/
 	}
 }
 
