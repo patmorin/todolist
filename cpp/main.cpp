@@ -147,8 +147,9 @@ void test_suite(size_t n, int (*gen_data)(size_t, size_t),
 		int (*gen_search)(size_t, size_t)) {
 	cout << "Structure Operation n time #comparisons c" << endl;
 	{
-		fastws::TodoList<Integer> tdl(NULL, 0, .2);
+		fastws::TodoList<Integer> tdl(NULL, 0, .03);
 		build_and_search(tdl, "TodoList", n, gen_data, gen_search);
+		cout << tdl;
 	}
 	{
 		ods::RedBlackTree1<Integer> rbt;
@@ -229,10 +230,10 @@ int main(int argc, char **argv) {
 	cout << "done" << endl;
 
 	// start with some bigger tests
-	for (size_t delay = 0; delay <= 0; delay += 10) {
+	for (size_t delay = 0; delay <= 25; delay += 5) {
 		Integer::setDelay(delay);
 		cout << "DELAY " << delay << endl;
-		size_t n = 500000;
+		size_t n = 100000;
 		cout << endl << "Random additions" << endl;
 		test_suite(n, rand_data, rand_search);
 		cout << endl << "Sequential additions" << endl;
