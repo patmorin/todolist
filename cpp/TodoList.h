@@ -185,7 +185,7 @@ T TodoList<T>::find(T x) {
 		//if (u->next[i] != NULL && u->next[i]->x == x) return u->next[i]->x;
 	}
 	Node *w = u->next[k];
-	return (w == NULL) ? (T)NULL : w->x;
+	return (w == NULL) ? (T)0 : w->x; // FIXME: requirement on T
 }
 
 template<class T>

@@ -89,7 +89,7 @@ BinarySearchTree<Node,int>::BinarySearchTree()  {
 
 template<class Node, class T>
 BinarySearchTree<Node,T>::BinarySearchTree() {
-	this->null = (T)NULL;  // won't work for non-primitive types
+	this->null = (T)0;  // FIXME: requires that T has integer constructor
 	n = 0;
 }
 

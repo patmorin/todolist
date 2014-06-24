@@ -72,7 +72,7 @@ typename SkiplistSSet<T>::Node* SkiplistSSet<T>::findPredNode(T x) {
 
 template<class T>
 SkiplistSSet<T>::SkiplistSSet() {
-	null = (T)NULL;
+	null = (T)0; // FIXME: requires T has integer constructor
 	n = 0;
 	sentinel = newNode(null, sizeof(int)*8);
 	memset(sentinel->next, '\0', sizeof(Node*)*sentinel->height);
