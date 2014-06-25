@@ -1,5 +1,5 @@
 
 main : 
-	g++ -O4 -o main main.cpp
+	g++ -Wall -O4 -o main main.cpp
 
 
