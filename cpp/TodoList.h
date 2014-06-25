@@ -66,7 +66,7 @@ protected:
 	void deleteNode(Node *u);
 
 public:
-	TodoList(T *data = NULL, int n0 = 0, double eps0 = .4);
+	TodoList(double eps0 = .3, T *data = NULL, int n0 = 0);
 	virtual ~TodoList();
 	T find(T x);
 	bool add(T x);
@@ -78,7 +78,7 @@ public:
 };
 
 template<class T>
-TodoList<T>::TodoList(T *data, int n0, double eps0) {
+TodoList<T>::TodoList(double eps0, T *data, int n0) {
 	eps = eps0;
 
 	int kmax = 100; // FIXME: potential limitation here

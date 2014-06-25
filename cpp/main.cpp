@@ -148,14 +148,14 @@ void test_suite(size_t n, int (*gen_data)(size_t, size_t),
 		int (*gen_search)(size_t, size_t)) {
 	cout << "Structure Operation n time #comparisons c" << endl;
 	{
-		fastws::LinkedTodoList<Integer> tdl(NULL, 0, .03);
-		build_and_search(tdl, "TodoList", n, gen_data, gen_search);
-		cout << tdl;
+		fastws::LinkedTodoList<Integer> tdl(.12, NULL, 0);
+		build_and_search(tdl, "LinkedTodoList", n, gen_data, gen_search);
+		// cout << tdl;
 	}
 	{
-		fastws::TodoList<Integer> tdl(NULL, 0, .03);
+		fastws::TodoList<Integer> tdl(.12, NULL, 0);
 		build_and_search(tdl, "TodoList", n, gen_data, gen_search);
-		cout << tdl;
+		// cout << tdl;
 	}
 	{
 		ods::RedBlackTree1<Integer> rbt;
@@ -228,15 +228,66 @@ void sanity_tests(size_t n) {
 	}
 }
 
-int main(int argc, char **argv) {
-	// start with some sanity tests
-	cout << "I: Doing sanity tests...";
-	cout.flush();
-	sanity_tests(100000);
-	cout << "done" << endl;
+void usage_error(const char *name) {
+	cerr << "Usage: " << name << " [-sanity] [-<n>] <ds1> <ds2> <ds3>..." << endl
+			<< "       <n> is a positive integer" << endl
+			<< "       <dsI> is one of redblack, treap, skiplist, "
+			<< "todolist, or linkedtodolist" << endl;
+	exit(-1);
+}
 
-	// start with some bigger tests
-	for (size_t delay = 100; delay <= 100; delay += 5) {
+int main(int argc, char **argv) {
+	if (argc < 2)
+		usage_error(argv[0]);
+	size_t n = 100000;
+	int (*gen_data)(size_t, size_t) = rand_data;
+	int (*gen_search)(size_t, size_t) = rand_search;
+	double epsilon = .2;
+	for (int i = 1; i < argc; i++) {
+		if (strlen(argv[i]) > 0 && argv[i][0] == '-' && isdigit(argv[i][1])) {
+			n = atoi(argv[i]+1);
+		} else if (strncmp(argv[i], "-eps=", 5) == 0) {
+			epsilon = strtof(argv[i]+5, NULL);
+
+		} else if (strcmp(argv[i], "-sanity") == 0) {
+			cout << "I: Doing sanity tests...";
+			cout.flush();
+			sanity_tests(n);
+			cout << "done" << endl;
+		} else if (strcmp(argv[i], "-sequential") == 0) {
+			cout << "I: Using sequential data" << endl;
+			gen_data = sequential_data;
+		} else if (strcmp(argv[i], "-requential") == 0) {
+			cout << "I: Using reversed sequential data" << endl;
+			gen_data = requential_data;
+		} else if (strcmp(argv[i], "-shuffled") == 0) {
+			cout << "I: Using shuffled data" << endl;
+			gen_data = requential_data;
+		} else if (strcmp(argv[i], "-redblack") == 0) {
+			ods::RedBlackTree1<Integer> rbt;
+			build_and_search(rbt, "RedBlackTree", n, gen_data, gen_search);
+		} else if (strcmp(argv[i], "-treap") == 0) {
+			ods::Treap1<Integer> t;
+			build_and_search(t, "Treap", n, gen_data, gen_search);
+		} else if (strcmp(argv[i], "-skiplist") == 0) {
+			ods::SkiplistSSet<Integer> sl;
+			build_and_search(sl, "Skiplist", n, gen_data, gen_search);
+		} else if (strcmp(argv[i], "-todolist") == 0) {
+				fastws::TodoList<Integer> tdl(epsilon);
+				build_and_search(tdl, "TodoList", n, gen_data, gen_search);
+		} else if (strcmp(argv[i], "-linkedtodolist") == 0) {
+			fastws::LinkedTodoList<Integer> ltdl(epsilon);
+			build_and_search(ltdl, "TodoList", n, rand_data, rand_search);
+		} else {
+			usage_error(argv[0]);
+		}
+	}
+	return 0;
+
+	// start with some sanity tests
+
+	// do some bigger tests
+	for (size_t delay = 0; delay <= 0; delay += 5) {
 		Integer::setDelay(delay);
 		cout << "DELAY " << delay << endl;
 		size_t n = 1000000;

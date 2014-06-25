@@ -55,6 +55,7 @@ protected:
 	int *rebuild_freqs;
 
 	void init(T *data, int n);
+	void deleteList(Node *head);
 	void rebuild();
 	void rebuild(int i);
 
@@ -64,7 +65,7 @@ protected:
 	void sanity();
 
 public:
-	LinkedTodoList(T *data = NULL, int n0 = 0, double eps0 = .4);
+	LinkedTodoList(double eps0 = .3, T *data = NULL, int n0 = 0);
 	virtual ~LinkedTodoList();
 	T find(T x);
 	bool add(T x);
@@ -76,7 +77,7 @@ public:
 };
 
 template<class T>
-LinkedTodoList<T>::LinkedTodoList(T *data, int n0, double eps0) {
+LinkedTodoList<T>::LinkedTodoList(double eps0, T *data, int n0) {
 	eps = eps0;
 
 	int kmax = 100; // FIXME: potential limitation here
@@ -90,7 +91,6 @@ LinkedTodoList<T>::LinkedTodoList(T *data, int n0, double eps0) {
 
 template<class T>
 void LinkedTodoList<T>::init(T *data, int n0) {
-
 	// Compute critical values depending on epsilon and n
 	n0max = ceil(2. / eps);
 	n0max = 1;
@@ -117,6 +117,7 @@ typename LinkedTodoList<T>::Node* LinkedTodoList<T>::newNode(T x, Node *down,
 	Node *u = new Node;
 	u->down = down;
 	u->next = next;
+	u->x = x;
 	return u;
 }
 
@@ -126,17 +127,21 @@ void LinkedTodoList<T>::deleteNode(Node *u) {
 }
 
 template<class T>
+void LinkedTodoList<T>::deleteList(Node *head) {
+	Node *u = head, *next = NULL;
+	while (u != NULL) {
+		next = u->next;
+		deleteNode(u);
+		u = next;
+	}
+}
+
+template<class T>
 void LinkedTodoList<T>::rebuild() {
 	// delete all but the k'th list
 	for (int i = 0; i < k; i++) {
-		Node *prev = sentinel[i];
-		Node *u = prev->next;
-		for (int j = 0; j < n[i]; j++) {
-			deleteNode(prev);
-			prev = u;
-			u = u->next;
-		}
-		deleteNode(prev);
+		deleteList(sentinel[i]);
+		sentinel[i] = NULL;
 	}
 	// save these for later
 	int n0 = n[k];
@@ -144,6 +149,7 @@ void LinkedTodoList<T>::rebuild() {
 
 	// start over with new paramters but the same list
 	delete[] n;
+	delete sentinel[k];
 	delete[] sentinel;
 	k = max(0.0, ceil(log(n0) / log(2-eps)));
 	n = new int[k + 1]();
@@ -152,7 +158,7 @@ void LinkedTodoList<T>::rebuild() {
 	for (int i = k-1; i >= 0; i--)
 		sentinel[i] = newNode((T)0, sentinel[i+1]);
 	n[k] = n0;
-	sentinel[k].next = head;
+	sentinel[k]->next = head;
 	rebuild(k);
 }
 
@@ -164,6 +170,7 @@ void LinkedTodoList<T>::rebuild(int i) {
 
 	for (int j = i - 1; j >= 0; j--) {
 		// populate L_j using L_{j+1}
+		deleteList(sentinel[j]->next);
 		n[j] = 0;
 		Node *u = sentinel[j+1]->next;
 		Node *prev = sentinel[j];
@@ -218,6 +225,7 @@ bool LinkedTodoList<T>::add(T x) {
 	for (i = k; i >= 0; i--) {
 		Node *w = newNode(x, down, path[i]->next);
 		down = w;
+		path[i]->next = w;
 		n[i]++;
 	}
 
@@ -239,13 +247,9 @@ LinkedTodoList<T>::~LinkedTodoList() {
 	delete[] n;
 	delete[] a;
 	delete[] rebuild_freqs;
-	Node *prev = sentinel;
-	while (prev != NULL) {
-		Node *u = prev->next[k];
-		prev->next[k] = NULL;
-		deleteNode(prev);
-		prev = u;
-	}
+	for (int i = 0; i <= k; i++)
+		deleteList(sentinel[i]);
+	delete[] sentinel;
 }
 
 template<class T>
