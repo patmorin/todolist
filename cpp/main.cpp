@@ -147,7 +147,7 @@ void test_suite(size_t n, int (*gen_data)(size_t, size_t),
 		int (*gen_search)(size_t, size_t)) {
 	cout << "Structure Operation n time #comparisons c" << endl;
 	{
-		fastws::TodoList<Integer> tdl(NULL, 0, .03);
+		fastws::LinkedTodoList<Integer> tdl(NULL, 0, .03);
 		build_and_search(tdl, "TodoList", n, gen_data, gen_search);
 		cout << tdl;
 	}
@@ -212,11 +212,11 @@ void sanity_tests(size_t n) {
 	}
 	{
 		ods::SkiplistSSet<int> sl;
-		fastws::TodoList<int> tdl;
+		fastws::LinkedTodoList<int> tdl;
 		test_dicts(sl, tdl, n);
 	}
 	{
-		fastws::TodoList<int> tdl;
+		fastws::LinkedTodoList<int> tdl;
 		ods::RedBlackTree1<int> rbt;
 		test_dicts(tdl, rbt, n);
 	}

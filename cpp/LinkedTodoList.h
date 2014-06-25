@@ -31,22 +31,20 @@ using namespace std;
 
 namespace fastws {
 
-/**
- * A dictionary with the working-set property.
- */
 template<class T>
 class LinkedTodoList {
 protected:
 	struct NP;
 
 	struct Node {
-		T x;          // data
-		Node *next[]; // a stack of next pointers
+		T x;         // data
+		Node *next;
+		Node *down;
 	};
 
 	int k;    // there are k+1 lists numbered 0,...,k
 	int *n;   // n[i] is the size of the i'th list
-	Node *sentinel; // sentinel-next[i] is the first element of list i
+	Node **sentinel; // sentinel-next[i] is the first element of list i
 
 	// parameters used to determine lists sizes
 	double eps;
@@ -60,10 +58,10 @@ protected:
 	void rebuild();
 	void rebuild(int i);
 
-	void sanity();
-
-	Node *newNode();
+	Node *newNode(T x, Node *down = NULL, Node *next = NULL);
 	void deleteNode(Node *u);
+
+	void sanity();
 
 public:
 	LinkedTodoList(T *data = NULL, int n0 = 0, double eps0 = .4);
@@ -85,11 +83,8 @@ LinkedTodoList<T>::LinkedTodoList(T *data, int n0, double eps0) {
 	rebuild_freqs = new int[kmax+1]();
 	double base_a = 2.0-eps;
 	a = new int[kmax+1];
-	for (int i = 0; i <= kmax; i++) {
+	for (int i = 0; i <= kmax; i++)
 		a[i] = pow(base_a, i);
-		// cout << "a[" << i << "]=" << a[i] << endl;
-	}
-
 	init(data, n0);
 }
 
@@ -99,53 +94,64 @@ void LinkedTodoList<T>::init(T *data, int n0) {
 	// Compute critical values depending on epsilon and n
 	n0max = ceil(2. / eps);
 	n0max = 1;
-	// cout << "n0max = " << n0max << endl;
 	k = max(0.0, ceil(log(n0) / log(2-eps)));
 
 	n = new int[k + 1]();
-	// cout << "k = " << k << endl;
+	sentinel = new Node*[k+1];
+	sentinel[k] = newNode((T)0);
+	for (int i = k-1; i >= 0; i--)
+		sentinel[i] = newNode((T)0, sentinel[i+1]);
 	n[k] = n0;
-	sentinel = newNode();
-	Node *prev = sentinel;
-	for (int i = 0; i < n0; i++) {
-		Node *u = newNode();
-		u->x = data[i];
-		prev->next[k] = u;
-		prev = u;
+	Node *next = NULL;
+	for (int j = n0-1; j >= 0; j--) {
+		Node *u = newNode(data[j], NULL, next);
+		next = u;
 	}
+	sentinel[k]->next = next;
 	rebuild(k);
 }
 
 template<class T>
-typename LinkedTodoList<T>::Node* LinkedTodoList<T>::newNode() {
-	Node *u = (Node *) malloc(sizeof(Node) + (k + 1) * sizeof(Node*));
-	memset(u->next, '\0', (k + 1) * sizeof(Node*));
+typename LinkedTodoList<T>::Node* LinkedTodoList<T>::newNode(()) {
+	Node *u = new Node;
+	u->next = u->down = NULL;
 	return u;
 }
 
 template<class T>
 void LinkedTodoList<T>::deleteNode(Node *u) {
-	free(u);
+	delete u;
 }
 
 template<class T>
 void LinkedTodoList<T>::rebuild() {
-	// time to rebuild --- free everything and start over
-	// TODO: Put some padding in so we only do this O(loglog n) times
-	T *data = new T[n[k]];
-	Node *prev = sentinel;
-	Node *u = sentinel->next[k];
-	for (int j = 0; j < n[k]; j++) {
-		data[j] = u->x;
+	// delete all but the k'th list
+	for (int i = 0; i < k; i++) {
+		Node *prev = sentinel[i];
+		Node *u = prev->next;
+		for (int j = 0; j < n[i]; j++) {
+			deleteNode(prev);
+			prev = u;
+			u = u->next;
+		}
 		deleteNode(prev);
-		prev = u;
-		u = u->next[k];
 	}
-	deleteNode(prev);
-	int enn = n[k];
+	// save these for later
+	int n0 = n[k];
+	Node *head = sentinel[k]->next;
+
+	// start over with new paramters but the same list
 	delete[] n;
-	init(data, enn);
-	delete[] data;
+	delete[] sentinel;
+	k = max(0.0, ceil(log(n0) / log(2-eps)));
+	n = new int[k + 1]();
+	sentinel = new Node*[k+1];
+	sentinel[k] = newNode((T)0);
+	for (int i = k-1; i >= 0; i--)
+		sentinel[i] = newNode((T)0, sentinel[i+1]);
+	n[k] = n0;
+	sentinel[k].next = head;
+	rebuild(k);
 }
 
 
@@ -157,21 +163,19 @@ void LinkedTodoList<T>::rebuild(int i) {
 	for (int j = i - 1; j >= 0; j--) {
 		// populate L_j using L_{j+1}
 		n[j] = 0;
-		Node *u = sentinel->next[j + 1];
-		Node *prev = sentinel;
+		Node *u = sentinel[j+1]->next;
+		Node *prev = sentinel[j];
 		bool skipped = false;
 		while (u != NULL) {
 			if (skipped) {
-				prev->next[j] = u;
-				prev = u;
+				prev->next = newNode(u->x, u);
+				prev = prev->next;
 				n[j]++;
-				skipped = false;
-			} else {
-				skipped = true;
 			}
-			u = u->next[j + 1];
+			skipped = !skipped;
+			u = u->next;
 		}
-		prev->next[j] = NULL;
+		prev->next = NULL;
 	}
 
 }
@@ -179,9 +183,11 @@ void LinkedTodoList<T>::rebuild(int i) {
 template<class T>
 T LinkedTodoList<T>::find(T x) {
 	Node *u = sentinel;
-	for (int i = 0; i <= k; i++)
-		if (u->next[i] != NULL && u->next[i]->x < x)
-			u = u->next[i];
+	for (int i = 0; i <= k; i++) {
+		if (u->next != NULL && u->next->x < x)
+			u = u->next;
+		u = u->down;
+	}
 	return (u->next[k] == NULL) ? (T)0 : u->next[k]->x;
 }
 
