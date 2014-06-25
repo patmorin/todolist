@@ -17,8 +17,8 @@
  * structure has its own array of length k=Theta(log n)$.  This avoids the
  * resizing that would otherwise be required when rebuilding levels.
  */
-#ifndef FASTWS_TODOLIST_H_
-#define FASTWS_TODOLIST_H_
+#ifndef FASTWS_LINKEDTODOLIST_H_
+#define FASTWS_LINKEDTODOLIST_H_
 
 #include <cmath>
 #include <cstring>
@@ -112,9 +112,11 @@ void LinkedTodoList<T>::init(T *data, int n0) {
 }
 
 template<class T>
-typename LinkedTodoList<T>::Node* LinkedTodoList<T>::newNode(()) {
+typename LinkedTodoList<T>::Node* LinkedTodoList<T>::newNode(T x, Node *down,
+		Node *next) {
 	Node *u = new Node;
-	u->next = u->down = NULL;
+	u->down = down;
+	u->next = next;
 	return u;
 }
 
@@ -182,38 +184,40 @@ void LinkedTodoList<T>::rebuild(int i) {
 
 template<class T>
 T LinkedTodoList<T>::find(T x) {
-	Node *u = sentinel;
-	for (int i = 0; i <= k; i++) {
+	Node *u = sentinel[0];
+	while (u->down != NULL) {
 		if (u->next != NULL && u->next->x < x)
 			u = u->next;
 		u = u->down;
 	}
-	return (u->next[k] == NULL) ? (T)0 : u->next[k]->x;
+	if (u->next != NULL && u->next->x < x)
+		u = u->next;
+
+	return (u->next == NULL) ? (T)0 : u->next->x;
 }
 
 template<class T>
 bool LinkedTodoList<T>::add(T x) {
 	// do a search for x and keep track of the search path
 	Node *path[50]; // FIXME: hard upper-bound
-	Node *u = sentinel;
+	Node *u = sentinel[0];
 	int i;
 	for (i = 0; i <= k; i++) {
-		if (u->next[i] != NULL && u->next[i]->x < x)
-			u = u->next[i];
+		if (u->next != NULL && u->next->x < x)
+			u = u->next;
 		path[i] = u;
+		u = u->down;
 	}
 
 	// check if x is already here and, if so, abort
-	Node *w = u->next[k];
-	if (w != NULL && w->x == x)
+	if (path[k]->next != NULL && path[k]->next->x == x)
 		return false;
 
 	// insert x everywhere along the search path
-	w = newNode();
-	w->x = x;
+	Node *down = NULL;
 	for (i = k; i >= 0; i--) {
-		w->next[i] = path[i]->next[i];
-		path[i]->next[i] = w;
+		Node *w = newNode(x, down, path[i]->next);
+		down = w;
 		n[i]++;
 	}
 
@@ -264,10 +268,10 @@ void LinkedTodoList<T>::printOn(std::ostream &out) {
 	for (int i = 0; i <= k; i++) {
 		cout << "L(" << i << "): ";
 		if (n[k] <= max_print) {
-			Node *u = sentinel->next[i];
+			Node *u = sentinel[i]->next;
 			for (int j = 0; j < n[i]; j++) {
 				cout << u->x << ",";
-				u = u->next[i];
+				u = u->next;
 			}
 			assert(u == NULL);
 		}
@@ -284,4 +288,4 @@ ostream& operator<<(ostream &out, LinkedTodoList<T> &sl) {
 
 } // fastws namespace
 
-#endif // FASTWS_TODOLIST_H_
+#endif // FASTWS_LINKEDTODOLIST_H_

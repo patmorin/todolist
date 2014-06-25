@@ -14,6 +14,7 @@ using namespace std;
 #include "SplayTree.h"
 #include "RedBlackTree.h"
 #include "TodoList.h"
+#include "LinkedTodoList.h"
 
 
 // A silly class to use for simulating classes that have more expensive
@@ -148,6 +149,11 @@ void test_suite(size_t n, int (*gen_data)(size_t, size_t),
 	cout << "Structure Operation n time #comparisons c" << endl;
 	{
 		fastws::LinkedTodoList<Integer> tdl(NULL, 0, .03);
+		build_and_search(tdl, "TodoList", n, gen_data, gen_search);
+		cout << tdl;
+	}
+	{
+		fastws::TodoList<Integer> tdl(NULL, 0, .03);
 		build_and_search(tdl, "TodoList", n, gen_data, gen_search);
 		cout << tdl;
 	}

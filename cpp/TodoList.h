@@ -35,7 +35,7 @@ namespace fastws {
  * A dictionary with the working-set property.
  */
 template<class T>
-class LinkedTodoList {
+class TodoList {
 protected:
 	struct NP;
 
@@ -66,8 +66,8 @@ protected:
 	void deleteNode(Node *u);
 
 public:
-	LinkedTodoList(T *data = NULL, int n0 = 0, double eps0 = .4);
-	virtual ~LinkedTodoList();
+	TodoList(T *data = NULL, int n0 = 0, double eps0 = .4);
+	virtual ~TodoList();
 	T find(T x);
 	bool add(T x);
 	int size() {
@@ -78,7 +78,7 @@ public:
 };
 
 template<class T>
-LinkedTodoList<T>::LinkedTodoList(T *data, int n0, double eps0) {
+TodoList<T>::TodoList(T *data, int n0, double eps0) {
 	eps = eps0;
 
 	int kmax = 100; // FIXME: potential limitation here
@@ -94,7 +94,7 @@ LinkedTodoList<T>::LinkedTodoList(T *data, int n0, double eps0) {
 }
 
 template<class T>
-void LinkedTodoList<T>::init(T *data, int n0) {
+void TodoList<T>::init(T *data, int n0) {
 
 	// Compute critical values depending on epsilon and n
 	n0max = ceil(2. / eps);
@@ -117,19 +117,19 @@ void LinkedTodoList<T>::init(T *data, int n0) {
 }
 
 template<class T>
-typename LinkedTodoList<T>::Node* LinkedTodoList<T>::newNode() {
+typename TodoList<T>::Node* TodoList<T>::newNode() {
 	Node *u = (Node *) malloc(sizeof(Node) + (k + 1) * sizeof(Node*));
 	memset(u->next, '\0', (k + 1) * sizeof(Node*));
 	return u;
 }
 
 template<class T>
-void LinkedTodoList<T>::deleteNode(Node *u) {
+void TodoList<T>::deleteNode(Node *u) {
 	free(u);
 }
 
 template<class T>
-void LinkedTodoList<T>::rebuild() {
+void TodoList<T>::rebuild() {
 	// time to rebuild --- free everything and start over
 	// TODO: Put some padding in so we only do this O(loglog n) times
 	T *data = new T[n[k]];
@@ -150,7 +150,7 @@ void LinkedTodoList<T>::rebuild() {
 
 
 template<class T>
-void LinkedTodoList<T>::rebuild(int i) {
+void TodoList<T>::rebuild(int i) {
 
 	rebuild_freqs[i]++;
 
@@ -177,7 +177,7 @@ void LinkedTodoList<T>::rebuild(int i) {
 }
 
 template<class T>
-T LinkedTodoList<T>::find(T x) {
+T TodoList<T>::find(T x) {
 	Node *u = sentinel;
 	for (int i = 0; i <= k; i++)
 		if (u->next[i] != NULL && u->next[i]->x < x)
@@ -186,7 +186,7 @@ T LinkedTodoList<T>::find(T x) {
 }
 
 template<class T>
-bool LinkedTodoList<T>::add(T x) {
+bool TodoList<T>::add(T x) {
 	// do a search for x and keep track of the search path
 	Node *path[50]; // FIXME: hard upper-bound
 	Node *u = sentinel;
@@ -225,7 +225,7 @@ bool LinkedTodoList<T>::add(T x) {
 }
 
 template<class T>
-LinkedTodoList<T>::~LinkedTodoList() {
+TodoList<T>::~TodoList() {
 	delete[] n;
 	delete[] a;
 	delete[] rebuild_freqs;
@@ -239,7 +239,7 @@ LinkedTodoList<T>::~LinkedTodoList() {
 }
 
 template<class T>
-void LinkedTodoList<T>::sanity() {
+void TodoList<T>::sanity() {
 	assert(n[0] <= n0max);
 	for (int i = 0; i <= k; i++) {
 		Node *u = sentinel;
@@ -252,7 +252,7 @@ void LinkedTodoList<T>::sanity() {
 }
 
 template<class T>
-void LinkedTodoList<T>::printOn(std::ostream &out) {
+void TodoList<T>::printOn(std::ostream &out) {
 	const int max_print = 50;
 	cout << "WSSkiplist: n = " << n[k] << ", k = " << k << endl;
 	for (int i = 0; i <= k; i++) {
@@ -271,7 +271,7 @@ void LinkedTodoList<T>::printOn(std::ostream &out) {
 }
 
 template<class T>
-ostream& operator<<(ostream &out, LinkedTodoList<T> &sl) {
+ostream& operator<<(ostream &out, TodoList<T> &sl) {
 	sl.printOn(out);
 	return out;
 }
