@@ -1,6 +1,7 @@
 \documentclass[lotsofwhite]{patmorin}
 \listfiles
 \usepackage{amsthm,amsmath,graphicx,wrapfig}
+\usepackage[noend]{algorithmic}
 \usepackage{pat}
 
 
@@ -18,16 +19,14 @@
   We describe todolists (top-down skiplists), a variant of skiplists (Pugh
   1990) that can execute a searches using at most $\lceil\log_{2-\eps}
   n\rceil$ binary comparisons per search and that has amortized update
-  time $O(\eps^{-1}\log n)$.  A variant of todo-lists, called woselists
-  (working-set skiplists) can execute a search for any element $x$
-  using $\log_{2-\eps} w(x) + o(\log w(x))$ binary comparisons.  Here,
-  $w$ is the ``working-set number'' of the element being accessed.
-  All previously-known structures with the working-set property perform
-  at least $4\log_2 w(x)$ comparisons.  We show that, experimentally,
-  todo-lists can are comparable to do skiplists and treaps in terms of
-  update time and that they can easily outperform skiplists and treaps
-  in terms of search time.  Todolists, however, do not outperform the
-  venerable red-black trees (Guibas and Sedgewick 1978).
+  time $O(\eps^{-1}\log n)$.  A variant of todolists, called woselists
+  (working-set skiplists) can execute a search for any element $x$ using
+  $\log_{2-\eps} w(x) + o(\log w(x))$ binary comparisons.  Here, $w(x)$ is
+  the ``working-set number'' of $x$.  All previously-known structures with
+  the working-set property perform at least $4\log_2 w(x)$ comparisons.
+  We show through experiments that, if implemented carefully, todolists
+  are comparable to other common dictionary implementations in terms of
+  update times and outperform them in terms of search times.
 \end{abstract}
 
 \end{titlepage}
@@ -45,8 +44,8 @@ library \cite{S}.
 
 In short, comparison-based dictionaries are so important that any
 new ideas or insights on them are worth exploring.  In this paper,
-we introduce the todolist (\bold{to}p-\bold{do}wn skip\bold{list}), a
-data structure that is parameterized by a parameter $\epsilon\in(0,1)$,
+we introduce the todolist (\boldx{to}p-\boldx{do}wn skip\boldx{list}), a
+data structure that is parameterized by a parameter $\eps\in(0,1)$,
 and that can execute searches using at most $\lceil(1+\eps)\log_2
 n\rceil$ binary comparisons per search and that has amortized update
 time $O(\eps^{-1}\log n)$.
@@ -54,26 +53,138 @@ time $O(\eps^{-1}\log n)$.
 
 \section{TodoLists}
 
-A \emph{todolist} for the values $x_1<x_2<\cdots<x_n$ consists of a nested
-sequence of sorted lists $L_0,\ldots,L_k$ having the following properties:\footnote{Here and throughout, we use set notations like $|\cdot|$, and $\subsetseteq$ on the lists $L_0,\ldots,L_k$, with the obvious interpretations.}
+A \emph{todolist} for the values $x_1<x_2<\cdots<x_n$ consists of a
+nested sequence of $h+1$ sorted singly-linked lists, $L_0,\ldots,L_h$,
+having the following properties:\footnote{Here and throughout, we use set
+notations like $|\cdot|$, and $\subseteq$ on the lists $L_0,\ldots,L_h$,
+with the obvious interpretations.}
 
 \begin{enumerate}
 \item $|L_0| \le 1$.
 \item $L_i\subseteq L_{i+1}$ for each $i\in\{0,\ldots,k-1\}$.
-\item For each $i\in\{1,\ldots,k\}$ and each pair $x,y$ of consecutive elements in $L_i$, at least one of $x$ or $y$ is in $L_{i-1}$.
+\item For each $i\in\{1,\ldots,h\}$ and each pair $x,y$ of consecutive elements in $L_i$, at least one of $x$ or $y$ is in $L_{i-1}$.
 \item $L_k$ contains $x_1,\ldots,x_n$.
 \end{enumerate}
 
-We will assume that, given a pointer to the node containing $x_j$ in
-$L_i$, it is possible to find, in constant time, the occurence of $x_j$
-in $L_{i+1}$.  This can be achieved by maintaining an extra pointer
-or (more efficiently) by maintaing all occurences of $x_j$ using an
-array. (See \secref{experiments} for a detailed description.)
+The value of $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and at most
+$\lceil \log_{2-\varepsilon} n\rceil+1$ .
+
+We will assume that each list $L_i$ contains a \emph{sentinel} node
+at the head of each list. This sentinel does not contain any data.
+We will also assume that, given a pointer to the node containing $x_j$
+in $L_i$, it is possible to find, in constant time, the occurence of $x_j$
+in $L_{i+1}$.  This can be achieved by maintaining an extra pointer or by
+maintaing all occurences of $x_j$ in an array. (See \secref{experiments}
+for a detailed description.)
+
+\subsection{Searching}
+
+Searching for a value, $x$, in a todolist is simple. In particular, we
+can find the node, $u$, in $L_h$ that contains the largest value that
+is less than $x$. If $L_h$ has no value less than $x$ than the search
+finds the sentinel in $L_h$.  We call the node $u$ the \emph{predecessor}
+of $x$ in $L_h$.
+
+Starting at the sentinel in $L_0$, one comparison (with the at most one
+element of $L_0$) is sufficient to determine the predecessor, $u_0$ of $x$
+in $L_0$. (This follows from Property~1.)  Moving down to the occurrence
+of $u_0$ in $L_1$, one additional comparison is sufficient to determine
+the predecessor, $u_1$ of $x$ in $L_1$. (This follows from Property~3.)
+In general, once we know the predecessor of $x$ in $L_i$ we can determine
+the predecessor of $x$ in $L_{i+1}$ using one additional comparison. Thus,
+the total number of comparisons needed to find the predecessor of $x$
+in $L_k$ is only $h+1$.
+
+\vspace{1ex}
+\noindent{$\textsc{FindSuccessor}(x)$}
+\begin{algorithmic}
+  \STATE{$u_0\gets \mathtt{sentinel}$}
+  \FOR{$i=0,\ldots,k$}
+    \IF{$\mathrm{next}(u_i)\neq \mathbf{nil}$ and $\mathrm{key}(\mathrm{next}(u_i)) < x$}
+      \STATE{$u_i\gets\mathrm{next}(u_i)$}
+    \ENDIF
+    \STATE{$u_{i+1}\gets\mathrm{down}(u_i)$}
+  \ENDFOR
+  \RETURN{$u_k$}
+\end{algorithmic}
+
+\subsection{Adding}
+
+Adding a new element, $x$, to a todolist is done by searching for it
+using the algorithm outlined above and then splicing $x$ into each of
+the lists $L_0,\ldots,L_h$.  This splicing is easily done in constant
+time per list, since the new nodes containing $x$ appear after the nodes
+$u_0,\ldots,u_h$.  This point, all of the Properties~2--4 are satisified,
+but Property~1 may be violated since there may be two values in $L_0$.
+If this is the case, then we find the smallest index $i$ such that
+$|L_i|\le (2-\eps)^i$.  We then rebuild the lists $L_{0},\ldots,L_{i-1}$
+in a bottom up fashion; $L_{i-1}$ gets every second element from $L_i$
+(starting with the second), $L_{i-2}$ gets every second element from
+$L_{i-1}$, and so on down to $L_0$.
+
+Since we take every element from $L_i$ starting with the second element,
+after rebuilding we obtain:
+\[
+   |L_{i-1}| = \lfloor |L_i|/2 \rfloor \le |L_i|/2
+\]
+and, repeating this reasoning for $L_{i-2}, L_{i-3},\ldots, L_0$, we see that, after rebuilding,
+\[
+   |L_{0}| = |L_i|/2^i \le (2-\eps)^i/2^i \le < 1 \rfloor \enspace .
+\]
+Thus, after this rebuilding, Property~1 is restored and the rebuilding,
+by definition, maintains Properties~2 and 3.
+
+To study the amortized cost of adding an element, we
+can use the potential method with the potential function
+\[
+    \Phi(L_0,\ldots,L_h)=C\sum_{i=0}^h|L_i| \enspace .
+\]
+Adding $x$ to each of $L_0,\ldots,L_h$ increases this potential by
+$C(h+1)=O(C\log n)$.  Rebuilding, if it occurs, takes $O(|L_i|)=O((2-\eps)^i)$
+time, but causes a change in potential of at least
+\begin{align*}
+     \Delta\Phi & = C\sum_{j=0}^i\left(|L_j|/2^{i-j} - (2-\eps)^j\right) \\
+          & \le C\sum_{j=0}^{i-1}\left((2-\eps)^i/2^{i-j} - (2-\eps)^j\right) \\
+          & \le C\left((2-\eps)^i - \sum_{j=0}^{i-1}(2-\eps)^j\right) \\
+          & = C\left((2-\eps)^i - \frac{(2-\eps)^i-(2-\eps)}{1-\eps}\right) \\
+          & < C\left((2-\eps)^i - (1+\epsilon)\left((2-\eps)^i-(2-\eps)\right)\right)
+           & \text{(since $1/(1-\eps)>1+\eps$)} \\
+          & = -C\eps(2-\eps)^i + O(C) \\
+\end{align*}
+Therefore, by setting $C=c/\eps$ units for a sufficiently large constant,
+$c$, the decrease in potential is greater than the cost of rebuilding.
+We conclude that the amortized cost of adding an element $x$ is $O(C\log
+n)=O(\epsilon^{-1}\log n)$.
+
+\subsection{Deleting}
+
+Since we already have an efficient method of partial rebuilding, we can use the same strategy for deletion. To delete an element $x$, we delete it in the obvious way, by searching for it and then splicing it out of the lists $L_i,\ldots,L_h$ in which it appears.  At this point, Properties~1, 2, and 4 hold, but Property~3 may be violated in any subset of the lists $L_i,\ldots,L_h$.  Luckily, all of these violations can be fixed by taking $x$'s successor in $L_h$ and splicing it into each of $L_0,\ldots,L_{h-1}$.  Thus, the second part of the deletion operation is like the second part of the insertion operation.  Like the insertion operation, this may trigger a partial rebuilding, but it has the same amortized running time of $O(\epsilon^{-1}\log n)$.
+
+\subsection{Tidying Up}
+
+
+
+
+
+\begin{thm}
+For any $\eps >0$
+A todo
+\end{thm}
+
 
 \section{WoseLists}
 
 
 \section{Experimental Results}
+\seclabel{experimental}
+
+We should mention here why skiplists (and to a less extent todolists)
+aren't as good as binary search trees.  Even if we can get them to do $t$
+comparisons, the still end up dereferencing $t+h$ pointers, since at each
+level they look at a node to the right that is not on the search path.
+This is why using an array to implement a skiplist node is critical,
+but it doesn't completely solve the problem because it then we have to
+do array index calculations for each pointer access.
 
 \section{Conclusion}
 

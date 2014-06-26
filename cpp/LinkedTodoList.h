@@ -192,14 +192,13 @@ void LinkedTodoList<T>::rebuild(int i) {
 template<class T>
 T LinkedTodoList<T>::find(T x) {
 	Node *u = sentinel[0];
+	if (u->next != NULL && u->next->x < x)
+		u = u->next;
 	while (u->down != NULL) {
 		if (u->next != NULL && u->next->x < x)
 			u = u->next;
 		u = u->down;
 	}
-	if (u->next != NULL && u->next->x < x)
-		u = u->next;
-
 	return (u->next == NULL) ? (T)0 : u->next->x;
 }
 

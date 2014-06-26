@@ -16,6 +16,7 @@ using namespace std;
 #include "RedBlackTree.h"
 #include "TodoList.h"
 #include "LinkedTodoList.h"
+#include "TodoList2.h"
 
 
 // class Integer
@@ -210,9 +211,9 @@ void test_dicts(Dict1 &d1, Dict2 &d2, int n) {
 
 void sanity_tests(size_t n) {
 	{
-		ods::RedBlackTree1<int> rbt;
+		fastws::TodoList2<int> tdl2;
 		ods::Treap1<int> t;
-		test_dicts(rbt, t, n);
+		test_dicts(tdl2, t, n);
 	}
 	{
 		ods::Treap1<int> t;
@@ -221,18 +222,18 @@ void sanity_tests(size_t n) {
 	}
 	{
 		ods::SkiplistSSet<int> sl;
-		fastws::LinkedTodoList<int> tdl;
-		test_dicts(sl, tdl, n);
-	}
-	{
-		fastws::LinkedTodoList<int> tdl;
 		ods::ScapegoatTree1<int> st;
-		test_dicts(tdl, st, n);
+		test_dicts(sl, st, n);
 	}
 	{
 		ods::ScapegoatTree1<int> st;
 		ods::RedBlackTree1<int> rbt;
 		test_dicts(st, rbt, n);
+	}
+	{
+		ods::RedBlackTree1<int> rbt;
+		fastws::TodoList2<int> tdl2;
+		test_dicts(rbt, tdl2, n);
 	}
 }
 
@@ -244,6 +245,7 @@ void usage_error(const char *name) {
 int main(int argc, char **argv) {
 	if (argc < 2)
 		usage_error(argv[0]);
+
 	size_t n = 100000;
 	int (*gen_data)(size_t, size_t) = rand_data;
 	int (*gen_search)(size_t, size_t) = rand_search;
@@ -288,6 +290,9 @@ int main(int argc, char **argv) {
 		} else if (strcmp(argv[i], "-todolist") == 0) {
 				fastws::TodoList<Integer> tdl(epsilon);
 				build_and_search(tdl, "TodoList", n, gen_data, gen_search);
+		} else if (strcmp(argv[i], "-todolist2") == 0) {
+				fastws::TodoList2<Integer> tdl2(epsilon);
+				build_and_search(tdl2, "TodoList2", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-linkedtodolist") == 0) {
 			fastws::LinkedTodoList<Integer> ltdl(epsilon);
 			build_and_search(ltdl, "LinkedTodoList", n, rand_data, rand_search);

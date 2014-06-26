@@ -44,7 +44,7 @@ protected:
 		Node *next[]; // a stack of next pointers
 	};
 
-	int k;    // there are k+1 lists numbered 0,...,k
+	int h;    // there are k+1 lists numbered 0,...,k
 	int *n;   // n[i] is the size of the i'th list
 	Node *sentinel; // sentinel-next[i] is the first element of list i
 
@@ -71,7 +71,7 @@ public:
 	T find(T x);
 	bool add(T x);
 	int size() {
-		return n[k];
+		return n[h];
 	}
 
 	void printOn(std::ostream &out);
@@ -100,26 +100,26 @@ void TodoList<T>::init(T *data, int n0) {
 	n0max = ceil(2. / eps);
 	n0max = 1;
 	// cout << "n0max = " << n0max << endl;
-	k = max(0.0, ceil(log(n0) / log(2-eps)));
+	h = max(0.0, ceil(log(n0) / log(2-eps)));
 
-	n = new int[k + 1]();
+	n = new int[h + 1]();
 	// cout << "k = " << k << endl;
-	n[k] = n0;
+	n[h] = n0;
 	sentinel = newNode();
 	Node *prev = sentinel;
 	for (int i = 0; i < n0; i++) {
 		Node *u = newNode();
 		u->x = data[i];
-		prev->next[k] = u;
+		prev->next[h] = u;
 		prev = u;
 	}
-	rebuild(k);
+	rebuild(h);
 }
 
 template<class T>
 typename TodoList<T>::Node* TodoList<T>::newNode() {
-	Node *u = (Node *) malloc(sizeof(Node) + (k + 1) * sizeof(Node*));
-	memset(u->next, '\0', (k + 1) * sizeof(Node*));
+	Node *u = (Node *) malloc(sizeof(Node) + (h + 1) * sizeof(Node*));
+	memset(u->next, '\0', (h + 1) * sizeof(Node*));
 	return u;
 }
 
@@ -132,17 +132,17 @@ template<class T>
 void TodoList<T>::rebuild() {
 	// time to rebuild --- free everything and start over
 	// TODO: Put some padding in so we only do this O(loglog n) times
-	T *data = new T[n[k]];
+	T *data = new T[n[h]];
 	Node *prev = sentinel;
-	Node *u = sentinel->next[k];
-	for (int j = 0; j < n[k]; j++) {
+	Node *u = sentinel->next[h];
+	for (int j = 0; j < n[h]; j++) {
 		data[j] = u->x;
 		deleteNode(prev);
 		prev = u;
-		u = u->next[k];
+		u = u->next[h];
 	}
 	deleteNode(prev);
-	int enn = n[k];
+	int enn = n[h];
 	delete[] n;
 	init(data, enn);
 	delete[] data;
@@ -179,10 +179,10 @@ void TodoList<T>::rebuild(int i) {
 template<class T>
 T TodoList<T>::find(T x) {
 	Node *u = sentinel;
-	for (int i = 0; i <= k; i++)
+	for (int i = 0; i <= h; i++)
 		if (u->next[i] != NULL && u->next[i]->x < x)
 			u = u->next[i];
-	return (u->next[k] == NULL) ? (T)0 : u->next[k]->x;
+	return (u->next[h] == NULL) ? (T)0 : u->next[h]->x;
 }
 
 template<class T>
@@ -191,34 +191,34 @@ bool TodoList<T>::add(T x) {
 	Node *path[50]; // FIXME: hard upper-bound
 	Node *u = sentinel;
 	int i;
-	for (i = 0; i <= k; i++) {
+	for (i = 0; i <= h; i++) {
 		if (u->next[i] != NULL && u->next[i]->x < x)
 			u = u->next[i];
 		path[i] = u;
 	}
 
 	// check if x is already here and, if so, abort
-	Node *w = u->next[k];
+	Node *w = u->next[h];
 	if (w != NULL && w->x == x)
 		return false;
 
 	// insert x everywhere along the search path
 	w = newNode();
 	w->x = x;
-	for (i = k; i >= 0; i--) {
+	for (i = h; i >= 0; i--) {
 		w->next[i] = path[i]->next[i];
 		path[i]->next[i] = w;
 		n[i]++;
 	}
 
 	// check if we need to add another level on the bottom
-	if (n[k] > a[k])
+	if (n[h] > a[h])
 		rebuild();
 
 	// do partial rebuilding, if necessary
 	if (n[0] > n0max) {
 		for (i = 1; n[i] > a[i]; i++);
-		assert(i <= k);
+		assert(i <= h);
 		rebuild(i);
 	}
 	return true;
@@ -231,8 +231,8 @@ TodoList<T>::~TodoList() {
 	delete[] rebuild_freqs;
 	Node *prev = sentinel;
 	while (prev != NULL) {
-		Node *u = prev->next[k];
-		prev->next[k] = NULL;
+		Node *u = prev->next[h];
+		prev->next[h] = NULL;
 		deleteNode(prev);
 		prev = u;
 	}
@@ -241,7 +241,7 @@ TodoList<T>::~TodoList() {
 template<class T>
 void TodoList<T>::sanity() {
 	assert(n[0] <= n0max);
-	for (int i = 0; i <= k; i++) {
+	for (int i = 0; i <= h; i++) {
 		Node *u = sentinel;
 		for (int j = 0; j < n[i]; j++) {
 			assert(u == sentinel || u->x < u->next->x);
@@ -254,10 +254,10 @@ void TodoList<T>::sanity() {
 template<class T>
 void TodoList<T>::printOn(std::ostream &out) {
 	const int max_print = 50;
-	cout << "WSSkiplist: n = " << n[k] << ", k = " << k << endl;
-	for (int i = 0; i <= k; i++) {
+	cout << "WSSkiplist: n = " << n[h] << ", k = " << h << endl;
+	for (int i = 0; i <= h; i++) {
 		cout << "L(" << i << "): ";
-		if (n[k] <= max_print) {
+		if (n[h] <= max_print) {
 			Node *u = sentinel->next[i];
 			for (int j = 0; j < n[i]; j++) {
 				cout << u->x << ",";
