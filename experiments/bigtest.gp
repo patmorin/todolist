@@ -11,10 +11,8 @@
 #    	gnuplot home:     http://www.gnuplot.info
 #    	faq, bugs, etc:   type "help FAQ"
 #    	immediate help:   type "help"  (plot window: hit 'h')
-# set terminal wxt 0
-# set output
 set term tikz color size 5in,3in
-set output 'epsilon.tex'
+set output 'bigtest.tex'
 unset clip points
 set clip one
 unset clip two
@@ -37,7 +35,7 @@ set style rectangle back fc lt -3 fillstyle   solid 1.00 border lt -1
 set style circle radius graph 0.02, first 0, 0 
 set style ellipse size graph 0.05, 0.03, first 0 angle 0 units xy
 set dummy x,y
-set format x "% g"
+set format x "%.0f"
 set format y "% g"
 set format x2 "% g"
 set format y2 "% g"
@@ -48,14 +46,16 @@ set angles radians
 unset grid
 set raxis
 set key title ""
-set key inside right top vertical Right noreverse enhanced autotitles nobox
-set key noinvert samplen 4 spacing 1 width 0 height 0 
+#set key lmargin top vertical Right noreverse enhanced autotitles nobox
+set key top left
+set key noinvert samplen 4 spacing 1.3 width 0 height 0 
 set key maxcolumns 0 maxrows 0
 set key noopaque
 unset label
 unset arrow
 set style increment default
 unset style line
+set style line 2  linetype 2 linewidth 1.000 pointtype 2 pointsize default pointinterval 0
 unset style arrow
 set style histogram clustered gap 2 title  offset character 0, 0, 0
 unset logscale
@@ -96,14 +96,13 @@ set mx2tics default
 set my2tics default
 set mcbtics default
 set xtics border in scale 1,0.5 mirror norotate  offset character 0, 0, 0 autojustify
-set xtics autofreq  norangelimit
-set ytics border in scale 1,0.5 nomirror norotate  offset character 0, 0, 0 autojustify
-set ytics 1 norangelimit textcolor rgb '#0060ad' # textcolor lt 2
+set xtics 500000 norangelimit
+set ytics border in scale 1,0.5 mirror norotate  offset character 0, 0, 0 autojustify
+set ytics autofreq  norangelimit
 set ztics border in scale 1,0.5 nomirror norotate  offset character 0, 0, 0 autojustify
 set ztics autofreq  norangelimit
 set nox2tics
-set y2tics border in scale 1,0.5 nomirror norotate  offset character 0, 0, 0 autojustify
-set y2tics 2 norangelimit textcolor rgb '#dd181f' 
+set noy2tics
 set cbtics border in scale 1,0.5 mirror norotate  offset character 0, 0, 0 autojustify
 set cbtics autofreq  norangelimit
 set rtics axis in scale 1,0.5 nomirror norotate  offset character 0, 0, 0 autojustify
@@ -117,18 +116,18 @@ set rrange [ * : * ] noreverse nowriteback
 set trange [ * : * ] noreverse nowriteback
 set urange [ * : * ] noreverse nowriteback
 set vrange [ * : * ] noreverse nowriteback
-set xlabel "$\\varepsilon$" 
+set xlabel "$n$" 
 set xlabel  offset character 0, 0, 0 font "" textcolor lt -1 norotate
 set x2label "" 
 set x2label  offset character 0, 0, 0 font "" textcolor lt -1 norotate
-set xrange [ 0.00000 : 0.700000 ] noreverse nowriteback
+set xrange [ * : * ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
-set ylabel "$5\\times 10^6$ searches (s)"  
-set ylabel  offset character 0, 0, 0 font "" textcolor rgb '#0060ad' rotate by -270
-set y2label "$10^6$ insertions (s)" 
-set y2label  offset character 0, 0, 0 font "" textcolor rgb '#dd181f' rotate by -270
-set yrange [ 0.00000 : * ] noreverse nowriteback
-set y2range [ 0.00000 : * ] noreverse nowriteback
+set ylabel "time (s)" 
+set ylabel  offset character 0, 0, 0 font "" textcolor lt -1 rotate by -270
+set y2label "" 
+set y2label  offset character 0, 0, 0 font "" textcolor lt -1 rotate by -270
+set yrange [ * : * ] noreverse nowriteback
+set y2range [ * : * ] noreverse nowriteback
 set zlabel "" 
 set zlabel  offset character 0, 0, 0 font "" textcolor lt -1 norotate
 set zrange [ * : * ] noreverse nowriteback
@@ -154,7 +153,8 @@ set fontpath
 set psdir
 set fit noerrorvariables
 GNUTERM = "wxt"
-set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2
-set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2
-plot 'epsilon-find.dat' using 7:4 with linespoints linestyle 1 title 'search time', 'epsilon-add.dat' using 7:4 axes x1y2 with linespoints linestyle 2 title 'insertion time'
+set output 'bigtest-find.tex'
+plot 'skiplist-find.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-find.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-find.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-find.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 'todolist2-find.dat' using 3:4 title 'todolist' with lines lt 1 lc rgb 'purple'
+set output 'bigtest-add.tex'
+plot 'skiplist-add.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-add.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-add.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-add.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 'todolist2-add.dat' using 3:4 title 'todolist' with lines lt 1 lc rgb 'purple'
 #    EOF

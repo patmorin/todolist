@@ -3,13 +3,12 @@
 \usepackage{amsthm,amsmath,graphicx,wrapfig}
 \usepackage[noend]{algorithmic}
 \usepackage{pat}
-
+\usepackage{tikz,gnuplot-lua-tikz}
 
 \newcommand{\eps}{\varepsilon}
 
 \title{\MakeUppercase{Top-Down Skiplists}}
 \author{Luis Barba, Rolf Fagerberg and Pat Morin}
-
 
 \begin{document}
 \begin{titlepage}
@@ -17,14 +16,14 @@
 
 \begin{abstract}
   We describe todolists (top-down skiplists), a variant of skiplists (Pugh
-  1990) that can execute a searches using at most $\log_{2-\eps}
-  n + O(1)$ binary comparisons per search and that has amortized update
+  1990) that can execute searches using at most $\log_{2-\eps}
+  n + O(1)$ binary comparisons per search and that have amortized update
   time $O(\eps^{-1}\log n)$.  A variant of todolists, called woselists
   (working-set skiplists) can execute a search for any element $x$ using
-  $\log_{2-\eps} w(x) + o(\log w(x))$ binary comparisons and has amortized
+  $\log_{2-\eps} w(x) + o(\log w(x))$ binary comparisons and have amortized
   search time $O(\eps^{-1}\log w(w))$.  Here, $w(x)$ is
   the ``working-set number'' of $x$.  All previously-known structures with
-  the working-set property perform at least $4\log_2 w(x)$ comparisons.
+  this working-set property perform at least $4\log_2 w(x)$ comparisons.
   We show through experiments that, if implemented carefully, todolists
   are comparable to other common dictionary implementations in terms of
   update times and outperform them in terms of search times.
@@ -466,7 +465,65 @@ outperforms some (but not all) of the tree-based structures.
 
 \subsection{The Data}
 
+The experimental data in this section was obtained from the program
+\texttt{main.cpp} that can be found in the accompanying source code.
+This program was compiled using the command line: \texttt{g++ -O4 -o
+main main.cpp}. The compiler was the \texttt{gcc} compiler, version 4.8.2
+that ships with the Ubuntu 14.04 Linux distribution.  Tests were run on
+a blah machine with blah memory.
+
 TODO: This may even be faster than binary search on a sorted array, we should test this.
+
+\subsubsection{Varying $\eps$}
+
+\Figref{epsilon} shows the results of varying the value of $\eps$ from
+$0.02$ to $0.68$ in increments of $0.01$. In this figure, $n=10^6$
+random integers in the set $\{0, 5,\ldots,5(n-1)\}$ were chosen
+(with replacement) and inserted into a todolist. Since dictionaries
+discard duplicates, the resulting todolist contained $906,086$ values.
+This todolist was then searched $m=5n$ times with random integers chosen,
+with replacement, from $\{-2,\ldots,5n+3\}$.  This figure confirms
+that todolists do behave as \thmref{todolist} predicts.  Insertion time
+increases roughly as a function of $1/\eps$ and search times seem to be
+of the form $1+\eps$.
+
+In terms of implementation guidance, this figure suggests value of
+$\eps$ below $0.1$ are hard to justify.  There improvement in search
+time does not justify the increase in insertion time.  At the same time,
+values of $\eps$ greater than $0.3$ do not seem to be of much use either
+since they increase the search time and don't decrease the insertion
+time significantly. At some point beyond this, increasing $\epsilon$
+increases both the insertion time and the search time (since every
+insertion starts with a search).
+
+\begin{figure}
+  %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
+  \centering{\input{experiments/epsilon.tex}}
+  \caption{The tradeoff between search time and insertion time as a function of $\eps$.}
+   \figlabel{epsilon}
+\end{figure}
+
+\subsubsection{The Race}
+
+Next, we tested the performance of the todolist against a number of
+other common data structures, including skiplists, red-black trees,
+scapegoat trees, and treaps. In these tests, the value of $n$ varied from $25,000$ to $2\times 10^6$ in increments of $25,000$.   Each individual test followed the same pattern as in the previous section and consisted of $n$ insertions followed by $5n$ searches.
+
+\begin{figure}
+  %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
+  \centering{\input{experiments/bigtest-find.tex}}
+  \caption{Search time comparison between different data structures.}
+   \figlabel{epsilon}
+\end{figure}
+
+\begin{figure}
+  %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
+  \centering{\input{experiments/bigtest-add.tex}}
+  \caption{Insertion time comparison between different data structures.}
+   \figlabel{epsilon}
+\end{figure}
+
+
 
 \section{Conclusion}
 
