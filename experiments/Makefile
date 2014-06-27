@@ -1,6 +1,12 @@
 data = $(wildcard *.dat)
 
-all : bigtest-find.tex epsilon.tex
+all : bigtest-find.tex epsilon.tex 
+
+data : 
+	rm -f *.dat
+	./test-epsilons.sh
+	./test-all.sh
+	./test-tradeoff.sh
 
 bigtest-find.tex : bigtest.gp $(data)
 	gnuplot bigtest.gp

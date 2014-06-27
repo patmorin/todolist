@@ -140,7 +140,7 @@ void build_and_search(Dict &d, const char *name, size_t n,
 	avg = ((double)Integer::getComparisons()) / (5*n);
 	c = avg * log(2) / log(d.size());
 
-	cout << name << " FIND " << d.size() << " " << elapsed
+	cout << name << " FIND " << n << " " << elapsed
 			<< " " <<  Integer::getComparisons()
 			<< " " << c << endl;
 

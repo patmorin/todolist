@@ -13,8 +13,6 @@
 #    	immediate help:   type "help"  (plot window: hit 'h')
 # set terminal wxt 0
 # set output
-set term tikz color size 5in,3in
-set output 'epsilon.tex'
 unset clip points
 set clip one
 unset clip two
@@ -48,7 +46,7 @@ set angles radians
 unset grid
 set raxis
 set key title ""
-set key inside right top vertical Right noreverse enhanced autotitles nobox
+set key inside left top vertical Right noreverse enhanced autotitles nobox
 set key noinvert samplen 4 spacing 1 width 0 height 0 
 set key maxcolumns 0 maxrows 0
 set key noopaque
@@ -97,13 +95,12 @@ set my2tics default
 set mcbtics default
 set xtics border in scale 1,0.5 mirror norotate  offset character 0, 0, 0 autojustify
 set xtics autofreq  norangelimit
-set ytics border in scale 1,0.5 nomirror norotate  offset character 0, 0, 0 autojustify
-set ytics 1 norangelimit textcolor rgb '#0060ad' # textcolor lt 2
+set ytics border in scale 1,0.5 mirror norotate  offset character 0, 0, 0 autojustify
+set ytics autofreq  norangelimit
 set ztics border in scale 1,0.5 nomirror norotate  offset character 0, 0, 0 autojustify
 set ztics autofreq  norangelimit
 set nox2tics
-set y2tics border in scale 1,0.5 nomirror norotate  offset character 0, 0, 0 autojustify
-set y2tics 2 norangelimit textcolor rgb '#dd181f' 
+set noy2tics
 set cbtics border in scale 1,0.5 mirror norotate  offset character 0, 0, 0 autojustify
 set cbtics autofreq  norangelimit
 set rtics axis in scale 1,0.5 nomirror norotate  offset character 0, 0, 0 autojustify
@@ -117,18 +114,18 @@ set rrange [ * : * ] noreverse nowriteback
 set trange [ * : * ] noreverse nowriteback
 set urange [ * : * ] noreverse nowriteback
 set vrange [ * : * ] noreverse nowriteback
-set xlabel "$\\varepsilon$" 
+set xlabel "" 
 set xlabel  offset character 0, 0, 0 font "" textcolor lt -1 norotate
 set x2label "" 
 set x2label  offset character 0, 0, 0 font "" textcolor lt -1 norotate
-set xrange [ 0.00000 : 0.700000 ] noreverse nowriteback
+set xrange [ * : * ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
-set ylabel "time for $5\\times 10^6$ searches (s)"  
-set ylabel  offset character 0, 0, 0 font "" textcolor rgb '#0060ad' rotate by -270
-set y2label "time for $10^6$ insertions (s)" 
-set y2label  offset character 0, 0, 0 font "" textcolor rgb '#dd181f' rotate by -270
-set yrange [ 0.00000 : * ] noreverse nowriteback
-set y2range [ 0.00000 : * ] noreverse nowriteback
+set ylabel "" 
+set ylabel  offset character 0, 0, 0 font "" textcolor lt -1 rotate by -270
+set y2label "" 
+set y2label  offset character 0, 0, 0 font "" textcolor lt -1 rotate by -270
+set yrange [ * : * ] noreverse nowriteback
+set y2range [ * : * ] noreverse nowriteback
 set zlabel "" 
 set zlabel  offset character 0, 0, 0 font "" textcolor lt -1 norotate
 set zrange [ * : * ] noreverse nowriteback
@@ -154,7 +151,6 @@ set fontpath
 set psdir
 set fit noerrorvariables
 GNUTERM = "wxt"
-set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2
-set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2
-plot 'epsilon-find.dat' using 7:4 with lines linestyle 1 title 'search time', 'epsilon-add.dat' using 7:4 axes x1y2 with lines linestyle 2 title 'insertion time'
+plot 'todolist-0.55-find.dat' using 3:4 with lines, 'todolist-0.5-find.dat' using 3:4 with lines, 'todolist-0.45-find.dat' using 3:4 with lines, 'todolist-0.4-find.dat' using 3:4 with lines, 'todolist-0.35-find.dat' using 3:4 with lines, 'todolist-0.3-find.dat' using 3:4 with lines, 'todolist-0.25-find.dat' using 3:4 with lines, 'todolist-0.2-find.dat' using 3:4 with lines, 'todolist-0.15-find.dat' using 3:4 with lines, 'todolist-0.1-find.dat' using 3:4 with lines
+plot 'todolist-0.55-add.dat' using 3:4 with lines, 'todolist-0.5-add.dat' using 3:4 with lines, 'todolist-0.45-add.dat' using 3:4 with lines, 'todolist-0.4-add.dat' using 3:4 with lines, 'todolist-0.35-add.dat' using 3:4 with lines, 'todolist-0.3-add.dat' using 3:4 with lines, 'todolist-0.25-add.dat' using 3:4 with lines, 'todolist-0.2-add.dat' using 3:4 with lines, 'todolist-0.15-add.dat' using 3:4 with lines, 'todolist-0.1-add.dat' using 3:4 with lines, 'redblack-add.dat' using 3:4 with lines
 #    EOF

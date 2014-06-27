@@ -507,39 +507,52 @@ insertion starts with a search).
 
 Next, we tested the performance of the todolist against a number of
 other common data structures, including skiplists, red-black trees,
-scapegoat trees, and treaps. In these tests, the value of $n$ varied from $25,000$ to $2\times 10^6$ in increments of $25,000$.   Each individual test followed the same pattern as in the previous section and consisted of $n$ insertions followed by $5n$ searches.
+scapegoat trees, and treaps. In these tests, the value of $n$ varied from
+$25,000$ to $2\times 10^6$ in increments of $25,000$.   Each individual
+test followed the same pattern as in the previous section and consisted
+of $n$ insertions followed by $5n$ searches.
+
+The timing results for the searches are shown in \figref{bigsearch}. In
+terms of search times, todolists are a clear winner.  Search times are
+roughly half the search times in skiplists and about 85\% of the search
+time of red-black trees, the next fastest data structure.  This is true
+even for the relatively large value $\eps=0.35$.
 
 \begin{figure}
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
   \centering{\input{experiments/bigtest-find.tex}}
   \caption{Search time comparison between different data structures.}
-   \figlabel{epsilon}
+   \figlabel{bigsearch}
 \end{figure}
+
+The timing results for the insertions are shown in
+\figref{biginsertion}. This is where the other shoe drops.  Even with
+$\eps=0.35$, insertions take about four times as long in a todolist as
+in a reb-black tree and three times as long as a skiplist.
 
 \begin{figure}
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
   \centering{\input{experiments/bigtest-add.tex}}
   \caption{Insertion time comparison between different data structures.}
-   \figlabel{epsilon}
+   \figlabel{biginsertion}
 \end{figure}
 
 
 
 \section{Conclusion}
 
-Todolists, when implemented properly seem quite difficult to beat, at
-least in terms of search time.  They perform $\log_{2-\eps} n$ comparisons
-and roughly half the comparisons follow a pointer to a successor
-and then use an index calculation to move down into the next list.
-The other half the comparison simply perform a trivial index calculation
-(incrementing a pointer) to move straight down into the next list.
-Thus, a search in a todolist does only about $\frac{1}{2}\log_{2-\eps}
-n$ pointer dereferencing operations.
+If searches are much more frequent than updates, then a todolist
+may be the right choice.  When implemented properly, they seem quite
+difficult to beat in terms of search time.  They perform $\log_{2-\eps}
+n$ comparisons and roughly half these lead to a trivial index calculation
+(incrementing a pointer) to move to the next position in an array. Thus,
+a search in a todolist does only about $\frac{1}{2}\log_{2-\eps} n$
+pointer dereferencing operations.
 
 On the other hand, todolists leave a lot to be desired in terms of
 insertion and deletion time.  Like other structures that use partial
 rebuilding, the extra work (beyond searching) done during an insertion
-takes time $\Omega(\log n)$, so is non-negligible.  
+takes time $\Omega(\log n)$, so is non-negligible.  The implementation of the insertion algorithm used in our experiments is fairly naive and could probably be improved, but it seems unlikely that its performance will ever match that of, for example, red-black trees.
 
 Although it's nice that todolists do a number of comparisons that is
 approaching optimality, their memory layout is at least as important to

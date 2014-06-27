@@ -116,13 +116,12 @@ set rrange [ * : * ] noreverse nowriteback
 set trange [ * : * ] noreverse nowriteback
 set urange [ * : * ] noreverse nowriteback
 set vrange [ * : * ] noreverse nowriteback
-set xlabel "$n$" 
+set xlabel "$n$ (number of insertions)" 
 set xlabel  offset character 0, 0, 0 font "" textcolor lt -1 norotate
 set x2label "" 
 set x2label  offset character 0, 0, 0 font "" textcolor lt -1 norotate
 set xrange [ * : * ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
-set ylabel "time (s)" 
 set ylabel  offset character 0, 0, 0 font "" textcolor lt -1 rotate by -270
 set y2label "" 
 set y2label  offset character 0, 0, 0 font "" textcolor lt -1 rotate by -270
@@ -153,8 +152,11 @@ set fontpath
 set psdir
 set fit noerrorvariables
 GNUTERM = "wxt"
+set ylabel "time for $5n$ searches (s)" 
 set output 'bigtest-find.tex'
-plot 'skiplist-find.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-find.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-find.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-find.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 'todolist2-find.dat' using 3:4 title 'todolist' with lines lt 1 lc rgb 'purple'
+plot 'skiplist-find.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-find.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-find.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-find.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 'todolist2-find.dat' using 3:4 title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lc rgb 'purple', 'todolist-0.35-find.dat' using 3:4 title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lc rgb 'orange', 
+
+set ylabel "time for $n$ insertions (s)" 
 set output 'bigtest-add.tex'
-plot 'skiplist-add.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-add.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-add.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-add.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 'todolist2-add.dat' using 3:4 title 'todolist' with lines lt 1 lc rgb 'purple'
-#    EOF
+plot 'skiplist-add.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-add.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-add.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-add.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 'todolist2-add.dat' using 3:4 title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lc rgb 'purple', 'todolist-0.35-add.dat' using 3:4 title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lc rgb 'orange', 
+ #    EOF
