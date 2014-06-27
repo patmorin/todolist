@@ -48,7 +48,7 @@ set raxis
 set key title ""
 #set key lmargin top vertical Right noreverse enhanced autotitles nobox
 set key top left
-set key noinvert samplen 4 spacing 1.3 width 0 height 0 
+set key noinvert samplen 4 spacing 2 width 0 height 0 
 set key maxcolumns 0 maxrows 0
 set key noopaque
 unset label
@@ -153,10 +153,12 @@ set psdir
 set fit noerrorvariables
 GNUTERM = "wxt"
 set ylabel "time for $5n$ searches (s)" 
+set key at 200000,11
 set output 'bigtest-find.tex'
 plot 'skiplist-find.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-find.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-find.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-find.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 'todolist2-find.dat' using 3:4 title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lc rgb 'purple', 'todolist-0.35-find.dat' using 3:4 title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lc rgb 'orange', 
 
 set ylabel "time for $n$ insertions (s)" 
+set key at 200000,8.5
 set output 'bigtest-add.tex'
-plot 'skiplist-add.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-add.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-add.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-add.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 'todolist2-add.dat' using 3:4 title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lc rgb 'purple', 'todolist-0.35-add.dat' using 3:4 title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lc rgb 'orange', 
+plot 'todolist2-add.dat' using 3:4 title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lc rgb 'purple', 'todolist-0.35-add.dat' using 3:4 title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lc rgb 'orange', 'skiplist-add.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-add.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-add.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-add.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 
  #    EOF

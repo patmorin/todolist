@@ -8,7 +8,7 @@
 \newcommand{\eps}{\varepsilon}
 
 \title{\MakeUppercase{Top-Down Skiplists}}
-\author{Luis Barba, Rolf Fagerberg and Pat Morin}
+\author{Luis Barba and Pat Morin}
 
 \begin{document}
 \begin{titlepage}
@@ -44,11 +44,25 @@ library \cite{S}.
 
 In short, comparison-based dictionaries are so important that any
 new ideas or insights on them are worth exploring.  In this paper,
-we introduce the todolist (\boldx{to}p-\boldx{do}wn skip\boldx{list}), a
-data structure that is parameterized by a parameter $\eps\in(0,1)$,
+we introduce the todolist (\boldx{to}p-\boldx{do}wn skip\boldx{list}),
+a data structure that is parameterized by a parameter $\eps\in(0,1)$,
 and that can execute searches using at most $\lceil(1+\eps)\log_2
-n\rceil$ binary comparisons per search and that has amortized update
-time $O(\eps^{-1}\log n)$.
+n\rceil$ binary comparisons per search and that has amortized update time
+$O(\eps^{-1}\log n)$.  
+
+As a theoretical result todolists are nothing to get excited about; there
+already exist comparison-based dictionaries with $O(\log n)$ time for
+all operations that perform at most $\lceil\log n\rceil+1$ comparisons
+per operation \cite{S}. However, todolists use a new idea: top-down
+partial rebuilding of skiplists.  Furthermore, our experimental results
+show that a careful implementation of todolists performs searches faster
+than existing popular data structures.  In particular, they outperform
+(again, in terms of searches) Guibas and Sedgewick's red-black trees
+which are easily the most common implementation of comparison-based
+dictionaries found in programming libraries.
+
+As a more interesting theoretical contribution
+
 
 
 \section{TodoLists}
@@ -169,7 +183,7 @@ of the lists $L_i,\ldots,L_h$ in which it appears.  At this point,
 Properties~1, 2, and 4 hold, but Property~3 may be violated in any
 subset of the lists $L_i,\ldots,L_h$.  Luckily, all of these violations
 can be fixed by taking $x$'s successor in $L_h$ and splicing it into
-each of $L_0,\ldots,L_{h-1}$.\footnote{If $x$ has not successor in
+each of $L_0,\ldots,L_{h-1}$.\footnote{If $x$ has no successor in
 $L_h$---because it is the largest value in the todolist---then deleting
 $x$ will not introduce any violations of Property~3.}  Thus, the second
 part of the deletion operation is like the second part of the insertion
@@ -209,27 +223,27 @@ sequence of $N$ add and remove operations takes $O(\eps^{-1}N\log
 N)$ time.
 \end{thm}
 
-Note that, as a theoretical result, \thmref{todolist} is neither new
-nor optimal.  The bound on the numbers on the number of comparisons
-and the running-time is matched, for example, by scapegoat trees
-\cite{galperin.rivest:blah,andersson:blah}.  Indeed, it is not even
-optimal: Fagerberg, Lai, and Someone describe variants of 1-2 trees that
-support all operations in $O(\log n)$ time and perform at most $\log_2
-n + 1$ comparisons per operation.
-
-\thmref{todolist} does compare favourably, however, with some of the
-more popular structures found in textbooks and in programming libraries,
-including red-black trees ($2\log_2 n$ comparisons), treaps ($1.38\log_2
-n$ comparisons), skiplists ($1.88\log_2 n$ comparisons), and splay tree
-($3\log_2 n$ comparisons).\footnote{The constants listed here for the
-binary search trees (red-black trees, treaps, scapegoat trees, and splay
-trees) are for ternary comparisons, which have three possible outcomes:
-$a<b$, $a>b$, or $a=b$. If only binary comparisons are available, then
-these constants should be doubled.} In \secref{experiments}, we will see
-that a careful implementation of todolists actually outperforms all of
-these data structures in terms of real search times, though the update
-times are often slower.
-
+%Note that, as a theoretical result, \thmref{todolist} is neither new
+%nor optimal.  The bound on the numbers on the number of comparisons
+%and the running-time is matched, for example, by scapegoat trees
+%\cite{galperin.rivest:blah,andersson:blah}.  Indeed, it is not even
+%optimal: Fagerberg, Lai, and Someone describe variants of 1-2 trees that
+%support all operations in $O(\log n)$ time and perform at most $\log_2
+%n + 1$ comparisons per operation.
+%
+%\thmref{todolist} does compare favourably, however, with some of the
+%more popular structures found in textbooks and in programming libraries,
+%including red-black trees ($2\log_2 n$ comparisons), treaps ($1.38\log_2
+%n$ comparisons), skiplists ($1.88\log_2 n$ comparisons), and splay tree
+%($3\log_2 n$ comparisons).\footnote{The constants listed here for the
+%binary search trees (red-black trees, treaps, scapegoat trees, and splay
+%trees) are for ternary comparisons, which have three possible outcomes:
+%$a<b$, $a>b$, or $a=b$. If only binary comparisons are available, then
+%these constants should be doubled.} In \secref{experiments}, we will see
+%that a careful implementation of todolists actually outperforms all of
+%these data structures in terms of real search times, though the update
+%times are often slower.
+%
 
 \section{WoseLists}
 \seclabel{woselist}
@@ -239,31 +253,34 @@ variant of the todolist that we call a woselist.  First, though, we need
 some definitions.  Let $a_1,\ldots,a_m$ be a sequence whose elements come
 from the set $\{1,\ldots,n\}$.  We call such a sequence an \emph{access
 sequence}. For any $x\in\{1,\ldots,n\}$, the \emph{last-occurrence},
-$\ell_i(x)$, of $x$ at time $i$ is defined as
+$\ell_t(x)$, of $x$ at time $t$ is defined as
 \[
-   \ell_i(x)=\max\{j\in{1,\ldots,i-1}: a_{j} = x\} \enspace .
+   \ell_t(x)=\max\{j\in{1,\ldots,t-1}: a_{j} = x\} \enspace .
 \]
-Note that $\ell_i(x)$ is undefined if $x$ does not appear in
-$a_1,\ldots,a_{i-1}$.  The \emph{working-set number}, $w_i(x)$, of $x$
-at time $i$ is
+Note that $\ell_t(x)$ is undefined if $x$ does not appear in
+$a_1,\ldots,a_{t-1}$.  The \emph{working-set number}, $w_t(x)$, of $x$
+at time $t$ is
 \[
-    w_i(x) = \begin{cases}
-               n & \text{if $\ell_i(x)$ is undefined} \\
-               |\{a_{\ell_i(x)},\ldots,a_{i-1}\}| & \text{otherwise.}
+    w_t(x) = \begin{cases}
+               n & \text{if $\ell_t(x)$ is undefined} \\
+               |\{a_{\ell_t(x)},\ldots,a_{t-1}\}| & \text{otherwise.}
              \end{cases}
 \]
-In words, if we think of $i$ as the current time, then $w_i(x)$ is the
+In words, if we think of $t$ as the current time, then $w_t(x)$ is the
 number of distinct values in the access sequence since the most recent
 access to $x$.
 
 In this section, we describe the woselist data structure, which stores
 $\{1,\ldots,n\}$ and, for any access sequence $a_1,\ldots,a_m$, can
-execute searches for $a_1,\ldots,a_m$ so that the search for $a_i$
-performs at most $(1+o(1))\log_{2-\eps} w_i(a_i)$ comparisons and takes
-$O(\eps^{-1}\log w_i(a_i))$ amortized time.
+execute searches for $a_1,\ldots,a_m$ so that the search for $a_t$
+performs at most $(1+o(1))\log_{2-\eps} w_t(a_t)$ comparisons and takes
+$O(\eps^{-1}\log w_t(a_t))$ amortized time.
 
-From this point onward we will drop the subscripts on $w_i$ and assume that $w(x)$ refers to the working set number of $x$ at the current point in time (given the sequence of searches performed so far).
-The woselist is a special kind of todolist that weakens Property~1 and adds an additional Property~5:
+From this point onward we will drop the time subscript, $t$, on $w_t$
+and assume that $w(x)$ refers to the working set number of $x$ at the
+current point in time (given the sequence of searches performed so far).
+The woselist is a special kind of todolist that weakens Property~1 and
+adds an additional Property~5:
 
 \begin{enumerate}
 \item $|L_0|\le \eps^{-1}+1$.
@@ -381,17 +398,17 @@ Since the cost of rebuilding $L_0,\ldots,L_{i-1}$ is proportional to $O(n_i)$, t
 \seclabel{experimental}
 \seclabel{experiments}
 
-To test the performance of the todolist, we implemented
-it and tested them against other comparison-based dictionaries that
-are popular, either in practice (red-black trees) and/or in textbooks
-(scapegoat trees, treaps, and skiplists).  The implementation
-was done in C++ and all the code was written by the third author.
-(The implementations of all but todolists were adapted from the third author's
-textbook \cite{S}.)  The code used to generate all the test data in this
-section is available for download at github \cite{}.\footnote{The final
-version of this paper will provide a DOI that provides a permanent fixed
-version of the source code that was used to generate all figures in the
-final paper.}
+To test the performance of the todolist, we implemented it and tested
+them against other comparison-based dictionaries that are popular, either
+in practice (red-black trees) and/or in textbooks (scapegoat trees,
+treaps, and skiplists).  The implementation was done in C++ and all
+the code was written by the third author.  (The implementations of all
+but todolists were adapted from the third author's textbook \cite{S}.)
+The code used to generate all the test data in this section is available
+for download at github \cite{}.\footnote{The final version of this paper
+will provide a digital object identifier (DOI) that provides a link to
+a permanent fixed version of the source code that was used to generate
+all figures in the final paper.}
 
 \subsection{The Story}
 
@@ -414,14 +431,14 @@ skiplists \cite{pXX}.
 Our initial implementation did exactly this, and performed well-enough
 to beat standard skiplists but was still bested by most forms of binary
 search trees.  This was despite the fact that the code for searching was
-dead-simple, and by decreasing $\eps$ we could reduce the height, $h$ (and
-hence the number of comparisons) to less than was being performed by these
-search trees.
+dead-simple, and by decreasing $\eps$ we could reduce the height, $h$
+(and hence the number of comparisons) to less than was being performed
+by these search trees.
 
 \subsection{The Problem With Skiplists}
 
-After some thought, the reasons for the disapointing performance
-of searches in a todolist became apparent and has to do with the
+After some thought, the reasons for the disappointing performance
+of searches in a todolist became apparent.  It is due to the
 fact that following pointers is considerably more expensive than
 performing comparisons.  In a binary search tree, there is a one-to-one
 correspondence between comparisons and the nodes that are on a search
