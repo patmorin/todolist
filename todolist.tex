@@ -459,53 +459,39 @@ by these search trees.
 
 \subsection{The Problem With Skiplists}
 
-After some thought, the reason for the disappointing performance of
+After some reflection, the reason for the disappointing performance of
 searches in a todolist (and to a greater extent, in a skiplist) became
-apparent.  The search path in a skiplist ...EDITING HERE...
+apparent, and is due to the fact that accessing a node by following a
+pointer is more expensive than performing a comparison.
 
-
-
- It is due to the fact that following pointers is considerably
-more expensive than performing comparisons.  In a binary search tree,
-there is a one-to-one correspondence between comparisons and the nodes
-that are on a search path.  In a todolist (and a skiplist as well) the
-search path visits a sequence of nodes (these are the values that the
-variable $u$ takes on in the pseudocode of \secref{todolist-search}).
-However, the search algorithm also performs comparisons with other nodes
-that are not on the search path.
-
-In a skiplist and in a todolist, the search algorithm performs comparisons
-of the form $\mathrm{key}(\mathrm{next}(u)) < x$.  Here the node $u$
-is on the search path, but the node $\mathrm{next}(u)$ whose key is
-being accessed may never appear on the search path.  In a skiplist,
+The search path in a todolist has length equal to the number of
+comparisons performed.  However, the set of nodes in the todolist
+that are dereferenced during a search includes nodes not on the
+search path. Indeed, when the outcome of a comparison of the form
+$\mathrm{key}(\mathrm{next}(u)) < x$ is false, the search path proceeds
+to $\mathrm{down}(u)$ and the node $\mathrm{next}(u)$ does not appear
+on the search path.  In a skiplist,
 for example, this implies that there is a node in every list $L_i$
 that is not on the search path but that is inspected during a search.
 This is bad for the performance of skiplists and means that, for example,
-a search inspects $3\log_2 n$ nodes on average even though the length
+a search inspects about $3\log_2 n$ nodes on average even though the length
 of the search path and the number of comparisons is only $2\log_2 n$.
 
 \subsection{The Solution}
 
 Luckily, there is a fairly easy remedy, though it does use more space.
-We implement the todolist so that each node $u$ in a list $L_i$ stores
-a pointer $\mathrm{next}(u)$ that, as usual points to $u$'s successor
-in $L_i$ and $u$ also stores a key $\mathrm{keynext}(u)$ that is the
-key associated with the node $\mathrm{next}(u)$.  This means that
-determining the next node to visit after $u$ can be done using the
-key $\mathrm{keynext}(u)$ stored at node $u$ rather than having to
-dereference $\mathrm{next}(u)$. The resulting structure is illustrated in
-\figref{packed-in}.
+We implement the todolist so that each node $u$ in a list $L_i$ stores an
+additional key, $\mathrm{keynext}(u)$, that is the key associated with
+the node $\mathrm{next}(u)$.  This means that determining the next node
+to visit after $u$ can be done using the key $\mathrm{keynext}(u)$ stored
+at node $u$ rather than having to dereference $\mathrm{next}(u)$. The
+resulting structure is illustrated in \figref{packed-in}.
 
 \begin{figure}
    \centerline{\includegraphics{packed-in}}
    \caption{The memory layout of an efficient todolist implementation.}
+   \figlabel{packed-in}
 \end{figure}
-
-
-Now, this trick is used in conjunction with the usual trick of storing all
-the $\mathrm{next}$ values and $\mathrm{keynext}$ values for a key $x$
-in an array that is attached to a single structure that also contains
-the key $x$.  This is illustrated in \figref{packed-in}.
 
 With this modification, the todolist structure achieves faster search
 times, even with fairly large values of $\eps$ than the tree-based
@@ -518,11 +504,10 @@ outperforms some (but not all) of the tree-based structures.
 The experimental data in this section was obtained from the program
 \texttt{main.cpp} that can be found in the accompanying source code.
 This program was compiled using the command line: \texttt{g++ -O4 -o
-main main.cpp}. The compiler was the \texttt{gcc} compiler, version 4.8.2
-that ships with the Ubuntu 14.04 Linux distribution.  Tests were run on
-a blah machine with blah memory.
-
-TODO: This may even be faster than binary search on a sorted array, we should test this.
+main main.cpp}. The compiler was the \texttt{gcc} compiler, version
+4.8.2 that ships with the Ubuntu 14.04 Linux distribution.  Tests were
+run on a Dell XPS 13 laptop having 8GB DDR3L-RS 1600 Mhz memory and a
+Intel Core i7-4500U processor with 4M cache and running at 3.0GHz.
 
 \subsubsection{Varying $\eps$}
 
@@ -534,12 +519,12 @@ discard duplicates, the resulting todolist contained $906,086$ values.
 This todolist was then searched $m=5n$ times with random integers chosen,
 with replacement, from $\{-2,\ldots,5n+3\}$.  This figure confirms
 that todolists do behave as \thmref{todolist} predicts.  Insertion time
-increases roughly as a function of $1/\eps$ and search times seem to be
-of the form $1+\eps$.
+increases roughly proportionally to $1/\eps$ and search times seem to be
+of the form $c(1+\eps)$ for some constant $c$.
 
 In terms of implementation guidance, this figure suggests value of
 $\eps$ below $0.1$ are hard to justify.  There improvement in search
-time does not justify the increase in insertion time.  At the same time,
+time does not offset the increase in insertion time.  At the same time,
 values of $\eps$ greater than $0.3$ do not seem to be of much use either
 since they increase the search time and don't decrease the insertion
 time significantly. At some point beyond this, increasing $\epsilon$
@@ -563,10 +548,16 @@ test followed the same pattern as in the previous section and consisted
 of $n$ insertions followed by $5n$ searches.
 
 The timing results for the searches are shown in \figref{bigsearch}. In
-terms of search times, todolists are a clear winner.  Search times are
-roughly half the search times in skiplists and about 85\% of the search
-time of red-black trees, the next fastest data structure.  This is true
-even for the relatively large value $\eps=0.35$.
+terms of search times, todolists---with $\eps = 0.2$ and $\eps=0.35$
+are the winners.  Search times are roughly half the search times in
+skiplists and about 85\% of the search time of red-black trees, the next
+fastest data structure.  The improved search time in todolists is mostly
+due to the memory layout.  In these experiments, the average number
+of comparisons done by red-black trees during a search was measured to
+be $\alpha\log_2 n$ for $\alpha\in[1.02,1.03]$. This is substantially
+less than the number of comparisons done by todolists, which is about
+$1.2\log_2 n$ (for $\eps=.2$) and or $1.35\log_2 n$ for ($\eps=.35$).
+
 
 \begin{figure}
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
@@ -578,7 +569,7 @@ even for the relatively large value $\eps=0.35$.
 The timing results for the insertions are shown in
 \figref{biginsertion}. This is where the other shoe drops.  Even with
 $\eps=0.35$, insertions take about four times as long in a todolist as
-in a reb-black tree and three times as long as a skiplist.
+in a reb-black tree and three times as long as a skiplist.  
 
 \begin{figure}
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
@@ -591,18 +582,21 @@ in a reb-black tree and three times as long as a skiplist.
 
 \section{Conclusion}
 
-If searches are much more frequent than updates, then a todolist
-may be the right choice.  When implemented properly, they seem quite
-difficult to beat in terms of search time.  They perform $\log_{2-\eps}
-n$ comparisons and roughly half these lead to a trivial index calculation
-(incrementing a pointer) to move to the next position in an array. Thus,
-a search in a todolist does only about $\frac{1}{2}\log_{2-\eps} n$
-pointer dereferencing operations.
+If searches are much more frequent than updates, then a todolist may
+be the right choice of data structure.  When implemented properly,
+they seem quite difficult to beat in terms of search time.  They
+perform $\log_{2-\eps} n$ comparisons and roughly half these lead to
+a trivial index calculation (incrementing a pointer) to move to the
+next position in an array. Thus, a search in a todolist does only about
+$\frac{1}{2}\log_{2-\eps} n$ pointer dereferencing operations.
 
 On the other hand, todolists leave a lot to be desired in terms of
 insertion and deletion time.  Like other structures that use partial
 rebuilding, the extra work (beyond searching) done during an insertion
-takes time $\Omega(\log n)$, so is non-negligible.  The implementation of the insertion algorithm used in our experiments is fairly naive and could probably be improved, but it seems unlikely that its performance will ever match that of, for example, red-black trees.
+takes time $\Omega(\log n)$, so is non-negligible.  The implementation
+of the insertion algorithm used in our experiments is fairly naïve and
+could probably be improved, but it seems unlikely that its performance
+will ever match that of, for example, red-black trees.
 
 Although it's nice that todolists do a number of comparisons that is
 approaching optimality, their memory layout is at least as important to
