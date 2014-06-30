@@ -15,18 +15,18 @@
 \maketitle
 
 \begin{abstract}
-  We describe todolists (top-down skiplists), a variant of skiplists (Pugh
-  1990) that can execute searches using at most $\log_{2-\eps}
-  n + O(1)$ binary comparisons per search and that have amortized update
-  time $O(\eps^{-1}\log n)$.  A variant of todolists, called woselists
-  (working-set skiplists) can execute a search for any element $x$ using
-  $\log_{2-\eps} w(x) + o(\log w(x))$ binary comparisons and have amortized
-  search time $O(\eps^{-1}\log w(w))$.  Here, $w(x)$ is
-  the ``working-set number'' of $x$.  All previously-known structures with
-  this working-set property perform at least $4\log_2 w(x)$ comparisons.
-  We show through experiments that, if implemented carefully, todolists
-  are comparable to other common dictionary implementations in terms of
-  update times and outperform them in terms of search times.
+  We describe todolists (top-down skiplists), a variant of skiplists
+  (Pugh 1990) that can execute searches using at most $\log_{2-\eps} n +
+  O(1)$ binary comparisons per search and that have amortized update time
+  $O(\eps^{-1}\log n)$. A variant of todolists, called working-todolists
+  can execute a search for any element $x$ using $\log_{2-\eps} w(x)
+  + o(\log w(x))$ binary comparisons and have amortized search time
+  $O(\eps^{-1}\log w(w))$. Here, $w(x)$ is the ``working-set number'' of
+  $x$. No previously-known structure is known to achieve a bound better
+  than $4\log_2 w(x)$ comparisons. We show through experiments that,
+  if implemented carefully, todolists are comparable to other common
+  dictionary implementations in terms of update times and outperform
+  them in terms of search times.
 \end{abstract}
 
 \end{titlepage}
@@ -46,23 +46,45 @@ In short, comparison-based dictionaries are so important that any
 new ideas or insights on them are worth exploring.  In this paper,
 we introduce the todolist (\boldx{to}p-\boldx{do}wn skip\boldx{list}),
 a data structure that is parameterized by a parameter $\eps\in(0,1)$,
-and that can execute searches using at most $\lceil(1+\eps)\log_2
-n\rceil$ binary comparisons per search and that has amortized update time
-$O(\eps^{-1}\log n)$.  
+and that can execute searches using at most $\log_{2-\eps} n + O(1)$
+binary comparisons per search and that has amortized update time
+$O(\eps^{-1}\log n)$.  (Note that $\log_{2-\eps} n \le (1+\eps)\log n$ for $\eps < 1/4$.)
 
 As a theoretical result todolists are nothing to get excited about; there
-already exist comparison-based dictionaries with $O(\log n)$ time for
-all operations that perform at most $\lceil\log n\rceil+1$ comparisons
-per operation \cite{S}. However, todolists use a new idea: top-down
-partial rebuilding of skiplists.  Furthermore, our experimental results
-show that a careful implementation of todolists performs searches faster
-than existing popular data structures.  In particular, they outperform
-(again, in terms of searches) Guibas and Sedgewick's red-black trees
-which are easily the most common implementation of comparison-based
-dictionaries found in programming libraries.
+already exist comparison-based dictionaries with $O(\log n)$ time for all
+operations that perform at most $\lceil\log n\rceil+1$ comparisons per
+operation \cite{S}. However, todolists do introduce a new idea--top-down
+partial rebuilding of skiplists---and our experimental results show
+that a careful implementation of todolists performs searches faster than
+existing popular data structures.  
 
-As a more interesting theoretical contribution
+In particular, the todolist outperforms (again, in terms of searches)
+Guibas and Sedgewick's red-black trees \cite{gsXX} which are easily
+the most common implementation of comparison-based dictionaries found
+in programming libraries. This is no small feat since, in the setting
+we studied, the average depth of a node in a red-black tree seems to be
+$\log_2 n - O(1)$ \cite{S}.\footnote{Experiments performed by Sedgewick
+suggest that the average depth of a node in red-black tree created by $n$
+random insertions is $\log_2 n - 1/2$. In our experiments, which used
+a slightly different variant of red-black trees, we found the average
+number of ternary comparisons performed by our red-black trees to be
+roughly $\alpha\log_2 n$, for $\alpha\in[1.02,1.03]$.  This is consistent
+consistent with Sedgewick's comparisons since our experiments include
+both successful and unsuccessful searches.}
 
+As a more substantial theoretical contribution, we show that a variant of
+todolists, called working-todolists is able to search for an element $x$
+using $\log_{2-\eps} w(x)$ in $O(\epsilon^{-1}\log w(x))$ amortized time.
+Here, $w(x)$---the working set number of $x$---is loosely defined
+as the number of distinct items accessed since the last time $x$ was
+accessed. (See \secref{working-todolist} for a precise definition.)
+Previous data structures with some variant of this \emph{working-set
+property} include splay trees \cite{S}, Martel's self-adjusting
+trees \cite{X}, Iacono's working-set structure \cite{S}, Bose \etal's
+deterministic self-adjusting skiplists, and several data structures that
+achieve the stronger \emph{unified property} \cite{A,B,C}.  However,
+even the most efficient of these can only be shown to perform at most
+$4\log_2 w(x)$ comparisons.
 
 
 \section{TodoLists}
@@ -245,11 +267,11 @@ N)$ time.
 %times are often slower.
 %
 
-\section{WoseLists}
-\seclabel{woselist}
+\section{Working-TodoLists}
+\seclabel{working-todolist}
 
 Next, we present a new theoretical result that is achieved using a
-variant of the todolist that we call a woselist.  First, though, we need
+variant of the todolist that we call a working-todolist.  First, though, we need
 some definitions.  Let $a_1,\ldots,a_m$ be a sequence whose elements come
 from the set $\{1,\ldots,n\}$.  We call such a sequence an \emph{access
 sequence}. For any $x\in\{1,\ldots,n\}$, the \emph{last-occurrence},
@@ -270,17 +292,17 @@ In words, if we think of $t$ as the current time, then $w_t(x)$ is the
 number of distinct values in the access sequence since the most recent
 access to $x$.
 
-In this section, we describe the woselist data structure, which stores
-$\{1,\ldots,n\}$ and, for any access sequence $a_1,\ldots,a_m$, can
-execute searches for $a_1,\ldots,a_m$ so that the search for $a_t$
+In this section, we describe the working-todolist data structure, which
+stores $\{1,\ldots,n\}$ and, for any access sequence $a_1,\ldots,a_m$,
+can execute searches for $a_1,\ldots,a_m$ so that the search for $a_t$
 performs at most $(1+o(1))\log_{2-\eps} w_t(a_t)$ comparisons and takes
 $O(\eps^{-1}\log w_t(a_t))$ amortized time.
 
 From this point onward we will drop the time subscript, $t$, on $w_t$
 and assume that $w(x)$ refers to the working set number of $x$ at the
 current point in time (given the sequence of searches performed so far).
-The woselist is a special kind of todolist that weakens Property~1 and
-adds an additional Property~5:
+The working-todolist is a special kind of todolist that weakens Property~1
+and adds an additional Property~5:
 
 \begin{enumerate}
 \item $|L_0|\le \eps^{-1}+1$.
@@ -288,7 +310,7 @@ adds an additional Property~5:
 \item For each $i\in\{0,\ldots,h\}$, $L_i$ contains all values $x$ such that $w(x)\le (2-\eps)^i$.
 \end{enumerate}
 
-For keeping track of working set numbers, a woselist also stores a
+For keeping track of working set numbers, a working-todolist also stores a
 doubly-linked list, $Q$, that contains the values $\{1,\ldots,n\}$
 ordered by their current working set numbers.  The node that contains $x$
 in this list is cross-linked (or associated in some other way) with the
@@ -297,9 +319,9 @@ appearances of $x$ in $L_0,\ldots,L_h$.
 \subsection{Searching}
 \seclabel{todolist-search}
 
-Searching in a woselist is similar to a search in a todolist.
+Searching in a working-todolist is similar to a search in a todolist.
 The main
-difference is that Property~5 guarantees that the woselist will reach
+difference is that Property~5 guarantees that the working-todolist will reach
 a list, $L_i$, that contains $x$ for some $i\le\log_{2-\eps} w(x)$.
 If ternary comparisons are available, then this is detected at the
 first such index $i$.  If only binary comparisons are available, then
@@ -316,19 +338,19 @@ Once we find $x$ in some list $L_{i'}$, we move it to the front of $Q$;
 this takes only constant time since the node containing $x$ in $L_{i'}$
 is crosslinked with $x$'s occurrence in $Q$.  Next, we insert $x$ into
 $L_0,\ldots,L_{i'-1}$.  As with insertion in a todolist, this takes only
-constant for each list $L_j$, since we have already seen the predecessor
+constant time for each list $L_j$, since we have already seen the predecessor
 of $x$ in $L_j$ while searching for $x$.  
 At this point, Properties 2--5 are ensured and the ordering of $Q$ is
 correct.  
 
 All that remains is to restore Property~1, which is now violated
-since $L_0$ contains $x$, which has $w(x)=1$ and the value $y$ such
+since $L_0$ contains $x$, for which $w(x)=1$, and the value $y$ such
 that $w(y)=2$.  Again, this is corrected using partial rebuilding,
 but the rebuilding is somewhat more delicate.  We find the first index
 $i$ such that $|L_i|\le (2-\eps/2)^i$.  Next, we traverse the first
-$(2-\eps)^{i-1}$ nodes of $Q$ and label them with their position in
-$Q$; the label at a node of $Q$ that contains the value $z$ is then at
-most $w(z)$.  
+$(2-\eps)^{i-1}$ nodes of $Q$ and label them with their position in $Q$.
+Since $Q$ is ordered by working-set number, this means that the label
+at a node of $Q$ that contains the value $z$ is at most $w(z)$.
 
 At this point, we are ready to rebuild the lists $L_0,\ldots,L_{i-1}$. To
 build $L_{j-1}$ we walk through $L_j$ and take any value whose label
@@ -341,14 +363,14 @@ are not incorrectly used during subsequent partial rebuilding operations.
 \subsection{Analysis}
 
 This completes the description of the algorithm for searching for an
-element $x$ in a woselist.  We have already argued that we find a node
-in some list $L_i$ with $i\in \log_{2-\eps} w(x) + O(\sqrt{\log w(x)})$
-and that this takes $O(\log w(x))$ time.  The number of comparison needed
-to reach this stage is
+element $x$ in a working-todolist.  We have already argued that we find
+a node in some list $L_i$ with $i\in \log_{2-\eps} w(x) + O(\sqrt{\log
+w(x)})$ and that this takes $O(\log w(x))$ time.  The number of comparisons
+needed to reach this stage is
 \[
-     \log_{2-\eps} w(x) + O(\eps^{-1} + \sqrt{\log w(x)}) \enspace .
+     \log_{2-\eps} w(x) + O\left(\eps^{-1} + \sqrt{\log w(x)}\right) \enspace .
 \]
-The $O(\eps^{-1})$ term is the cost of searching in $L_0$. The 
+The $O(\eps^{-1})$ term is the cost of searching in $L_0$. The
 $O(\sqrt{\log w(x)})$ term covers one comparison at each of the lists
 $L_{\lceil\log_{2-\eps} w(x)\rceil},\ldots,L_i$ as well as the extra
 comparison performed in each of the lists $L_j$ where $j\in\{0,\ldots,i\}$
@@ -358,8 +380,8 @@ After finding $x$ in $L_i$, the algorithm then updates
 $L_0,\ldots,L_{i-1}$ in such a way that Properties~2--5 are maintained.
 All that remains is to show that Property~1 is restored by the partial
 rebuilding operation and to study the amortized cost of this partial
-rebuilding.  Both of these begin by studying the sizes of the lists
-$L_0,\ldots,L_i$.
+rebuilding.  We accompish both goals by studying the sizes of the lists
+$L_0,\ldots,L_i$ after rebuilding.
 
 Let $n_i=|L_i|$. Then,
 the number of elements that make it from $L_i$ into $L_{i-1}$ is 
@@ -399,11 +421,11 @@ Since the cost of rebuilding $L_0,\ldots,L_{i-1}$ is proportional to $O(n_i)$, t
 \seclabel{experiments}
 
 To test the performance of the todolist, we implemented it and tested
-them against other comparison-based dictionaries that are popular, either
+it against other comparison-based dictionaries that are popular, either
 in practice (red-black trees) and/or in textbooks (scapegoat trees,
 treaps, and skiplists).  The implementation was done in C++ and all
-the code was written by the third author.  (The implementations of all
-but todolists were adapted from the third author's textbook \cite{S}.)
+the code was written by the third author.\footnote{The implementations of all
+but todolists were adapted from the third author's textbook \cite{S}.}
 The code used to generate all the test data in this section is available
 for download at github \cite{}.\footnote{The final version of this paper
 will provide a digital object identifier (DOI) that provides a link to
@@ -437,16 +459,20 @@ by these search trees.
 
 \subsection{The Problem With Skiplists}
 
-After some thought, the reasons for the disappointing performance
-of searches in a todolist became apparent.  It is due to the
-fact that following pointers is considerably more expensive than
-performing comparisons.  In a binary search tree, there is a one-to-one
-correspondence between comparisons and the nodes that are on a search
-path.  In a todolist (and a skiplist as well) the search path visits a
-sequence of nodes (these are the values that the variable $u$ takes on
-in the pseudocode of \secref{todolist-search}).  However, the search
-algorithm also performs comparisons with other nodes that are not on
-the search path.
+After some thought, the reason for the disappointing performance of
+searches in a todolist (and to a greater extent, in a skiplist) became
+apparent.  The search path in a skiplist ...EDITING HERE...
+
+
+
+ It is due to the fact that following pointers is considerably
+more expensive than performing comparisons.  In a binary search tree,
+there is a one-to-one correspondence between comparisons and the nodes
+that are on a search path.  In a todolist (and a skiplist as well) the
+search path visits a sequence of nodes (these are the values that the
+variable $u$ takes on in the pseudocode of \secref{todolist-search}).
+However, the search algorithm also performs comparisons with other nodes
+that are not on the search path.
 
 In a skiplist and in a todolist, the search algorithm performs comparisons
 of the form $\mathrm{key}(\mathrm{next}(u)) < x$.  Here the node $u$
@@ -467,7 +493,14 @@ in $L_i$ and $u$ also stores a key $\mathrm{keynext}(u)$ that is the
 key associated with the node $\mathrm{next}(u)$.  This means that
 determining the next node to visit after $u$ can be done using the
 key $\mathrm{keynext}(u)$ stored at node $u$ rather than having to
-dereference $\mathrm{next}(u)$.
+dereference $\mathrm{next}(u)$. The resulting structure is illustrated in
+\figref{packed-in}.
+
+\begin{figure}
+   \centerline{\includegraphics{packed-in}}
+   \caption{The memory layout of an efficient todolist implementation.}
+\end{figure}
+
 
 Now, this trick is used in conjunction with the usual trick of storing all
 the $\mathrm{next}$ values and $\mathrm{keynext}$ values for a key $x$
