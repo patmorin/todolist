@@ -33,19 +33,29 @@
 
 \section{Introduction}
 
-Comparison-based dictionaries supporting the three \emph{basic operations}
-insert, delete and search represent \emph{the} classic data-structuring
-problem in computer science.  Solutions that support each of these
-operations $O(\log n)$ time have been known for more than 50 years
-\cite{avl}.  Since then, many competing implementations of dictionaries
-have been proposed \cite{X}.  Most major programming environments include
-one or more $O(\log n)$ time dictionary data structures in their standard
-library \cite{S}.
+Comparison-based dictionaries supporting the three \emph{basic
+operations} insert, delete and search represent \emph{the} classic
+data-structuring problem in computer science.  Data structures that
+support each of these operations in $O(\log n)$ time have been known
+since the introduction of AVL trees more than half a centry ago
+\cite{adelson-velskii.landis:algorithm}.  Since then, many competing
+implementations of dictionaries have been proposed, including
+red-black trees \cite{guibas.sedgewick:dichromatic}, splay trees
+\cite{sleator.tarjan:self-adjusting}, general-balanced/scapegoat
+trees \cite{andersson:general,galperin.rivest:scapegoat},
+randomized binary search trees \cite{martinez:randomized},
+power trees \cite{goodrich:competitive}, Cartesian trees/treaps
+\cite{aragon.seidel:randomized,vuillemin:unifying}, skip lists
+\cite{pugh:skip}, jump lists \cite{bronnimann.cazals.ea:randomized},
+and others.  Most major programming environments include one or more
+$O(\log n)$ time dictionary data structures in their standard library,
+including Java's \texttt{TreeMap} and \texttt{TreeSet}, the C++ STL's
+\texttt{set}, and Python's \texttt{OrderedDict}.
 
 In short, comparison-based dictionaries are so important that any
 new ideas or insights on them are worth exploring.  In this paper,
 we introduce the todolist (\boldx{to}p-\boldx{do}wn skip\boldx{list}),
-a data structure that is parameterized by a parameter $\eps\in(0,1)$,
+a dictionary that is parameterized by a parameter $\eps\in(0,1)$,
 and that can execute searches using at most $\log_{2-\eps} n + O(1)$
 binary comparisons per search and that has amortized update time
 $O(\eps^{-1}\log n)$.  (Note that $\log_{2-\eps} n \le (1+\eps)\log n$ for $\eps < 1/4$.)
@@ -53,39 +63,40 @@ $O(\eps^{-1}\log n)$.  (Note that $\log_{2-\eps} n \le (1+\eps)\log n$ for $\eps
 As a theoretical result todolists are nothing to get excited about; there
 already exist comparison-based dictionaries with $O(\log n)$ time for all
 operations that perform at most $\lceil\log n\rceil+1$ comparisons per
-operation \cite{S}. However, todolists do introduce a new idea--top-down
-partial rebuilding of skiplists---and our experimental results show
-that a careful implementation of todolists performs searches faster than
-existing popular data structures.  
+operation \cite{andersson.lai:fast,fagerberg:binary}. However, todolists
+are based on a new idea---top-down partial rebuilding of skiplists---and
+our experimental results show that a careful implementation of todolists
+performs searches faster than existing popular data structures.
 
-In particular, the todolist outperforms (again, in terms of searches)
-Guibas and Sedgewick's red-black trees \cite{gsXX} which are easily
-the most common implementation of comparison-based dictionaries found
-in programming libraries. This is no small feat since, in the setting
-we studied, the average depth of a node in a red-black tree seems to be
-$\log_2 n - O(1)$ \cite{S}.\footnote{Experiments performed by Sedgewick
-suggest that the average depth of a node in red-black tree created by $n$
-random insertions is $\log_2 n - 1/2$. In our experiments, which used
-a slightly different variant of red-black trees, we found the average
-number of ternary comparisons performed by our red-black trees to be
-roughly $\alpha\log_2 n$, for $\alpha\in[1.02,1.03]$.  This is consistent
-consistent with Sedgewick's comparisons since our experiments include
-both successful and unsuccessful searches.}
+In particular, todolists outperform (again, in terms of searches) Guibas
+and Sedgewick's red-black trees \cite{guibas.sedgewick:dichromatic} which are
+easily the most common implementation of comparison-based dictionaries
+found in programming libraries. This is no small feat since, in the
+setting we studied, the average depth of a node in a red-black tree
+seems to be $\log_2 n - O(1)$ \cite{sedgewick:left-leaning}.\footnote{Experiments
+performed by Sedgewick suggest that the average depth of a node
+in red-black tree created by $n$ random insertions is $\log_2 n -
+1/2$. In our experiments, which used a slightly different variant of
+red-black trees, we found the average number of ternary comparisons
+performed by our red-black trees to be roughly $\alpha\log_2 n$, for
+$\alpha\in[1.02,1.03]$.  This is consistent with Sedgewick's experiments
+since our experiments include both successful and unsuccessful searches.}
 
-As a more substantial theoretical contribution, we show that a variant of
-todolists, called working-todolists is able to search for an element $x$
-using $\log_{2-\eps} w(x)$ in $O(\epsilon^{-1}\log w(x))$ amortized time.
-Here, $w(x)$---the working set number of $x$---is loosely defined
-as the number of distinct items accessed since the last time $x$ was
-accessed. (See \secref{working-todolist} for a precise definition.)
-Previous data structures with some variant of this \emph{working-set
-property} include splay trees \cite{S}, Martel's self-adjusting
-trees \cite{X}, Iacono's working-set structure \cite{S}, Bose \etal's
-deterministic self-adjusting skiplists, and several data structures that
-achieve the stronger \emph{unified property} \cite{A,B,C}.  However,
-even the most efficient of these can only be shown to perform at most
-$4\log_2 w(x)$ comparisons.
-
+As a more substantial theoretical contribution, we show that a
+variant of todolists, called working-todolists is able to search for
+an element $x$ using $\log_{2-\eps} w(x)+o(\log w(x))$ comparisons
+in $O(\epsilon^{-1}\log w(x))$ amortized time.  Here, $w(x)$---the
+working set number of $x$---is loosely defined as the number of
+distinct items accessed since the last time $x$ was accessed. (See
+\secref{working-todolist} for a precise definition.)  Previous data
+structures with some variant of this \emph{working-set property}
+include splay trees \cite{sleator.tarjan:self-adjusting}, Iacono's
+working-set structure \cite{iacono:alternatives,badoiu.cole.ea:unified},
+deterministic self-adjusting skiplists \cite{bose.douieb.ea:dynamic},
+layered working-set trees \cite{bose.douieb.ea:layered}, and skip-splay
+trees \cite{derryberry.sleator:skip-splay}.  However, even the most
+efficient of these can only be shown to perform at most $4\log_2 w(x)$
+comparisons during a search for $x$.
 
 \section{TodoLists}
 \seclabel{todolist}
@@ -425,12 +436,12 @@ it against other comparison-based dictionaries that are popular, either
 in practice (red-black trees) and/or in textbooks (scapegoat trees,
 treaps, and skiplists).  The implementation was done in C++ and all
 the code was written by the third author.\footnote{The implementations of all
-but todolists were adapted from the third author's textbook \cite{S}.}
+but todolists were adapted from the third author's textbook \cite{morin:open}.}
 The code used to generate all the test data in this section is available
-for download at github \cite{}.\footnote{The final version of this paper
+for download at github.\footnote{The source code is available at \url{https://github.com/patmorin/todolist}. The final version of this paper
 will provide a digital object identifier (DOI) that provides a link to
-a permanent fixed version of the source code that was used to generate
-all figures in the final paper.}
+the permanent fixed version of the source code that was used to generate
+all data in the final paper.}
 
 \subsection{The Story}
 
@@ -448,7 +459,7 @@ $L_{i},\ldots,L_h$, then this array has length $h-i+1$ so that it can
 store the \texttt{next} pointers for the occurrence of $x$ in each of
 these lists.  This is, by now the standard implementation of skiplists
 and this trick is suggested already by Pugh in his original paper on
-skiplists \cite{pXX}.
+skiplists \cite{pugh:skip}.
 
 Our initial implementation did exactly this, and performed well-enough
 to beat standard skiplists but was still bested by most forms of binary
@@ -608,6 +619,9 @@ each stored in an array. Such a representation would save a pointer
 dereferencing operation each time the search path went to a left-child.
 It's not immediately clear, however, how such a representation could be
 combined with a tree-balancing scheme.
+
+\bibliographystyle{plain}
+\bibliography{todolist}
 
 \end{document}
 
