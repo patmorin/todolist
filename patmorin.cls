@@ -21,8 +21,8 @@
 \DeclareOption{twoside}{\OptionNotUsed}
 \DeclareOption{titlepage}{\OptionNotUsed}
 \DeclareOption{onecolumn}{\OptionNotUsed}
-\DeclareOption{10pt}{\OptionNotUsed}
-\DeclareOption{12pt}{\OptionNotUsed}
+%\DeclareOption{10pt}{\OptionNotUsed}
+%\DeclareOption{12pt}{\OptionNotUsed}
 
 % The default action is to pass options to article class
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
