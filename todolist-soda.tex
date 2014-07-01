@@ -1,11 +1,12 @@
-\documentclass[11pt]{patmorin}
+\documentclass[12pt]{patmorin}
 \usepackage[utf8]{inputenc}
 
 % SODA space-saving crap
 \setlength{\parskip}{0pt}
 \addtolength{\topmargin}{-.5in}
 \addtolength{\textheight}{1in}
-\usepackage[nomarkers]{endfloat}
+\usepackage[nomarkers,nofiglist]{endfloat}
+\renewcommand{\efloatseparator}{\mbox{}}
 
 \listfiles
 \usepackage{amsthm,amsmath,graphicx,wrapfig}
@@ -201,15 +202,25 @@ can use the potential method with the potential function
 Adding $x$ to each of $L_0,\ldots,L_h$ increases this potential by
 $C(h+1)=O(C\log n)$.  Rebuilding, if it occurs, takes $O(|L_i|)=O((2-\eps)^i)$
 time, but causes a change in potential of at least
-\begin{align*}
+%\begin{align*}
+%     \Delta\Phi & = C\sum_{j=0}^i\left(|L_j|/2^{i-j} - (2-\eps)^j\right) \\
+%          & \le C\sum_{j=0}^{i-1}\left((2-\eps)^i/2^{i-j} - (2-\eps)^j\right) \\
+%          & \le C\left((2-\eps)^i - \sum_{j=0}^{i-1}(2-\eps)^j\right) \\
+%          & = C\left((2-\eps)^i - \frac{(2-\eps)^i-(2-\eps)}{1-\eps}\right) \\
+%          & < C\left((2-\eps)^i - (1+\eps)\left((2-\eps)^i-(2-\eps)\right)\right)
+%           & \text{(since $1/(1-\eps)>1+\eps$)} \\
+%          & = -C\eps(2-\eps)^i + O(C) \\
+%\end{align*}
+\begin{eqnarray*}
      \Delta\Phi & = C\sum_{j=0}^i\left(|L_j|/2^{i-j} - (2-\eps)^j\right) \\
-          & \le C\sum_{j=0}^{i-1}\left((2-\eps)^i/2^{i-j} - (2-\eps)^j\right) \\
-          & \le C\left((2-\eps)^i - \sum_{j=0}^{i-1}(2-\eps)^j\right) \\
-          & = C\left((2-\eps)^i - \frac{(2-\eps)^i-(2-\eps)}{1-\eps}\right) \\
-          & < C\left((2-\eps)^i - (1+\eps)\left((2-\eps)^i-(2-\eps)\right)\right)
-           & \text{(since $1/(1-\eps)>1+\eps$)} \\
-          & = -C\eps(2-\eps)^i + O(C) \\
-\end{align*}
+          & \le & C\sum_{j=0}^{i-1}\left((2-\eps)^i/2^{i-j} - (2-\eps)^j\right) \\
+          & \le & C\left((2-\eps)^i - \sum_{j=0}^{i-1}(2-\eps)^j\right) \\
+          & = & C\left((2-\eps)^i - \frac{(2-\eps)^i-(2-\eps)}{1-\eps}\right) \\
+          & < & C\left((2-\eps)^i - (1+\eps)\left((2-\eps)^i-(2-\eps)\right)\right)
+           %& \text{(since $1/(1-\eps)>1+\eps$)}
+            \\
+          & = & -C\eps(2-\eps)^i + O(C) \\
+\end{eqnarray*}
 Therefore, by setting $C=c/\eps$ units for a sufficiently large constant,
 $c$, the decrease in potential is greater than the cost of rebuilding.
 We conclude that the amortized cost of adding an element $x$ is $O(C\log
@@ -447,7 +458,7 @@ treaps, and skiplists).  The implementation was done in C++ and all
 the code was written by the third author.\footnote{The implementations of all
 but todolists were adapted from the third author's textbook \cite{morin:open}.}
 The code used to generate all the test data in this section is available
-for download at github.\footnote{The source code is available at \url{https://github.com/patmorin/todolist}. The final version of this paper
+for download.\footnote{The source code is available at \url{https://github.com/patmorin/todolist}. The final version of this paper
 will provide a digital object identifier (DOI) that provides a link to
 the permanent fixed version of the source code that was used to generate
 all data in the final paper.}
