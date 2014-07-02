@@ -150,52 +150,6 @@ void build_and_search(Dict &d, const char *name, size_t n,
 	summer += sum; // to make sure this isn't optimized away
 }
 
-
-void test_suite(size_t n, int (*gen_data)(size_t, size_t),
-		int (*gen_search)(size_t, size_t)) {
-	cout << "Structure Operation n time #comparisons c" << endl;
-	{
-		todolist::LinkedTodoList<Integer> tdl(.12, NULL, 0);
-		build_and_search(tdl, "LinkedTodoList", n, gen_data, gen_search);
-		// cout << tdl;
-	}
-	{
-		todolist::TodoList<Integer> tdl(.12, NULL, 0);
-		build_and_search(tdl, "TodoList", n, gen_data, gen_search);
-		// cout << tdl;
-	}
-	{
-		ods::RedBlackTree1<Integer> rbt;
-		build_and_search(rbt, "RedBlackTree", n, gen_data, gen_search);
-		int tpl = rbt.tpl();
-		cout << "I: total path length = " << tpl << endl;
-		double apl = ((double)tpl) / rbt.size();
-		cout << "I: average path length = " << apl << endl;
-		cout << "I: c_average = " << apl * log(2) / log(n) << endl;
-		cout << "#red nodes = " << rbt.reds() << endl;
-		int mpl = rbt.mpl();
-		cout << "I: maximum path length = " << mpl << endl;
-		cout << "I: c_max = " << log(2) * mpl / log(n) << endl;
-	}
-	{
-		ods::Treap1<Integer> t;
-		build_and_search(t, "Treap", n,	gen_data, gen_search);
-		int tpl = t.tpl();
-		cout << "I: total path length = " << tpl << endl;
-		double apl = ((double)tpl) / t.size();
-		cout << "I: average path length = " << apl << endl;
-		cout << "I: c_average = " << apl * log(2) / log(n) << endl;
-		int mpl = t.mpl();
-		cout << "I: maximum path length = " << mpl << endl;
-		cout << "I: c_max = " << log(2) * mpl / log(n) << endl;
-	}
-	{
-		ods::SkiplistSSet<Integer> sl;
-		build_and_search(sl, "Skiplist", n, gen_data, gen_search);
-	}
-
-}
-
 // Compare the results of performing the same operations on two dictionaries
 template<class Dict1, class Dict2>
 void test_dicts(Dict1 &d1, Dict2 &d2, int n) {
@@ -256,18 +210,6 @@ void usage_error(const char *name) {
 }
 
 int main(int argc, char **argv) {
-
-//	todolist::TodoList4<int> tdl4;
-//	cout << tdl4;
-//	tdl4.add(22);
-//	cout << tdl4;
-//	tdl4.add(56);
-//	cout << tdl4;
-//	tdl4.add(29);
-//	cout << tdl4;
-//	tdl4.add(88);
-//	cout << tdl4;
-
 	if (argc < 2)
 		usage_error(argv[0]);
 
