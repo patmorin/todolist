@@ -5,8 +5,8 @@
  *      Author: morin
  */
 
-#ifndef SplayTree_H_
-#define SplayTree_H_
+#ifndef SPLAYTREE_H_
+#define SPLAYTREE_H_
 
 #include <climits>
 
