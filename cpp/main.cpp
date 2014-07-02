@@ -5,7 +5,6 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
-using namespace std;
 
 #include <unistd.h>
 
@@ -20,6 +19,7 @@ using namespace std;
 #include "TodoList3.h"
 #include "TodoList4.h"
 
+using namespace std;
 
 // class Integer
 // A silly class to use for counting comparisons and for simulating classes
@@ -154,12 +154,12 @@ void test_suite(size_t n, int (*gen_data)(size_t, size_t),
 		int (*gen_search)(size_t, size_t)) {
 	cout << "Structure Operation n time #comparisons c" << endl;
 	{
-		fastws::LinkedTodoList<Integer> tdl(.12, NULL, 0);
+		todolist::LinkedTodoList<Integer> tdl(.12, NULL, 0);
 		build_and_search(tdl, "LinkedTodoList", n, gen_data, gen_search);
 		// cout << tdl;
 	}
 	{
-		fastws::TodoList<Integer> tdl(.12, NULL, 0);
+		todolist::TodoList<Integer> tdl(.12, NULL, 0);
 		build_and_search(tdl, "TodoList", n, gen_data, gen_search);
 		// cout << tdl;
 	}
@@ -213,7 +213,12 @@ void test_dicts(Dict1 &d1, Dict2 &d2, int n) {
 
 void sanity_tests(size_t n) {
 	{
-		fastws::TodoList3<int> tdl3;
+		todolist::TodoList4<int> tdl4;
+		todolist::TodoList3<int> tdl3;
+		test_dicts(tdl4, tdl3, n);
+	}
+	{
+		todolist::TodoList3<int> tdl3;
 		ods::Treap1<int> t;
 		test_dicts(tdl3, t, n);
 	}
@@ -234,13 +239,13 @@ void sanity_tests(size_t n) {
 	}
 	{
 		ods::RedBlackTree1<int> rbt;
-		fastws::TodoList2<int> tdl2;
+		todolist::TodoList2<int> tdl2;
 		test_dicts(rbt, tdl2, n);
 	}
 	{
-		fastws::TodoList2<int> tdl2;
-		fastws::TodoList2<int> tdl3;
-		test_dicts(tdl2, tdl3, n);
+		todolist::TodoList2<int> tdl2;
+		todolist::TodoList4<int> tdl4;
+		test_dicts(tdl2, tdl4, n);
 	}
 }
 
@@ -282,7 +287,7 @@ int main(int argc, char **argv) {
 		} else if (strcmp(argv[i], "-sanity") == 0) {
 			cout << "I: Doing sanity tests...";
 			cout.flush();
-			sanity_tests(n);
+			sanity_tests(n); // FIXME: reset to n when done testing
 			cout << "done" << endl;
 		} else if (strcmp(argv[i], "-sequential") == 0) {
 			cout << "I: Using sequential data" << endl;
@@ -306,19 +311,19 @@ int main(int argc, char **argv) {
 			ods::ScapegoatTree1<Integer> st(1./(2.-epsilon));
 			build_and_search(st, "ScapegoatTree", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-todolist") == 0) {
-				fastws::TodoList<Integer> tdl(epsilon);
+				todolist::TodoList<Integer> tdl(epsilon);
 				build_and_search(tdl, "TodoList", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-todolist2") == 0) {
-				fastws::TodoList2<Integer> tdl2(epsilon);
+				todolist::TodoList2<Integer> tdl2(epsilon);
 				build_and_search(tdl2, "TodoList2", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-todolist3") == 0) {
-				fastws::TodoList3<Integer> tdl3(epsilon);
+				todolist::TodoList3<Integer> tdl3(epsilon);
 				build_and_search(tdl3, "TodoList3", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-todolist4") == 0) {
-				fastws::TodoList4<Integer> tdl4(epsilon);
+				todolist::TodoList4<Integer> tdl4(epsilon);
 				build_and_search(tdl4, "TodoList4", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-linkedtodolist") == 0) {
-			fastws::LinkedTodoList<Integer> ltdl(epsilon);
+			todolist::LinkedTodoList<Integer> ltdl(epsilon);
 			build_and_search(ltdl, "LinkedTodoList", n, rand_data, rand_search);
 		} else {
 			usage_error(argv[0]);

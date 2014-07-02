@@ -122,7 +122,9 @@ typename TodoList4<T>::Node* TodoList4<T>::newNode(size_t height) {
 
 template<class T>
 typename TodoList4<T>::Node* TodoList4<T>::resizeNode(Node *u, size_t height) {
-	Node *w = newNode(height);
+	size_t type = height2type(height);
+	Node *w = (Node *) realloc(u, sizeof(Node) + (1U<<type) * sizeof(NX));
+	if (w == u) return w;
 	w->x = u->x;
 	deleteNode(u);
 	return w;

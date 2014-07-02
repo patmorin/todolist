@@ -7,6 +7,7 @@
 
 #ifndef SKIPLISTSSET_H_
 #define SKIPLISTSSET_H_
+#include <iostream>
 #include <cstdlib>
 #include <cstring>
 
@@ -175,6 +176,11 @@ void SkiplistSSet<T>::clear() {
 	n = 0;
 }
 
+template<class T>
+std::ostream& operator<<(std::ostream &out, const SkiplistSSet<T> &sl) {
+	out << "BinarySearchTree";
+	return out;
+}
 
 
 } /* namespace ods */
