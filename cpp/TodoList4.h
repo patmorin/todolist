@@ -14,11 +14,9 @@
 #include <cstdlib>
 #include <climits>
 #include <cassert>
-
 #include <iostream>
-using namespace std;
 
-namespace fastws {
+namespace todolist {
 
 /**
  * A dictionary with the working-set property.
@@ -49,9 +47,6 @@ protected:
 	int n0max;
 	int *a;
 
-	// FIXME: for profiling information
-	int *rebuild_freqs;
-
 	void init(T *data, int n);
 	void rebuild();
 	void rebuild(int i);
@@ -67,7 +62,7 @@ public:
 	T find(T x);
 	bool add(T x);
 	int size() {
-		return n[h];
+		return n[0];
 	}
 
 	void printOn(std::ostream &out);
@@ -78,13 +73,10 @@ TodoList4<T>::TodoList4(double eps0, T *data, int n0) {
 	eps = eps0;
 
 	int kmax = 100; // FIXME: potential limitation here
-	rebuild_freqs = new int[kmax+1]();
 	double base_a = 2.0-eps;
 	a = new int[kmax+1];
-	for (int i = 0; i <= kmax; i++) {
+	for (int i = 0; i <= kmax; i++)
 		a[i] = pow(base_a, i);
-		// cout << "a[" << i << "]=" << a[i] << endl;
-	}
 
 	init(data, n0);
 }
@@ -95,11 +87,9 @@ void TodoList4<T>::init(T *data, int n0) {
 	// Compute critical values depending on epsilon and n
 	n0max = ceil(2. / eps);
 	n0max = 1;
-	// cout << "n0max = " << n0max << endl;
 	h = max(0.0, ceil(log(n0) / log(2-eps)));
 
 	n = new int[h + 1]();
-	// cout << "k = " << k << endl;
 	n[0] = n0;
 	sentinel = newNode();
 	Node *prev = sentinel;
@@ -148,7 +138,6 @@ void TodoList4<T>::rebuild() {
 
 template<class T>
 void TodoList4<T>::rebuild(int i) {
-	rebuild_freqs[i]++;
 	Node *stack[50]; // FIXME: hard-coded limit
 	for (int j = i + 1; j <= h; j++) {
 		n[j] = 0;
@@ -158,7 +147,7 @@ void TodoList4<T>::rebuild(int i) {
 	for (int q = 1; q <= n[i]; q++) {
 		u = u->nx[i].next;
 		int top = i + __builtin_ctz(q);
-		assert(top >= 0);
+		assert(top <= h);
 		for (int j = i+1; j <= top; j++) {
 			n[j]++;
 			stack[j]->nx[j].next = u;
@@ -178,7 +167,7 @@ T TodoList4<T>::find(T x) {
 	for (int i = h; i >= 0; i--)
 		if (u->nx[i].next != NULL && u->nx[i].xnext < x)
 			u = u->nx[i].next;
-	return (u->nx[h].next == NULL) ? (T)0 : u->nx[h].xnext;
+	return (u->nx[0].next == NULL) ? (T)0 : u->nx[0].xnext;
 }
 
 template<class T>
@@ -194,7 +183,7 @@ bool TodoList4<T>::add(T x) {
 	}
 
 	// check if x is already here and, if so, abort
-	Node *w = u->nx[h].next;
+	Node *w = u->nx[0].next;
 	if (w != NULL && w->x == x)
 		return false;
 
@@ -214,7 +203,7 @@ bool TodoList4<T>::add(T x) {
 
 	// do partial rebuilding, if necessary
 	if (n[h] > n0max) {
-		for (i = h-1; n[i] > a[i]; i--);
+		for (i = h-1; n[i] > a[h-i]; i--);
 		assert(i <= h);
 		rebuild(i);
 	}
@@ -225,11 +214,10 @@ template<class T>
 TodoList4<T>::~TodoList4() {
 	delete[] n;
 	delete[] a;
-	delete[] rebuild_freqs;
 	Node *prev = sentinel;
 	while (prev != NULL) {
-		Node *u = prev->nx[h].next;
-		prev->nx[h].next = NULL;
+		Node *u = prev->nx[0].next;
+		prev->nx[0].next = NULL;
 		deleteNode(prev);
 		prev = u;
 	}
@@ -251,19 +239,18 @@ void TodoList4<T>::sanity() {
 template<class T>
 void TodoList4<T>::printOn(std::ostream &out) {
 	const int max_print = 50;
-	cout << "WSSkiplist: n = " << n[h] << ", k = " << h << endl;
+	out << "WSSkiplist: n = " << n[h] << ", k = " << h << endl;
 	for (int i = h; i >= 0; i--) {
-		cout << "L(" << i << "): ";
+		out << "L(" << i << "): ";
 		if (n[h] <= max_print) {
 			Node *u = sentinel->nx[i].next;
 			for (int j = 0; j < n[i]; j++) {
-				cout << u->x << ",";
+				out << u->x << ",";
 				u = u->nx[i].next;
 			}
 			assert(u == NULL);
 		}
-		cout << " n(" << i << ") = " << n[i]
-		     << " (rebuilt " << rebuild_freqs[i] << " times)" << endl;
+		out << " n(" << i << ") = " << n[i] << endl;
 	}
 }
 
