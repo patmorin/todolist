@@ -2,20 +2,10 @@
  * (c) 2014 Pat Morin, Released under a CC BY 3.0 License:
  *     https://creativecommons.org/licenses/by/3.0/
  *
- * todo.h : A top-down skiplist
+ * TodoList2.h : A top-down skiplist
  *
- * A top-down skiplist is a variant of a skiplist that stays balanced by
- * using partial rebuilding on the top levels of the list.  Unlike a normal
- * skiplist, it maintains a tight enough structure that only one comparison
- * is necessary at each level.
- *
- * - add(x) and remove(x) run in O(log n) amortized time.
- * - find(x) runs in O(log n) worst-case time and performs
- *   ceiling((1+epsilon)log n) comparisons.
- *
- * This particular implementation is a space hog.  Every element in the
- * structure has its own array of length k=Theta(log n)$.  This avoids the
- * resizing that would otherwise be required when rebuilding levels.
+ * A TodoList variant that tries to minimize memory accesses by storing a
+ * the key value associated with each next pointer.
  */
 #ifndef FASTWS_TODOLIST2_H_
 #define FASTWS_TODOLIST2_H_
