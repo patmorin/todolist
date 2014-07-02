@@ -34,17 +34,17 @@ protected:
 	};
 
 	struct Node {
-		T x;          // data
-		NX nx[]; // a stack of next pointers
+		T x;      // data
+		size_t type; // FIXME: this only need represent 0,...,log log n
+		NX nx[];  // a stack of next pointers
 	};
 
-	int h;    // there are k+1 lists numbered 0,...,k
+	int h;    // there are h+1 lists numbered 0,...,h
 	int *n;   // n[i] is the size of the i'th list
-	Node *sentinel; // sentinel-next[i] is the first element of list i
+	Node *sentinel; // sentinel->nx[i].next is the first element of list i
 
 	// parameters used to determine lists sizes
 	double eps;
-	int n0max;
 	int *a;
 
 	void init(T *data, int n);
@@ -53,7 +53,8 @@ protected:
 
 	void sanity();
 
-	Node *newNode();
+	Node *newNode(size_t height);
+	Node *resizeNode(Node *u, size_t height);
 	void deleteNode(Node *u);
 
 public:
@@ -85,16 +86,14 @@ template<class T>
 void TodoList4<T>::init(T *data, int n0) {
 
 	// Compute critical values depending on epsilon and n
-	n0max = ceil(2. / eps);
-	n0max = 1;
 	h = max(0.0, ceil(log(n0) / log(2-eps)));
 
 	n = new int[h + 1]();
 	n[0] = n0;
-	sentinel = newNode();
+	sentinel = newNode(h);
 	Node *prev = sentinel;
 	for (int i = 0; i < n0; i++) {
-		Node *u = newNode();
+		Node *u = newNode(h);
 		u->x = data[i];
 		prev->nx[0].next = u;
 		prev->nx[0].xnext = u->x;
@@ -103,11 +102,30 @@ void TodoList4<T>::init(T *data, int n0) {
 	rebuild(0);
 }
 
+size_t height2type(size_t height) {
+	size_t type = 0;
+	for (size_t h = height; h != 0; h>>= 1)
+		type++;
+	assert(1U << type >= height+1);    // FIXME: remove these
+	assert(1U << type < 2*(height+1)); // FIXME: remove these
+	return type;
+}
+
 template<class T>
-typename TodoList4<T>::Node* TodoList4<T>::newNode() {
-	Node *u = (Node *) malloc(sizeof(Node) + (h + 1) * sizeof(NX));
+typename TodoList4<T>::Node* TodoList4<T>::newNode(size_t height) {
+	size_t type = height2type(height);
+	Node *u = (Node *) malloc(sizeof(Node) + (1U<<type) * sizeof(NX));
+	u->type = type;
 	memset(u->nx, '\0', (h + 1) * sizeof(NX));
 	return u;
+}
+
+template<class T>
+typename TodoList4<T>::Node* TodoList4<T>::resizeNode(Node *u, size_t height) {
+	Node *w = newNode(height);
+	w->x = u->x;
+	deleteNode(u);
+	return w;
 }
 
 template<class T>
@@ -138,6 +156,7 @@ void TodoList4<T>::rebuild() {
 
 template<class T>
 void TodoList4<T>::rebuild(int i) {
+	// this holds a list of all the predecessors of the current node
 	Node *stack[50]; // FIXME: hard-coded limit
 	for (int j = i + 1; j <= h; j++) {
 		n[j] = 0;
@@ -145,9 +164,27 @@ void TodoList4<T>::rebuild(int i) {
 	}
 	Node *u = sentinel;
 	for (int q = 1; q <= n[i]; q++) {
-		u = u->nx[i].next;
 		int top = i + __builtin_ctz(q);
 		assert(top <= h);
+		Node *w = u;
+		u = u->nx[i].next;
+		if (1 << u->type < top+1) {
+			// node needs to be reallocated --- it's not big enough
+			Node *u_new = resizeNode(u, top);
+			if (u_new != u) {
+				for (int j = i; j >= 0; j--) {
+					if (w->nx[j].next != u) w = w->nx[j].next;
+					stack[j] = w;
+				}
+				for (int j = 0; j <= i; j++) {
+					u_new->nx[j].next = stack[j]->nx[j].next;
+					u_new->nx[j].xnext = stack[j]->nx[j].xnext;
+					stack[j]->nx[j].next = u_new;
+					stack[j]->nx[j].xnext = u_new->x;
+
+				}
+			}
+		}
 		for (int j = i+1; j <= top; j++) {
 			n[j]++;
 			stack[j]->nx[j].next = u;
@@ -188,7 +225,7 @@ bool TodoList4<T>::add(T x) {
 		return false;
 
 	// insert x everywhere along the search path
-	w = newNode();
+	w = newNode(h);
 	w->x = x;
 	for (i = h; i >= 0; i--) {
 		w->nx[i] = path[i]->nx[i];
@@ -202,7 +239,7 @@ bool TodoList4<T>::add(T x) {
 		rebuild();
 
 	// do partial rebuilding, if necessary
-	if (n[h] > n0max) {
+	if (n[h] > 1) {
 		for (i = h-1; n[i] > a[h-i]; i--);
 		assert(i <= h);
 		rebuild(i);
@@ -225,7 +262,7 @@ TodoList4<T>::~TodoList4() {
 
 template<class T>
 void TodoList4<T>::sanity() {
-	assert(n[0] <= n0max);
+	assert(n[0] <= 1);
 	for (int i = 0; i <= h; i++) {
 		Node *u = sentinel;
 		for (int j = 0; j < n[i]; j++) {
