@@ -157,6 +157,7 @@ in $L_k$ is only $h+1$.
 \end{algorithmic}
 
 \subsection{Adding}
+\seclabel{insertion}\seclabel{adding}
 
 Adding a new element, $x$, to a todolist is done by searching for it
 using the algorithm outlined above and then splicing $x$ into each of
@@ -227,7 +228,9 @@ of $O(\eps^{-1}\log n)$.
 
 \subsection{Tidying Up}
 
-Aside from the partial rebuilding caused by insertions and deletions, there are also some global rebuilding operations that are sometimes triggered:
+Aside from the partial rebuilding caused by insertions and deletions,
+there are also some \emph{global rebuilding} operations that are sometimes
+triggered:
 \begin{enumerate}
 \item If an insertion causes $n$ to exceed $\lceil(2-\eps)^h\rceil$, then
 we increment the value of $h$ to $h'=h+1$ and rebuild $L_0,\ldots,L_{h'}$
@@ -241,7 +244,7 @@ A standard amortization argument shows that the first and third type
 of global rebuilding contribute only $O(1)$ to the amortized cost of
 each insertion and deletion, respectively.  The same potential argument
 function used to study insertion and deletion works to show that the
-second type of global rebuilding constributes only $O(\log n)$ to the
+second type of global rebuilding contributes only $O(\log n)$ to the
 amortized cost of each insertion or deletion.  (Note that this second
 type of global rebuilding is only required to ensure that the size of
 the data structure remains in $O(n)$.)
@@ -427,7 +430,7 @@ potential function argument as in \secref{todolist}.  The change in the sizes of
 Since the cost of rebuilding $L_0,\ldots,L_{i-1}$ is proportional to $O(n_i)$, this implies that the amortized cost of accessing $x$ is $O(\epsilon^{-1}\log w(x))$.
 
 
-\section{Experimental Results}
+\section{Implementation and Experiments}
 \seclabel{experimental}
 \seclabel{experiments}
 
@@ -443,35 +446,54 @@ will provide a digital object identifier (DOI) that provides a link to
 the permanent fixed version of the source code that was used to generate
 all data in the final paper.}
 
-\subsection{The Story}
-
 As a first attempt, one might try to implement a todolist exactly
 as described in \secref{todolist}, with each list $L_i$ being a
 separate singly linked list in which each node has a down pointer to
 the corresponding node in $L_{i+1}$.  However, past experience with
 skiplists suggests (and preliminary experiments confirmed) that this is
 neither space-efficient nor fast (see the class \texttt{LinkedTodoList}
-in the source code).
+in the source code). Instead, we use an implementation idea that appears in
+Pugh's original paper on skiplists \cite{pugh:skip}.
+
+\subsection{Nodes as Arrays}
 
 A better implementation uses one structure for each data item, $x$,
 and this structure includes an array of pointers.  If $x$ appears in
 $L_{i},\ldots,L_h$, then this array has length $h-i+1$ so that it can
 store the \texttt{next} pointers for the occurrence of $x$ in each of
-these lists.  This is, by now the standard implementation of skiplists
-and this trick is suggested already by Pugh in his original paper on
-skiplists \cite{pugh:skip}.
+these lists.  
+
+One complication occurs in implementing arrays of next pointers in a
+todolist that is not present in a skiplist.  During a partial rebuilding
+operation, the height of elements in a todolist change, which means
+that their arrays need to be reallocated.  The cost of reallocating and
+initializing an array is proportional to the length of the array. However,
+the amortization argument used in \secref{insertion}, requires that the
+cost of increasing the height of an element when rebuilding level $i$
+is proportional to the increase in height; promoting an element from
+level $i$ to level $i-c$ should take $O(c)$ time, not $O(h - i + c)$ time.
+
+The work-around for this problem is to use a standard
+doubling-trick used to implement dynamic arrays (c.f.,
+Morin~\cite[Section~2.1.2]{morin:open}). When a new array for a node
+is allocated to hold $r$ values, its size is set to $r'=2^{\lceil\log_2
+r\rceil}$.  Later, if the height of the node increases, to $r+c$ during
+a partial rebuilding operation, the array only needs to be reallocated
+if $r+c > r'$.  Using this trick, the amortized
+cost of increasing the height of the node is $O(c)$.  This trick does not
+increase the number of pointers in the structure by more than factor of 2.
 
 Our initial implementation did exactly this, and performed well-enough
-to beat standard skiplists but was still bested by most forms of binary
-search trees.  This was despite the fact that the code for searching was
-dead-simple, and by decreasing $\eps$ we could reduce the height, $h$
-(and hence the number of comparisons) to less than was being performed
-by these search trees.
+to execute searches faster than standard skiplists but was still bested
+by most forms of binary search trees.  This was despite the fact that
+the code for searching was dead-simple, and by decreasing $\eps$ we
+could reduce the height, $h$ (and hence the number of comparisons)
+to less than was being performed by these search trees.
 
 \subsection{The Problem With Skiplists}
 
 After some reflection, the reason for the disappointing performance of
-searches in a todolist (and to a greater extent, in a skiplist) became
+searches in todolists (and to a greater extent, in skiplists) became
 apparent, and is due to the fact that accessing a node by following a
 pointer is more expensive than performing a comparison.
 
@@ -494,7 +516,7 @@ Luckily, there is a fairly easy remedy, though it does use more space.
 We implement the todolist so that each node $u$ in a list $L_i$ stores an
 additional key, $\mathrm{keynext}(u)$, that is the key associated with
 the node $\mathrm{next}(u)$.  This means that determining the next node
-to visit after $u$ can be done using the key $\mathrm{keynext}(u)$ stored
+to visit after $u$ can be done using the key, $\mathrm{keynext}(u)$, stored
 at node $u$ rather than having to dereference $\mathrm{next}(u)$. The
 resulting structure is illustrated in \figref{packed-in}.
 
@@ -510,11 +532,11 @@ structures. Indeed, retrofitting this idea into the skiplist
 implementation improves its performance considerably so that it
 outperforms some (but not all) of the tree-based structures.
 
-\subsection{The Data}
+\subsection{Experiments Data}
 
 The experimental data in this section was obtained from the program
 \texttt{main.cpp} that can be found in the accompanying source code.
-This program was compiled using the command line: \texttt{g++ -O4 -o
+This program was compiled using the command line: \texttt{g++ -Wall -O4 -o
 main main.cpp}. The compiler was the \texttt{gcc} compiler, version
 4.8.2 that ships with the Ubuntu 14.04 Linux distribution.  Tests were
 run on a Dell XPS 13 laptop having 8GB DDR3L-RS 1600 Mhz memory and a
@@ -579,8 +601,20 @@ $1.2\log_2 n$ (for $\eps=.2$) and or $1.35\log_2 n$ for ($\eps=.35$).
 
 The timing results for the insertions are shown in
 \figref{biginsertion}. This is where the other shoe drops.  Even with
-$\eps=0.35$, insertions take about four times as long in a todolist as
-in a reb-black tree and three times as long as a skiplist.  
+$\eps=0.35$, insertions take about four times as long in a todolist as in
+a red-black tree and three times as long as a skiplist.  Profiling the
+code shows that approximately 65\% of this time is spent doing partial
+rebuilding and another 6\% is due to global rebuilding.
+
+One perhaps surprising result is that scapegoat trees, which are also
+based on partial rebuilding, outperform todolists in terms of insertions
+in these tests.  This is because scapegoat trees are opportunistic,
+only performing partial rebuilding when needed to maintain balance.
+Since these tests perform random insertions, scapegoat trees do very
+little rebuilding.  In a similar that inserts elements in increasing
+order, scapegoat tree insertions were approximately 50\% slower than
+todolist insertions.
+
 
 \begin{figure}
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
