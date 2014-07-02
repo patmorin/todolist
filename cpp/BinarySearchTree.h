@@ -53,7 +53,7 @@ public:
 	virtual ~BinarySearchTree();
 	virtual bool add(T x);
 	virtual bool remove(T x);
-	virtual T find(T x);
+	T find(T x);
 	virtual T findEQ(T x);
 	virtual int size();
 	virtual void clear();
