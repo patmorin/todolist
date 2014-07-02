@@ -21,6 +21,7 @@
 
 using namespace std;
 
+
 // class Integer
 // A silly class to use for counting comparisons and for simulating classes
 // that have more expensive comparisons
@@ -256,7 +257,7 @@ void usage_error(const char *name) {
 
 int main(int argc, char **argv) {
 
-//	fastws::TodoList4<int> tdl4;
+//	todolist::TodoList4<int> tdl4;
 //	cout << tdl4;
 //	tdl4.add(22);
 //	cout << tdl4;
@@ -266,6 +267,7 @@ int main(int argc, char **argv) {
 //	cout << tdl4;
 //	tdl4.add(88);
 //	cout << tdl4;
+
 	if (argc < 2)
 		usage_error(argv[0]);
 
