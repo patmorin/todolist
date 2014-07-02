@@ -17,6 +17,8 @@ using namespace std;
 #include "TodoList.h"
 #include "LinkedTodoList.h"
 #include "TodoList2.h"
+#include "TodoList3.h"
+#include "TodoList4.h"
 
 
 // class Integer
@@ -211,9 +213,9 @@ void test_dicts(Dict1 &d1, Dict2 &d2, int n) {
 
 void sanity_tests(size_t n) {
 	{
-		fastws::TodoList2<int> tdl2;
+		fastws::TodoList3<int> tdl3;
 		ods::Treap1<int> t;
-		test_dicts(tdl2, t, n);
+		test_dicts(tdl3, t, n);
 	}
 	{
 		ods::Treap1<int> t;
@@ -235,6 +237,11 @@ void sanity_tests(size_t n) {
 		fastws::TodoList2<int> tdl2;
 		test_dicts(rbt, tdl2, n);
 	}
+	{
+		fastws::TodoList2<int> tdl2;
+		fastws::TodoList2<int> tdl3;
+		test_dicts(tdl2, tdl3, n);
+	}
 }
 
 void usage_error(const char *name) {
@@ -243,6 +250,17 @@ void usage_error(const char *name) {
 }
 
 int main(int argc, char **argv) {
+
+//	fastws::TodoList4<int> tdl4;
+//	cout << tdl4;
+//	tdl4.add(22);
+//	cout << tdl4;
+//	tdl4.add(56);
+//	cout << tdl4;
+//	tdl4.add(29);
+//	cout << tdl4;
+//	tdl4.add(88);
+//	cout << tdl4;
 	if (argc < 2)
 		usage_error(argv[0]);
 
@@ -293,6 +311,12 @@ int main(int argc, char **argv) {
 		} else if (strcmp(argv[i], "-todolist2") == 0) {
 				fastws::TodoList2<Integer> tdl2(epsilon);
 				build_and_search(tdl2, "TodoList2", n, gen_data, gen_search);
+		} else if (strcmp(argv[i], "-todolist3") == 0) {
+				fastws::TodoList3<Integer> tdl3(epsilon);
+				build_and_search(tdl3, "TodoList3", n, gen_data, gen_search);
+		} else if (strcmp(argv[i], "-todolist4") == 0) {
+				fastws::TodoList4<Integer> tdl4(epsilon);
+				build_and_search(tdl4, "TodoList4", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-linkedtodolist") == 0) {
 			fastws::LinkedTodoList<Integer> ltdl(epsilon);
 			build_and_search(ltdl, "LinkedTodoList", n, rand_data, rand_search);
