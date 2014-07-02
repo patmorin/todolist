@@ -29,7 +29,7 @@
 #include <iostream>
 using namespace std;
 
-namespace fastws {
+namespace todolist {
 
 template<class T>
 class LinkedTodoList {

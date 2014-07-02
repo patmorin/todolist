@@ -24,7 +24,7 @@
 #include <iostream>
 using namespace std;
 
-namespace fastws {
+namespace todolist {
 
 /**
  * A dictionary with the working-set property.
@@ -80,10 +80,8 @@ TodoList<T>::TodoList(double eps0, T *data, int n0) {
 	rebuild_freqs = new int[kmax+1]();
 	double base_a = 2.0-eps;
 	a = new int[kmax+1];
-	for (int i = 0; i <= kmax; i++) {
+	for (int i = 0; i <= kmax; i++)
 		a[i] = pow(base_a, i);
-		// cout << "a[" << i << "]=" << a[i] << endl;
-	}
 
 	init(data, n0);
 }
@@ -94,11 +92,9 @@ void TodoList<T>::init(T *data, int n0) {
 	// Compute critical values depending on epsilon and n
 	n0max = ceil(2. / eps);
 	n0max = 1;
-	// cout << "n0max = " << n0max << endl;
 	h = max(0.0, ceil(log(n0) / log(2-eps)));
 
 	n = new int[h + 1]();
-	// cout << "k = " << k << endl;
 	n[h] = n0;
 	sentinel = newNode();
 	Node *prev = sentinel;
@@ -249,18 +245,18 @@ void TodoList<T>::sanity() {
 template<class T>
 void TodoList<T>::printOn(std::ostream &out) {
 	const int max_print = 50;
-	cout << "WSSkiplist: n = " << n[h] << ", k = " << h << endl;
+	out << "WSSkiplist: n = " << n[h] << ", k = " << h << endl;
 	for (int i = 0; i <= h; i++) {
-		cout << "L(" << i << "): ";
+		out << "L(" << i << "): ";
 		if (n[h] <= max_print) {
 			Node *u = sentinel->next[i];
 			for (int j = 0; j < n[i]; j++) {
-				cout << u->x << ",";
+				out << u->x << ",";
 				u = u->next[i];
 			}
 			assert(u == NULL);
 		}
-		cout << " n(" << i << ") = " << n[i]
+		out << " n(" << i << ") = " << n[i]
 		     << " (rebuilt " << rebuild_freqs[i] << " times)" << endl;
 	}
 }

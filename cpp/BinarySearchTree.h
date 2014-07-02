@@ -297,6 +297,12 @@ template<class T>
 BinarySearchTree1<T>::BinarySearchTree1()  {
 }
 
+template<class Node, class T>
+std::ostream& operator<<(std::ostream &out, BinarySearchTree<Node, T> &bst) {
+	out << "BinarySearchTree";
+	return out;
+}
+
 
 } /* namespace ods */
 #endif /* BINARYSEARCHTREE_H_ */

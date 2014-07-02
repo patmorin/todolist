@@ -1,5 +1,9 @@
+#CFLAGS=-Wall -O4
+CFLAGS=-Wall -g
 
-main : 
-	g++ -Wall -O4 -o main main.cpp
+main : *.cpp *.h
+	g++ $(CFLAGS) -o main main.cpp
 
+clean :
+	rm -f main
 
