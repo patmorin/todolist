@@ -5,7 +5,7 @@ epsilons="0.67 0.66 0.65 0.64 0.63 0.62 0.61 0.6 0.59 0.58 0.57 0.56 0.55 0.54 0
 
 for eps in $epsilons; do
     echo epsilon=$eps
-    ../cpp-bin/main -eps=$eps -$n -todolist2 > tmp.dat
+    ../cpp-bin/main -eps=$eps -$n -todolist4 > tmp.dat
     echo `grep 'ADD' tmp.dat` $eps >> epsilon-add.dat
     echo `grep 'FIND' tmp.dat` $eps >> epsilon-find.dat
 done
