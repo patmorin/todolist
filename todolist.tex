@@ -1,4 +1,5 @@
 \documentclass[12pt]{patmorin}
+\usepackage[utf8]{inputenc}
 \listfiles
 \usepackage{amsthm,amsmath,graphicx,wrapfig}
 \usepackage[noend]{algorithmic}
@@ -504,8 +505,8 @@ of the tree-based structures.
 \subsection{Experiments}
 \seclabel{experiments}
 
-To test the performance of the todolist, we implemented it and tested
-it against other comparison-based dictionaries that are popular, either
+To test the performance of todolists, we implemented them and tested
+them against other comparison-based dictionaries that are popular, either
 in practice (red-black trees) and/or in textbooks (scapegoat trees,
 treaps, and skiplists).  The implementation was done in C++ and all
 the code was written by the third author.\footnote{The implementations
@@ -645,6 +646,7 @@ takes time $\Omega(\log n)$, so is non-negligible.  The implementation
 of the insertion algorithm used in our experiments is fairly naïve and
 could probably be improved, but it seems unlikely that its performance
 will ever match that of, for example, red-black trees.
+
 
 %Although it's nice that todolists do a number of comparisons that is
 %approaching optimality, their memory layout is at least as important to
