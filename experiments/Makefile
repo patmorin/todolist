@@ -8,6 +8,7 @@ data :
 	./test-all.sh
 	./test-static.sh
 	./test-tradeoff.sh
+	python ./normalize.py
 
 bigtest-find.tex : bigtest.gp $(data)
 	gnuplot bigtest.gp

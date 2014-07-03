@@ -1,9 +1,12 @@
-\documentclass[lotsofwhite]{patmorin}
+\documentclass[12pt]{patmorin}
 \listfiles
 \usepackage{amsthm,amsmath,graphicx,wrapfig}
 \usepackage[noend]{algorithmic}
 \usepackage{pat}
 \usepackage{tikz,gnuplot-lua-tikz}
+
+\hyphenation{todo-list}
+\hyphenation{skip-list}
 
 \newcommand{\eps}{\varepsilon}
 
@@ -22,10 +25,10 @@
   can execute a search for any element $x$ using $\log_{2-\eps} w(x)
   + o(\log w(x))$ binary comparisons and have amortized search time
   $O(\eps^{-1}\log w(w))$. Here, $w(x)$ is the ``working-set number'' of
-  $x$. No previously-known structure is known to achieve a bound better
+  $x$. No previous data structure is known to achieve a bound better
   than $4\log_2 w(x)$ comparisons. We show through experiments that,
   if implemented carefully, todolists are comparable to other common
-  dictionary implementations in terms of update times and outperform
+  dictionary implementations in terms of insertion times and outperform
   them in terms of search times.
 \end{abstract}
 
@@ -63,17 +66,18 @@ n)$.  (Note that $\log_{2-\eps} n \le (1+\eps)\log n$ for $\eps < 1/4$.)
 As a theoretical result todolists are nothing to get excited about; there
 already exist comparison-based dictionaries with $O(\log n)$ time for all
 operations that perform at most $\lceil\log n\rceil+1$ comparisons per
-operation \cite{andersson.lai:fast,fagerberg:binary}. However, todolists
+operation \cite{andersson.lai:fast,fagerberg:binary}. Here, and throughout,
+$\log n=\log_2 n$ denotes the binary logarithm of $n$. However, todolists
 are based on a new idea---top-down partial rebuilding of skiplists---and
 our experimental results show that a careful implementation of todolists
-performs searches faster than existing popular data structures.
+can execute searches faster than existing popular data structures.
 
 In particular, todolists outperform (again, in terms of searches) Guibas
 and Sedgewick's red-black trees \cite{guibas.sedgewick:dichromatic} which are
 easily the most common implementation of comparison-based dictionaries
 found in programming libraries. This is no small feat since, in the
 setting we studied, the average depth of a node in a red-black tree
-seems to be $\log_2 n - O(1)$ \cite{sedgewick:left-leaning}.
+seems to be $\log n - O(1)$ \cite{sedgewick:left-leaning}.
 
 As a more substantial theoretical contribution, we show that a
 variant of todolists, called working-todolists is able to search for
@@ -88,7 +92,7 @@ working-set structure \cite{iacono:alternatives,badoiu.cole.ea:unified},
 deterministic self-adjusting skiplists \cite{bose.douieb.ea:dynamic},
 layered working-set trees \cite{bose.douieb.ea:layered}, and skip-splay
 trees \cite{derryberry.sleator:skip-splay}.  However, even the most
-efficient of these can only be shown to perform at most $4\log_2 w(x)$
+efficient of these can only be shown to perform at most $4\log w(x)$
 comparisons during a search for $x$.
 
 \section{TodoLists}
@@ -101,28 +105,38 @@ notations like $|\cdot|$, and $\subseteq$ on the lists $L_0,\ldots,L_h$,
 with the obvious interpretations.}
 
 \begin{enumerate}
-\item $|L_0| \le 1$.
-\item $L_i\subseteq L_{i+1}$ for each $i\in\{0,\ldots,h-1\}$.
-\item For each $i\in\{1,\ldots,h\}$ and each pair $x,y$ of consecutive elements in $L_i$, at least one of $x$ or $y$ is in $L_{i-1}$.
-\item $L_k$ contains $x_1,\ldots,x_n$.
+  \item $|L_0| \le 1$.
+  \item $L_i\subseteq L_{i+1}$ for each $i\in\{0,\ldots,h-1\}$.
+  \item For each $i\in\{1,\ldots,h\}$ and each pair $x,y$ of consecutive
+        elements in $L_i$, at least one of $x$ or $y$ is in $L_{i-1}$.
+  \item $L_h$ contains $x_1,\ldots,x_n$.
 \end{enumerate}
 
-The value of $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and at most
-$\lceil \log_{2-\varepsilon} n\rceil+1$ .
+The value of $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and
+at most $\lceil \log_{2-\varepsilon} n\rceil+1$.  The \emph{height} of
+a value, $x$, in a todolist is the number of lists in which $x$ appears.
 
-We will assume that each list $L_i$ contains a \emph{sentinel} node
-at the head of each list. This sentinel does not contain any data.
-We will also assume that, given a pointer to the node containing $x_j$
-in $L_i$, it is possible to find, in constant time, the occurence of $x_j$
-in $L_{i+1}$.  This can be achieved by maintaining an extra pointer or by
-maintaing all occurences of $x_j$ in an array. (See \secref{experiments}
-for a detailed description.)
+We will assume that head of each list $L_i$ is a \emph{sentinel} node that does not contain any data. (See \figref{todolist}.)  We will also
+assume that, given a pointer to the node containing $x_j$ in $L_i$, it is
+possible to find, in constant time, the occurence of $x_j$ in $L_{i+1}$.
+This can be achieved by maintaining an extra pointer or by maintaing
+all occurrences of $x_j$ in an array. (See \secref{implementation} for
+a detailed description.)
+
+\begin{figure}
+  \centering{\includegraphics{example}}
+  \caption{An example of a todolist containing $1,3,4,7,8,9,11$.}
+  \figlabel{todolist}
+\end{figure}
+
+
+
 
 \subsection{Searching}
 
 Searching for a value, $x$, in a todolist is simple. In particular, we
 can find the node, $u$, in $L_h$ that contains the largest value that
-is less than $x$. If $L_h$ has no value less than $x$ than the search
+is less than $x$. If $L_h$ has no value less than $x$ then the search
 finds the sentinel in $L_h$.  We call the node $u$ the \emph{predecessor}
 of $x$ in $L_h$.
 
@@ -134,19 +148,19 @@ the predecessor, $u_1$ of $x$ in $L_1$. (This follows from Property~3.)
 In general, once we know the predecessor of $x$ in $L_i$ we can determine
 the predecessor of $x$ in $L_{i+1}$ using one additional comparison. Thus,
 the total number of comparisons needed to find the predecessor of $x$
-in $L_k$ is only $h+1$.
+in $L_h$ is only $h+1$.
 
 \vspace{1ex}
 \noindent{$\textsc{FindSuccessor}(x)$}
 \begin{algorithmic}
   \STATE{$u_0\gets \mathtt{sentinel}_0$}
-  \FOR{$i=0,\ldots,k$}
+  \FOR{$i=0,\ldots,h$}
     \IF{$\mathrm{next}(u_i)\neq \mathbf{nil}$ and $\mathrm{key}(\mathrm{next}(u_i)) < x$}
       \STATE{$u_i\gets\mathrm{next}(u_i)$}
     \ENDIF
     \STATE{$u_{i+1}\gets\mathrm{down}(u_i)$}
   \ENDFOR
-  \RETURN{$u_k$}
+  \RETURN{$u_h$}
 \end{algorithmic}
 
 \subsection{Adding}
@@ -235,8 +249,8 @@ a partial rebuilding operation on $L_{0},\ldots,L_{h'-1}$.
 
 A standard amortization argument shows that the first and third type
 of global rebuilding contribute only $O(1)$ to the amortized cost of
-each insertion and deletion, respectively.  The same potential argument
-function used to study insertion and deletion works to show that the
+each insertion and deletion, respectively.  The same potential function
+argument used to study insertion and deletion works to show that the
 second type of global rebuilding contributes only $O(\log n)$ to the
 amortized cost of each insertion or deletion.  (Note that this second
 type of global rebuilding is only required to ensure that the size of
@@ -252,27 +266,6 @@ sequence of $N$ add and remove operations takes $O(\eps^{-1}N\log
 N)$ time.
 \end{thm}
 
-%Note that, as a theoretical result, \thmref{todolist} is neither new
-%nor optimal.  The bound on the numbers on the number of comparisons
-%and the running-time is matched, for example, by scapegoat trees
-%\cite{galperin.rivest:blah,andersson:blah}.  Indeed, it is not even
-%optimal: Fagerberg, Lai, and Someone describe variants of 1-2 trees that
-%support all operations in $O(\log n)$ time and perform at most $\log_2
-%n + 1$ comparisons per operation.
-%
-%\thmref{todolist} does compare favourably, however, with some of the
-%more popular structures found in textbooks and in programming libraries,
-%including red-black trees ($2\log_2 n$ comparisons), treaps ($1.38\log_2
-%n$ comparisons), skiplists ($1.88\log_2 n$ comparisons), and splay tree
-%($3\log_2 n$ comparisons).\footnote{The constants listed here for the
-%binary search trees (red-black trees, treaps, scapegoat trees, and splay
-%trees) are for ternary comparisons, which have three possible outcomes:
-%$a<b$, $a>b$, or $a=b$. If only binary comparisons are available, then
-%these constants should be doubled.} In \secref{experiments}, we will see
-%that a careful implementation of todolists actually outperforms all of
-%these data structures in terms of real search times, though the update
-%times are often slower.
-%
 
 \section{Working-TodoLists}
 \seclabel{working-todolist}
@@ -326,7 +319,7 @@ appearances of $x$ in $L_0,\ldots,L_h$.
 \subsection{Searching}
 \seclabel{todolist-search}
 
-Searching in a working-todolist is similar to a search in a todolist.
+Searching in a working-todolist is similar to a searching in a todolist.
 The main
 difference is that Property~5 guarantees that the working-todolist will reach
 a list, $L_i$, that contains $x$ for some $i\le\log_{2-\eps} w(x)$.
@@ -369,16 +362,15 @@ are not incorrectly used during subsequent partial rebuilding operations.
 
 \subsection{Analysis}
 
-This completes the description of the algorithm for searching for an
-element $x$ in a working-todolist.  We have already argued that we find
-a node in some list $L_i$ with $i\in \log_{2-\eps} w(x) + O(\sqrt{\log
-w(x)})$ and that this takes $O(\log w(x))$ time.  The number of comparisons
-needed to reach this stage is
+We have already argued that we find a node containing $x$ in some list
+$L_i$ with $i\in \log_{2-\eps} w(x) + O(\sqrt{\log w(x)})$ and that this
+takes $O(\log w(x))$ time.  The number of comparisons needed to reach
+this stage is
 \[
      \log_{2-\eps} w(x) + O\left(\eps^{-1} + \sqrt{\log w(x)}\right) \enspace .
 \]
-The $O(\eps^{-1})$ term is the cost of searching in $L_0$. The
-$O(\sqrt{\log w(x)})$ term covers one comparison at each of the lists
+The $O(\eps^{-1})$ term is the cost of searching in $L_0$ and the
+$O(\sqrt{\log w(x)})$ term accounts for one comparison at each of the lists
 $L_{\lceil\log_{2-\eps} w(x)\rceil},\ldots,L_i$ as well as the extra
 comparison performed in each of the lists $L_j$ where $j\in\{0,\ldots,i\}$
 is a perfect square.
@@ -387,7 +379,7 @@ After finding $x$ in $L_i$, the algorithm then updates
 $L_0,\ldots,L_{i-1}$ in such a way that Properties~2--5 are maintained.
 All that remains is to show that Property~1 is restored by the partial
 rebuilding operation and to study the amortized cost of this partial
-rebuilding.  We accompish both goals by studying the sizes of the lists
+rebuilding.  We accomplish both these goals by studying the sizes of the lists
 $L_0,\ldots,L_i$ after rebuilding.
 
 Let $n_i=|L_i|$. Then,
@@ -407,7 +399,7 @@ In particular
 \[
     |L_0| \le \eps^{-1} + n_i/2^i \le \eps^{-1} + 1\enspace .
 \]
-Therefore, Property~1 is satsified.
+Therefore, Property~1 is satisfied.
 
 To study the amortized cost of searching for $x$, we use the same
 potential function argument as in \secref{todolist}.  The change in the sizes of the lists is then 
@@ -420,23 +412,12 @@ potential function argument as in \secref{todolist}.  The change in the sizes of
   & \le O((2-\eps)^i/\eps) - (\eps/2)n_i \\
   & \in - \Omega(\eps n_i) & \text{(since $n_i \ge n_{i-1} \ge (2-\eps/2)^{i-1}$)}
 \end{align*}
-Since the cost of rebuilding $L_0,\ldots,L_{i-1}$ is proportional to $O(n_i)$, this implies that the amortized cost of accessing $x$ is $O(\eps^{-1}\log w(x))$.
+Since the cost of rebuilding $L_0,\ldots,L_{i-1}$ is $O(n_i)$, this implies that the amortized cost of accessing $x$ is $O(\eps^{-1}\log w(x))$.
 
 
 \section{Implementation Issues}
 \seclabel{implementation}
 
-To test the performance of the todolist, we implemented it and tested
-it against other comparison-based dictionaries that are popular, either
-in practice (red-black trees) and/or in textbooks (scapegoat trees,
-treaps, and skiplists).  The implementation was done in C++ and all
-the code was written by the third author.\footnote{The implementations of all
-but todolists were adapted from the third author's textbook \cite{morin:open}.}
-The code used to generate all the test data in this section is available
-for download at github.\footnote{The source code is available at \url{https://github.com/patmorin/todolist}. The final version of this paper
-will provide a digital object identifier (DOI) that provides a link to
-the permanent fixed version of the source code that was used to generate
-all data in the final paper.}
 
 As a first attempt, one might try to implement a todolist exactly
 as described in \secref{todolist}, with each list $L_i$ being a
@@ -466,9 +447,9 @@ is proportional to the increase in height; promoting an element from
 level $i$ to level $i-c$ should take $O(c)$ time, not $O(h - i + c)$ time.
 
 The work-around for this problem is to use a standard
-doubling-trick used to implement dynamic arrays (c.f.,
+doubling trick used to implement dynamic arrays (c.f.,
 Morin~\cite[Section~2.1.2]{morin:open}). When a new array for a node
-is allocated to hold $r$ values, its size is set to $r'=2^{\lceil\log_2
+is allocated to hold $r$ values, its size is set to $r'=2^{\lceil\log
 r\rceil}$.  Later, if the height of the node increases, to $r+c$ during
 a partial rebuilding operation, the array only needs to be reallocated
 if $r+c > r'$.  Using this trick, the amortized
@@ -487,20 +468,16 @@ to less than was being performed by these search trees.
 After some reflection, the reason for the disappointing performance of
 searches in todolists (and to a greater extent, in skiplists) became
 apparent, and is due to the fact that accessing a node by following a
-pointer is more expensive than performing a comparison.
+pointer that causes a CPU cache miss is more expensive than performing
+a comparison.
 
 The search path in a todolist has length equal to the number of
 comparisons performed.  However, the set of nodes in the todolist
 that are dereferenced during a search includes nodes not on the
 search path. Indeed, when the outcome of a comparison of the form
 $\mathrm{key}(\mathrm{next}(u)) < x$ is false, the search path proceeds
-to $\mathrm{down}(u)$ and the node $\mathrm{next}(u)$ does not appear
-on the search path.  In a skiplist,
-for example, this implies that there is a node in every list $L_i$
-that is not on the search path but that is inspected during a search.
-This is bad for the performance of skiplists and means that, for example,
-a search inspects about $3\log_2 n$ nodes on average even though the length
-of the search path and the number of comparisons is only $2\log_2 n$.
+to $\mathrm{down}(u)$ and the node $\mathrm{next}(u)$ does not appear on
+the search path.
 
 \subsection{The Solution}
 
@@ -518,21 +495,35 @@ resulting structure is illustrated in \figref{packed-in}.
    \figlabel{packed-in}
 \end{figure}
 
-With this modification, the todolist structure achieves faster search
-times, even with fairly large values of $\eps$ than the tree-based
-structures. Indeed, retrofitting this idea into the skiplist
-implementation improves its performance considerably so that it
-outperforms some (but not all) of the tree-based structures.
+With this modification, todolists achieve faster search times, even with
+fairly large values of $\eps$ than binary search tree structures. Indeed,
+retrofitting this idea into the skiplist implementation improves its
+performance considerably so that it outperforms some (but not all)
+of the tree-based structures.
 
 \subsection{Experiments}
+\seclabel{experiments}
+
+To test the performance of the todolist, we implemented it and tested
+it against other comparison-based dictionaries that are popular, either
+in practice (red-black trees) and/or in textbooks (scapegoat trees,
+treaps, and skiplists).  The implementation was done in C++ and all
+the code was written by the third author.\footnote{The implementations
+of all but todolists were adapted from the third author's textbook
+\cite{morin:open}.} The code used to generate all the test data in this
+section is available for download at github.\footnote{The source code
+is available at \url{https://github.com/patmorin/todolist}. The final
+version of this paper will provide a digital object identifier (DOI)
+that provides a link to the permanent fixed version of the source code
+that was used to generate all data in the final paper.}
 
 The experimental data in this section was obtained from the program
 \texttt{main.cpp} that can be found in the accompanying source code.
-This program was compiled using the command line: \texttt{g++ -Wall -O4 -o
-main main.cpp}. The compiler was the \texttt{gcc} compiler, version
+This program was compiled using the command line: \texttt{g++ -Wall -O4
+-o main main.cpp}. The compiler was the \texttt{gcc} compiler, version
 4.8.2 that ships with the Ubuntu 14.04 Linux distribution.  Tests were
-run on a Dell XPS 13 laptop having 8GB DDR3L-RS 1600 Mhz memory and a
-Intel Core i7-4500U processor with 4M cache and running at 3.0GHz.
+run on a desktop computer having 16GB DDR3 1600MHz memory and a Intel
+Core i5-4670K processor with 6MB L3 cache and running at 3.4GHz.
 
 \subsubsection{Varying $\eps$}
 
@@ -542,22 +533,22 @@ random integers in the set $\{0, 5,\ldots,5(n-1)\}$ were chosen
 (with replacement) and inserted into a todolist. Since dictionaries
 discard duplicates, the resulting todolist contained $906,086$ values.
 This todolist was then searched $m=5n$ times with random integers chosen,
-with replacement, from $\{-2,\ldots,5n+3\}$.  This figure confirms
-that todolists do behave as \thmref{todolist} predicts.  Insertion time
-increases roughly proportionally to $1/\eps$ and search times seem to be
-of the form $c(1+\eps)$ for some constant $c$.
+with replacement, from $\{-2,\ldots,5n+3\}$.  This figure illustrates
+that todolists do behave roughly as \thmref{todolist} predicts.
+Insertion time increases roughly proportionally to $1/\eps$ and search
+times seem to be of the form $c(d+\eps)$ for some constant $c$ and $d$
+(though there is certainly lots of noise in the search times).
 
-In terms of implementation guidance, this figure suggests value of
-$\eps$ below $0.1$ are hard to justify.  There improvement in search
-time does not offset the increase in insertion time.  At the same time,
-values of $\eps$ greater than $0.3$ do not seem to be of much use either
-since they increase the search time and don't decrease the insertion
-time significantly. At some point beyond this, increasing $\eps$
-increases both the insertion time and the search time (since every
-insertion starts with a search).
+In terms of implementation guidance, this figure suggests that values of $\eps$
+below $0.1$ are hard to justify.  The improvement in search time does
+not offset the increase in insertion time.  At the same time, values of
+$\eps$ greater than $0.35$ do not seem to be of much use either since
+they increase the search time and don't decrease the insertion time
+significantly. At some point beyond this, increasing $\eps$ increases
+both the insertion time and the search time (since every insertion starts
+with a search).
 
 \begin{figure}
-  %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
   \centering{\input{experiments/epsilon.tex}}
   \caption{The tradeoff between search time and insertion time as a function of $\eps$.}
    \figlabel{epsilon}
@@ -578,54 +569,60 @@ followed by $5n$ searches.
 
 The timing results for the searches are shown in \figref{bigsearch}. In
 terms of search times, todolists---with $\eps = 0.2$ and $\eps=0.35$
-are the winners---among all the real data structures, and even match
-the performance of the static perfectly-balanced binary search tree.
+are the winners---among all the dynamic data structures, and even match
+the performance of static perfectly-balanced binary search trees fairly
+closely across the range of values for $n$. The next fastest dynamic data
+structure are red-black trees which, for larger $n$ have a search time
+of roughly 1.4 times that of perfectly-balanced binary search trees.
 
-Search times are roughly half the search times in skiplists and about
-80--85\% of the search time of red-black trees, the next fastest dynamic
-data structure.  The improved search time in todolists is mostly due
-to the memory layout.  In these experiments, the average number of
-comparisons done by red-black trees during a search was measured to be
-$\alpha\log_2 n$ for $\alpha\in[1.02,1.03]$.\footnote{This incredibly
-good performance of red-black trees created by inserting random data
-has been observed already by Sedgewick \cite{sedgewick:left-leaning},
-who conjectures that the average depth of a node in a such a tree is
-$\log_2 n-1/2$.} This is substantially less than the number of comparisons
-done by todolists, which is about $1.2\log_2 n$ (for $\eps=.2$) and or
-$1.35\log_2 n$ for ($\eps=.35$). The statically-optimal binary search
-trees also have a similarly efficient memory layout because they algorithm
-that constructs them allocates nodes in the order they are encountered
-in a pre-order traversal. This means that the left child of any node,
-$u$, is typically placed adjacent to $u$ in memory.
+Surprisingly, todolists beat red-black trees because of their memory
+layout, not because they reduce the number of comparisons. In these
+experiments, the average number of comparisons done by red-black
+trees during a search was measured to be $\alpha\log n$ for
+$\alpha\in[1.02,1.03]$.\footnote{This incredibly good performance
+of red-black trees created by inserting random data has been observed
+already by Sedgewick \cite{sedgewick:left-leaning}, who conjectures that
+the average depth of a node in a such a red-black tree is $\log n-1/2$.} This
+is substantially less than the number of comparisons done by todolists,
+which is about $1.2\log n$ (for $\eps=0.2$) and $1.35\log n$ for
+($\eps=0.35$). The optimal binary search trees also have a
+similarly efficient memory layout because the algorithm that constructs
+them allocates nodes in the order they are encountered in a pre-order
+traversal. As side-effect of this is that the left child of any node,
+$u$, is typically placed in a memory location adjacent to $u$.  Thus,
+during a random search, roughly half the steps proceed to an adjacent
+memory location.
 
 \begin{figure}
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
   \centering{\input{experiments/bigtest-find.tex}}
-  \caption{Search time comparison between different data structures.}
+  \centering{\input{experiments/bigtest-find-norm.tex}}
+  \caption{Search time comparison between different data structures. The top figure shows absolute times, in seconds. The bottom figure shows relative times, normalized by the time taken in the optimal search tree.}
    \figlabel{bigsearch}
 \end{figure}
 
 The timing results for the insertions are shown in
 \figref{biginsertion}. This is where the other shoe drops.  Even with
-$\eps=0.35$, insertions take about four times as long in a todolist as in
-a red-black tree and three times as long as a skiplist.  Profiling the
-code shows that approximately 65\% of this time is spent doing partial
-rebuilding and another 6\% is due to global rebuilding.
+$\eps=0.35$, insertions take about three to four times as long in
+a todolist as in a red-black tree.  Profiling the code shows that
+approximately 65\% of this time is spent doing partial rebuilding and
+another 6\% is due to global rebuilding.
 
-One perhaps surprising result is that scapegoat trees, which are also
-based on partial rebuilding, outperform todolists in terms of insertions
-in these tests.  This is because scapegoat trees are opportunistic,
-only performing partial rebuilding when needed to maintain balance.
+One perhaps surprising result is that scapegoat trees, which are
+also based on partial rebuilding, outperform todolists in terms of
+insertions.  This is because scapegoat trees are opportunistic, and
+only perform partial rebuilding when needed to maintain a small height.
 Since these tests perform random insertions, scapegoat trees do very
-little rebuilding.  In a similar that inserts elements in increasing
-order, scapegoat tree insertions were approximately 50\% slower than
+little rebuilding.  In a similar test that inserts elements in increasing
+order, scapegoat tree insertions took approximately 50\% longer than
 todolist insertions.
 
 
 \begin{figure}
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
   \centering{\input{experiments/bigtest-add.tex}}
-  \caption{Insertion time comparison between different data structures.}
+  \centering{\input{experiments/bigtest-add-norm.tex}}
+  \caption{Insertion time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the running time of the red-black tree.}
    \figlabel{biginsertion}
 \end{figure}
 
@@ -649,16 +646,16 @@ of the insertion algorithm used in our experiments is fairly naïve and
 could probably be improved, but it seems unlikely that its performance
 will ever match that of, for example, red-black trees.
 
-Although it's nice that todolists do a number of comparisons that is
-approaching optimality, their memory layout is at least as important to
-their performance.  It would be interesting to know if the memory layout
-and data duplication tricks used in our implementation of todolists could
-be applied to tree-based dictionaries.  The obvious generalization of this
-to binary search trees is to store the tree as a collection of left-paths
-each stored in an array. Such a representation would save a pointer
-dereferencing operation each time the search path went to a left-child.
-It's not immediately clear, however, how such a representation could be
-combined with a tree-balancing scheme.
+%Although it's nice that todolists do a number of comparisons that is
+%approaching optimality, their memory layout is at least as important to
+%their performance.  It would be interesting to know if the memory layout
+%and data duplication tricks used in our implementation of todolists could
+%be applied to tree-based dictionaries.  The obvious generalization of this
+%to binary search trees is to store the tree as a collection of left-paths
+%each stored in an array. Such a representation would save a pointer
+%dereferencing operation each time the search path went to a left-child.
+%It's not immediately clear, however, how such a representation could be
+%combined with a tree-balancing scheme.
 
 \bibliographystyle{plain}
 \bibliography{todolist}
