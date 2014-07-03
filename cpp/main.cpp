@@ -8,6 +8,7 @@
 
 #include <unistd.h>
 
+#include "BinarySearchTree.h"
 #include "ScapegoatTree.h"
 #include "SkiplistSSet.h"
 #include "Treap.h"
@@ -112,11 +113,9 @@ int shuffle_data(size_t i, size_t n) {
 	return (i*sn + i/sn) % n;
 }
 
-// Our main speed testing routine
 template<class Dict>
-void build_and_search(Dict &d, const char *name, size_t n,
-		int (*gen_add)(size_t, size_t), int (*gen_search)(size_t, size_t)) {
-	static int summer;
+void build(Dict &d, const char *name, size_t n,
+		int (*gen_add)(size_t, size_t)) {
 	srand(1);
 	Integer::resetComparisons();
 
@@ -131,17 +130,23 @@ void build_and_search(Dict &d, const char *name, size_t n,
 	cout << name << " ADD " << n << " " << elapsed
 			<< " " << Integer::getComparisons()
 			<< " " << c << endl;
+}
+
+template<class Dict>
+void search(Dict &d, const char *name, size_t n,
+		int (*gen_search)(size_t, size_t)) {
+	static int summer;
 
 	Integer::resetComparisons();
 	long sum = 0;
-	start = clock();
+	clock_t start = clock();
 	for (size_t i = 0; i < 5*n; i++)
 		sum += (int)d.find(gen_search(i, n));
-	stop = clock();
+	clock_t stop = clock();
 
-	elapsed = ((double)(stop-start))/CLOCKS_PER_SEC;
-	avg = ((double)Integer::getComparisons()) / (5*n);
-	c = avg * log(2) / log(d.size());
+	double elapsed = ((double)(stop-start))/CLOCKS_PER_SEC;
+	double avg = ((double)Integer::getComparisons()) / (5*n);
+	double c = avg * log(2) / log(d.size());
 
 	cout << name << " FIND " << n << " " << elapsed
 			<< " " <<  Integer::getComparisons()
@@ -150,21 +155,71 @@ void build_and_search(Dict &d, const char *name, size_t n,
 	summer += sum; // to make sure this isn't optimized away
 }
 
-// Compare the results of performing the same operations on two dictionaries
+
+// Our main speed testing routine
+template<class Dict>
+void build_and_search(Dict &d, const char *name, size_t n,
+		int (*gen_add)(size_t, size_t), int (*gen_search)(size_t, size_t)) {
+	build(d, name, n, gen_add);
+	search(d, name, n, gen_search);
+}
+
 template<class Dict1, class Dict2>
-void test_dicts(Dict1 &d1, Dict2 &d2, int n) {
+void test_build(Dict1 &d1, Dict2 &d2, int n) {
 	srand(1);
 	for (int i = 0; i < n; i++) {
 		int x = rand() % (5*n);
 		assert(d1.add(x) == d2.add(x));
 	}
+}
 
+template<class Dict1, class Dict2>
+void test_search(Dict1 &d1, Dict2 &d2, int n) {
+	srand(2);
 	for (int i = 0; i < 5*n; i++) {
 		int x = rand() % (5*(n+1))-2;
 		assert(d1.find(x) == d2.find(x));
 	}
 }
 
+// Compare the results of performing the same operations on two dictionaries
+template<class Dict1, class Dict2>
+void test_dicts(Dict1 &d1, Dict2 &d2, int n) {
+	test_build(d1, d2, n);
+	test_search(d1, d2, n);
+}
+
+// Return the index of the smallest value that is greater than or equal
+// to x. If no such value exists, then return n0.
+// Warning: n0 must be greater than 0.
+template<class T>
+T binarySearch(T x, T *data, size_t n) {
+	T ans = (T)0;
+	while (n > 0) {
+		size_t m = n/2;
+		if (x < data[m]) {
+			ans = data[m];
+			n = m; // recurse on data[0,...,m-1]
+		} else if (x > data[m]) {
+			data += m+1; // recurse on data[m+1,...n]
+			n -= m+1;
+		} else {
+			return data[m];
+		}
+	}
+	return ans;
+}
+
+template<class T>
+class SortedArray {
+protected:
+	T *data;
+	size_t n;
+public:
+	SortedArray(T *data0, size_t n0) : data(data0), n(n0) {	}
+	int size() { return n; }
+	T find(T x) { return binarySearch(x, data, n); }
+};
 
 void sanity_tests(size_t n) {
 	{
@@ -202,12 +257,73 @@ void sanity_tests(size_t n) {
 		todolist::TodoList4<int> tdl4;
 		test_dicts(tdl2, tdl4, n);
 	}
+	{
+		srand(1);
+		int *data = new int[n];
+		ods::Treap1<int> t;
+		for (size_t i = 0; i < n; i++) {
+			data[i] = rand() % (5*n);
+			t.add(data[i]);
+		}
+		std::sort(data, data+n);
+		size_t unique = 0;
+		for (size_t i = 0; i < n; i++)
+			if (i == 0 || data[i] > data[i-1])
+				data[unique++] = data[i];
+		ods::BinarySearchTree1<int> bst(data, unique);
+		delete[] data;
+		assert(t.size() == bst.size());
+		test_search(t, bst, n);
+	}
+	{
+		srand(1);
+		int *data = new int[n];
+		for (size_t i = 0; i < n; i++)
+			data[i] = rand() % (5*n);
+		std::sort(data, data+n);
+		size_t unique = 0;
+		for (size_t i = 0; i < n; i++)
+			if (i == 0 || data[i] > data[i-1])
+				data[unique++] = data[i];
+		SortedArray<int> sa(data, unique);
+		ods::BinarySearchTree1<int> bst(data, unique);
+		test_search(sa, bst, n);
+		delete[] data;
+	}
+
 }
 
 void usage_error(const char *name) {
-	cerr << "Usage error: you're doing it wrong" << endl;
+	cerr << "Usage: " << name << " <args>+" << endl
+		<< "Possible values of <args> are:" << endl
+		<< " -<n>        : Do tests on inputs of size n" << endl
+		<< " -eps=<eps>  : Set the value of epsilon for todolists and"
+					  << " scapegoat trees" << endl
+		<< " -sanity     : runs sanity tests to ensure correctness" << endl
+		<< " -sequential : use sequential insertions (default is random)"
+		<< endl
+		<< " -requential : use reverse sequential insertions (default is random)"
+		<< endl
+		<< " -shuffled   : use shuffled insertions (sqrt(n) groups)" << endl
+		<< " -bst        : test static balanced binary search tree" << endl
+		<< " -redblack   : test red-black tree (Guibas and Sedgewick)" << endl
+		<< " -treap      : test treap (Aragon and Seidel, Vuillemin)" << endl
+		<< " -skiplist   : test skip list (Pugh)" << endl
+		<< " -scapegoat  : test scapegoat tree (Galperin and Rivest, Andersson)"
+		<< endl
+		<< " -todolist   : test todolist (version 1)" << endl
+		<< " -todolist2  : test todolist (version 2)" << endl
+		<< " -todolist3  : test todolist (version 3)" << endl
+		<< " -todolist4  : test todolist (version 4)" << endl
+		<< " -linkedtodolist : test linked todolist" << endl << endl
+		<< "Consult README for a discussion of different todolist versions."
+		<< endl << endl
+		<< "Example: " << name << " -1000000 -todolist4 -redblack" << endl
+	    << " will test a todolist (version 4) and a red-black tree by performing"
+		<< endl << " 1000000 random insertions and 5000000 random searches." << endl;
 	exit(-1);
 }
+
 
 int main(int argc, char **argv) {
 	if (argc < 2)
@@ -242,6 +358,21 @@ int main(int argc, char **argv) {
 		} else if (strcmp(argv[i], "-shuffled") == 0) {
 			cout << "I: Using shuffled data" << endl;
 			gen_data = requential_data;
+		} else if (strcmp(argv[i], "-bst") == 0) {
+			Integer *data = new Integer[n];
+			srand(1);
+			for (size_t i = 0; i < n; i++)
+				data[i] = gen_data(i, n);
+			std::sort(data, data+n);
+			size_t unique = 0;
+			for (size_t i = 0; i < n; i++)
+				if (i == 0 || data[i] > data[i-1])
+					data[unique++] = data[i];
+			SortedArray<Integer> sa(data, unique);
+			search(sa, "SortedArray", n, gen_search);
+			ods::BinarySearchTree1<Integer> bst(data, unique);
+			delete[] data;
+			search(bst, "BinarySearchTree", n, gen_search);
 		} else if (strcmp(argv[i], "-redblack") == 0) {
 			ods::RedBlackTree1<Integer> rbt;
 			build_and_search(rbt, "RedBlackTree", n, gen_data, gen_search);

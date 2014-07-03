@@ -38,6 +38,8 @@ protected:
 	virtual void rotateRight(Node *u);
 	virtual void rotateLeft(Node *u);
 	virtual bool add(Node *u);
+	Node *buildBalanced(T *data, size_t n);
+	Node *buildBalanced2(T *data, size_t n);
 	// Compute the total path length of the subtree rooted at r
 	int tpl(Node *u, int d) {
 		if (u==nil) return d;
@@ -50,6 +52,7 @@ protected:
 public:
 	BinarySearchTree();
 	BinarySearchTree(T null);
+	BinarySearchTree(T *data, size_t n);
 	virtual ~BinarySearchTree();
 	virtual bool add(T x);
 	virtual bool remove(T x);
@@ -75,6 +78,9 @@ template<class T>
 class BinarySearchTree1 : public BinarySearchTree<BSTNode1<T>, T> {
 public:
 	BinarySearchTree1();
+	BinarySearchTree1(T *data, size_t n)
+	: BinarySearchTree<BSTNode1<T>,T>(data, n) {
+	}
 };
 
 
@@ -98,6 +104,41 @@ template<class Node, class T>
 BinarySearchTree<Node,T>::BinarySearchTree(T null) {
 	this->null = null;
 	n = 0;
+}
+
+template<class Node, class T>
+BinarySearchTree<Node,T>::BinarySearchTree(T *data, size_t n0) {
+	null = (T)0; // FIXME: requires that T have integer consructor
+	r = buildBalanced(data, n0);
+	n = n0;
+}
+
+template<class Node, class T>
+Node* BinarySearchTree<Node,T>::buildBalanced(T *data, size_t n0) {
+	if (n0 == 0) return NULL;
+	size_t m = n0/2;
+	Node *u = new Node;
+	u->x = data[m];
+	u->left = buildBalanced(data, m);
+	assert(u->left == NULL || u->left->x < u->x);
+	u->right = buildBalanced(data+m+1, n0-m-1);
+	assert(u->right == NULL || u->right->x > u->x);
+	return u;
+}
+
+template<class Node, class T>
+Node* BinarySearchTree<Node,T>::buildBalanced2(T *data, size_t n0) {
+	if (n0 == 0) return NULL;
+	size_t m = n0/2;
+	Node *left = buildBalanced(data, m);
+	Node *right = buildBalanced(data+m+1, n0-m-1);
+	Node *u = new Node;
+	u->x = data[m];
+	u->left = left;
+	u->right = right;
+	assert(u->left == NULL || u->left->x < u->x);
+	assert(u->right == NULL || u->right->x > u->x);
+	return u;
 }
 
 template<class Node, class T>
