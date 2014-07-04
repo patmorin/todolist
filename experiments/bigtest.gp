@@ -155,23 +155,23 @@ GNUTERM = "wxt"
 set ylabel "time for $5n$ searches (s)" 
 set key at 80000,9.5
 set output 'bigtest-find.tex'
-plot 'skiplist-find.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-find.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-find.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-find.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 'todolist-0.35-find.dat' using 3:4 title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lc rgb 'orange', 'todolist-0.2-find.dat' using 3:4 title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lc rgb 'purple', 'bst-find.dat' using 3:4 title 'optimal search tree' with lines lt 1 lc rgb 'steelblue', 'sortedarray-find.dat' using 3:4 title 'sorted array' with lines lt 1 lc rgb 'violet',
+plot 'skiplist-find.dat' using 3:4 title 'skiplist' with lines lt 1 lw 2 lc rgb 'red', 'treap-find.dat' using 3:4 title 'treap' with lines lt 1 lw 2 lc rgb 'brown', 'scapegoat-find.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lw 2 lc rgb 'blue', 'redblack-find.dat' using 3:4 title 'red-black tree' with lines lt 1 lw 2 lc rgb 'sea-green', 'todolist-0.35-find.dat' using 3:4 title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lw 2 lc rgb 'orange', 'todolist-0.2-find.dat' using 3:4 title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lw 2 lc rgb 'purple', 'bst-find.dat' using 3:4 title 'optimal search tree' with lines lt 1 lw 2 lc rgb 'steelblue', 'sortedarray-find.dat' using 3:4 title 'sorted array' with lines lt 1 lw 2 lc rgb 'violet',
 
 set ylabel "relative time for $5n$ searches" 
 set key off
 #set key at 20000,4
 set output 'bigtest-find-norm.tex'
-plot 'skiplist-find-norm.dat' title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-find-norm.dat' title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-find-norm.dat' title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-find-norm.dat' title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 'todolist-0.35-find-norm.dat' title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lc rgb 'orange', 'todolist-0.2-find-norm.dat' title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lc rgb 'purple', 'bst-find-norm.dat' title 'optimal search tree' with lines lt 1 lc rgb 'steelblue', 'sortedarray-find-norm.dat' title 'sorted array' with lines lt 1 lc rgb 'violet',
+plot 'skiplist-find-norm.dat' title 'skiplist' with lines lt 1 lw 2 lc rgb 'red', 'treap-find-norm.dat' title 'treap' with lines lt 1 lw 2 lc rgb 'brown', 'scapegoat-find-norm.dat' title 'scapegoat tree' with lines lt 1 lw 2 lc rgb 'blue', 'redblack-find-norm.dat' title 'red-black tree' with lines lt 1 lw 2 lc rgb 'sea-green', 'todolist-0.35-find-norm.dat' title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lw 2 lc rgb 'orange', 'todolist-0.2-find-norm.dat' title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lw 2 lc rgb 'purple', 'bst-find-norm.dat' title 'optimal search tree' with lines lt 1 lw 2 lc rgb 'steelblue', 'sortedarray-find-norm.dat' title 'sorted array' with lines lt 1 lw 2 lc rgb 'violet',
 
 set ylabel "time for $n$ insertions (s)" 
 set key on
 set key at 200000,5.5
 set output 'bigtest-add.tex'
-plot 'todolist-0.2-add.dat' using 3:4 title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lc rgb 'purple', 'todolist-0.35-add.dat' using 3:4 title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lc rgb 'orange', 'skiplist-add.dat' using 3:4 title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-add.dat' using 3:4 title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-add.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-add.dat' using 3:4 title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 
+plot 'todolist-0.2-add.dat' using 3:4 title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lw 2 lc rgb 'purple', 'todolist-0.35-add.dat' using 3:4 title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lw 2 lc rgb 'orange', 'skiplist-add.dat' using 3:4 title 'skiplist' with lines lt 1 lw 2 lc rgb 'red', 'treap-add.dat' using 3:4 title 'treap' with lines lt 1 lw 2 lc rgb 'brown', 'scapegoat-add.dat' using 3:4 title 'scapegoat tree' with lines lt 1 lw 2 lc rgb 'blue', 'redblack-add.dat' using 3:4 title 'red-black tree' with lines lt 1 lw 2 lc rgb 'sea-green', 
 
 set ylabel "relative time for $n$ insertions" 
 set key off
 set output 'bigtest-add-norm.tex'
-plot 'todolist-0.2-add-norm.dat' title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lc rgb 'purple', 'todolist-0.35-add-norm.dat' title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lc rgb 'orange', 'skiplist-add-norm.dat' title 'skiplist' with lines lt 1 lc rgb 'red', 'treap-add-norm.dat' title 'treap' with lines lt 1 lc rgb 'brown', 'scapegoat-add-norm.dat' title 'scapegoat tree' with lines lt 1 lc rgb 'blue', 'redblack-add-norm.dat' title 'red-black tree' with lines lt 1 lc rgb 'sea-green', 
+plot 'todolist-0.2-add-norm.dat' title 'todolist ($\varepsilon=0.2$)' with lines lt 1 lw 2 lc rgb 'purple', 'todolist-0.35-add-norm.dat' title 'todolist ($\varepsilon=0.35$)' with lines lt 1 lw 2 lc rgb 'orange', 'skiplist-add-norm.dat' title 'skiplist' with lines lt 1 lw 2 lc rgb 'red', 'treap-add-norm.dat' title 'treap' with lines lt 1 lw 2 lc rgb 'brown', 'scapegoat-add-norm.dat' title 'scapegoat tree' with lines lt 1 lw 2 lc rgb 'blue', 'redblack-add-norm.dat' title 'red-black tree' with lines lt 1 lw 2 lc rgb 'sea-green', 
  
  #    EOF
