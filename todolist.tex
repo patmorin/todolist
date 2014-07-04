@@ -424,7 +424,7 @@ As a first attempt, one might try to implement a todolist exactly
 as described in \secref{todolist}, with each list $L_i$ being a
 separate singly linked list in which each node has a down pointer to
 the corresponding node in $L_{i+1}$.  However, past experience with
-skiplists suggests (and preliminary experiments confirmed) that this is
+skiplists suggests (and preliminary experiments confirms) that this is
 neither space-efficient nor fast (see the class \texttt{LinkedTodoList}
 in the source code). Instead, we use an implementation idea that appears in
 Pugh's original paper on skiplists \cite{pugh:skip}.
@@ -461,14 +461,14 @@ Our initial implementation did exactly this, and performed well-enough
 to execute searches faster than standard skiplists but was still bested
 by most forms of binary search trees.  This was despite the fact that
 the code for searching was dead-simple, and by decreasing $\eps$ we
-could reduce the height, $h$ (and hence the number of comparisons)
+could reduce the height, $h$, (and hence the number of comparisons)
 to less than was being performed by these search trees.
 
 \subsection{The Problem With Skiplists}
 
 After some reflection, the reason for the disappointing performance of
 searches in todolists (and to a greater extent, in skiplists) became
-apparent, and is due to the fact that accessing a node by following a
+apparent. It is due to the fact that accessing a node by following a
 pointer that causes a CPU cache miss is more expensive than performing
 a comparison.
 
@@ -540,14 +540,14 @@ Insertion time increases roughly proportionally to $1/\eps$ and search
 times seem to be of the form $c(d+\eps)$ for some constant $c$ and $d$
 (though there is certainly lots of noise in the search times).
 
-In terms of implementation guidance, this figure suggests that values of $\eps$
-below $0.1$ are hard to justify.  The improvement in search time does
-not offset the increase in insertion time.  At the same time, values of
-$\eps$ greater than $0.35$ do not seem to be of much use either since
-they increase the search time and don't decrease the insertion time
-significantly. At some point beyond this, increasing $\eps$ increases
-both the insertion time and the search time (since every insertion starts
-with a search).
+In terms of implementation guidance, this figure suggests that values
+of $\eps$ below $0.1$ are hard to justify.  The improvement in search
+time does not offset the increase in insertion time.  At the same
+time, values of $\eps$ greater than $0.35$ do not seem to be of much
+use either since they increase the search time and don't decrease the
+insertion time significantly. At some point beyond this---at around
+$\eps=0.45$---increasing $\eps$ increases both the insertion time and
+the search time (since every insertion starts with a search).
 
 \begin{figure}
   \centering{\input{experiments/epsilon.tex}}
@@ -568,28 +568,29 @@ in increments of $25,000$.   Each individual test followed the same
 pattern as in the previous section and consisted of $n$ insertions
 followed by $5n$ searches.
 
+\paragraph{Searches: Todolists win.}
 The timing results for the searches are shown in \figref{bigsearch}. In
-terms of search times, todolists---with $\eps = 0.2$ and $\eps=0.35$
-are the winners---among all the dynamic data structures, and even match
-the performance of static perfectly-balanced binary search trees fairly
-closely across the range of values for $n$. The next fastest dynamic data
-structure are red-black trees which, for larger $n$ have a search time
-of roughly 1.4 times that of perfectly-balanced binary search trees.
+terms of search times, todolists---with $\eps = 0.2$ and $\eps=0.35$---are
+the winners among all the dynamic data structures, and even match the
+performance of statically-built perfectly-balanced binary search trees.
+The next fastest dynamic data structures are red-black trees which,
+for larger $n$ have a search time of roughly 1.4 times that of
+perfectly-balanced binary search trees.
 
 Surprisingly, todolists beat red-black trees because of their memory
-layout, not because they reduce the number of comparisons. In these
-experiments, the average number of comparisons done by red-black
-trees during a search was measured to be $\alpha\log n$ for
-$\alpha\in[1.02,1.03]$.\footnote{This incredibly good performance
+layout, not because they reduce the number of comparisons. In
+these experiments, the average number of comparisons done by
+red-black trees during a search was measured to be $\alpha\log n$
+for $\alpha\in[1.02,1.03]$.\footnote{This incredibly good performance
 of red-black trees created by inserting random data has been observed
-already by Sedgewick \cite{sedgewick:left-leaning}, who conjectures that
-the average depth of a node in a such a red-black tree is $\log n-1/2$.} This
-is substantially less than the number of comparisons done by todolists,
-which is about $1.2\log n$ (for $\eps=0.2$) and $1.35\log n$ for
-($\eps=0.35$). The optimal binary search trees also have a
+already by Sedgewick \cite{sedgewick:left-leaning}, who conjectures
+that the average depth of a node in a such a red-black tree is $\log
+n-1/2$.} This is substantially less than the number of comparisons done
+by todolists, which is about $1.2\log n$ (for $\eps=0.2$) and $1.35\log
+n$ for ($\eps=0.35$). The optimal binary search trees also have a
 similarly efficient memory layout because the algorithm that constructs
 them allocates nodes in the order they are encountered in a pre-order
-traversal. As side-effect of this is that the left child of any node,
+traversal. A consequence of this is that the left child of any node,
 $u$, is typically placed in a memory location adjacent to $u$.  Thus,
 during a random search, roughly half the steps proceed to an adjacent
 memory location.
@@ -602,6 +603,7 @@ memory location.
    \figlabel{bigsearch}
 \end{figure}
 
+\paragraph{Insertions: Todolists lose.}
 The timing results for the insertions are shown in
 \figref{biginsertion}. This is where the other shoe drops.  Even with
 $\eps=0.35$, insertions take about three to four times as long in
@@ -609,14 +611,14 @@ a todolist as in a red-black tree.  Profiling the code shows that
 approximately 65\% of this time is spent doing partial rebuilding and
 another 6\% is due to global rebuilding.
 
-One perhaps surprising result is that scapegoat trees, which are
-also based on partial rebuilding, outperform todolists in terms of
-insertions.  This is because scapegoat trees are opportunistic, and
-only perform partial rebuilding when needed to maintain a small height.
-Since these tests perform random insertions, scapegoat trees do very
-little rebuilding.  In a similar test that inserts elements in increasing
-order, scapegoat tree insertions took approximately 50\% longer than
-todolist insertions.
+One perhaps surprising result is that scapegoat trees, which are also
+based on partial rebuilding, outperform todolists in terms of insertions.
+This is because scapegoat trees are opportunistic, and only perform
+partial rebuilding when needed to maintain a small height.  Randomly built
+binary search trees have logarithmic depth, so scapegoat trees do very
+little rebuilding in our tests.  In a similar test that inserts elements
+in increasing order, scapegoat tree insertions took approximately 50\%
+longer than todolist insertions.
 
 
 \begin{figure}
@@ -641,11 +643,11 @@ $\frac{1}{2}\log_{2-\eps} n$ pointer dereferencing operations.
 
 On the other hand, todolists leave a lot to be desired in terms of
 insertion and deletion time.  Like other structures that use partial
-rebuilding, the extra work (beyond searching) done during an insertion
-takes time $\Omega(\log n)$, so is non-negligible.  The implementation
-of the insertion algorithm used in our experiments is fairly naïve and
-could probably be improved, but it seems unlikely that its performance
-will ever match that of, for example, red-black trees.
+rebuilding, the restructuring done during an insertion takes time
+$\Omega(\log n)$, so is non-negligible.  The implementation of the
+insertion algorithm used in our experiments is fairly naïve and could
+probably be improved, but it seems unlikely that its performance will
+ever match that of, for example, red-black trees.
 
 
 %Although it's nice that todolists do a number of comparisons that is
