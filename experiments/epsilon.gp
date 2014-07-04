@@ -154,7 +154,7 @@ set fontpath
 set psdir
 set fit noerrorvariables
 GNUTERM = "wxt"
-set key at 0.65,2
+set key at 0.65,1.5
 set key spacing 2
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2
