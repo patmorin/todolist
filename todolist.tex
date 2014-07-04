@@ -1,10 +1,26 @@
-\documentclass[12pt]{patmorin}
+\documentclass{patmorin}
 \usepackage[utf8]{inputenc}
 \listfiles
 \usepackage{amsthm,amsmath,graphicx,wrapfig}
 \usepackage[noend]{algorithmic}
 \usepackage{pat}
 \usepackage{tikz,gnuplot-lua-tikz}
+
+% SODA space-saving crap
+\setlength{\parskip}{0pt}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\topskip}{-.25in}
+\setlength{\topskip}{0in}
+\addtolength{\textheight}{1in}
+\addtolength{\leftmargin}{-.25in}
+\addtolength{\oddsidemargin}{-.25in}
+\addtolength{\evensidemargin}{-.25in}
+\addtolength{\textwidth}{.5in}
+\usepackage[nomarkers,nofiglist]{endfloat}
+\renewcommand{\efloatseparator}{\mbox{}}
+\renewcommand{\efloatseparator}{\vfill}
+\pagestyle{plain}
+\raggedbottom
 
 \hyphenation{todo-list}
 \hyphenation{skip-list}
@@ -123,6 +139,10 @@ possible to find, in constant time, the occurence of $x_j$ in $L_{i+1}$.
 This can be achieved by maintaining an extra pointer or by maintaing
 all occurrences of $x_j$ in an array. (See \secref{implementation} for
 a detailed description.)
+
+\begin{figure*}
+\section*{Appendix: Figures and Graphs}
+\end{figure*}
 
 \begin{figure}
   \centering{\includegraphics{example}}
@@ -628,8 +648,6 @@ longer than todolist insertions.
   \caption{Insertion time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the running time of the red-black tree.}
    \figlabel{biginsertion}
 \end{figure}
-
-
 
 \section{Conclusion}
 

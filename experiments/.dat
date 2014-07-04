@@ -1,0 +1,3 @@
+I: epsilon = 0.2 for ScapegoatTree, TodoList, and LinkedTodoList
+TodoList2 ADD 25000 0.029393 399463 1.10428
+TodoList2 FIND 22688 0.015833 2230262 1.23307
