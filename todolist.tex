@@ -118,7 +118,7 @@ The value of $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and
 at most $\lceil \log_{2-\varepsilon} n\rceil+1$.  The \emph{height} of
 a value, $x$, in a todolist is the number of lists in which $x$ appears.
 
-We will assume that head of each list $L_i$ is a \emph{sentinel} node that does not contain any data. (See \figref{todolist}.)  We will also
+We will assume that the head of each list $L_i$ is a \emph{sentinel} node that does not contain any data. (See \figref{todolist}.)  We will also
 assume that, given a pointer to the node containing $x_j$ in $L_i$, it is
 possible to find, in constant time, the occurence of $x_j$ in $L_{i+1}$.
 This can be achieved by maintaining an extra pointer or by maintaing
