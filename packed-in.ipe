@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
-<ipe version="70005" creator="ipetoipe 7.1.4">
-<info created="D:20140630113044" modified="D:20140630113044"/>
+<ipe version="70005" creator="Ipe 7.1.4">
+<info created="D:20140630113044" modified="D:20140704094044"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -232,7 +232,77 @@ h
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" stroke="black">
+<path layer="alpha" matrix="1 0 0 1 336 48" stroke="lightgray">
+192 736 m
+192 720 l
+208 720 l
+208 736 l
+h
+</path>
+<path matrix="1 0 0 1 336 48" stroke="lightgray">
+208 736 m
+208 720 l
+224 720 l
+224 736 l
+h
+</path>
+<path matrix="1 0 0 1 288 16" stroke="lightgray">
+192 736 m
+192 720 l
+208 720 l
+208 736 l
+h
+</path>
+<path matrix="1 0 0 1 288 16" stroke="lightgray">
+208 736 m
+208 720 l
+224 720 l
+224 736 l
+h
+</path>
+<path matrix="1 0 0 1 192 16" stroke="lightgray">
+192 736 m
+192 720 l
+208 720 l
+208 736 l
+h
+</path>
+<path matrix="1 0 0 1 192 16" stroke="lightgray">
+208 736 m
+208 720 l
+224 720 l
+224 736 l
+h
+</path>
+<path matrix="1 0 0 1 96 48" stroke="lightgray">
+192 736 m
+192 720 l
+208 720 l
+208 736 l
+h
+</path>
+<path matrix="1 0 0 1 96 48" stroke="lightgray">
+208 736 m
+208 720 l
+224 720 l
+224 736 l
+h
+</path>
+<path matrix="1 0 0 1 48 16" stroke="lightgray">
+192 736 m
+192 720 l
+208 720 l
+208 736 l
+h
+</path>
+<path matrix="1 0 0 1 48 16" stroke="lightgray">
+208 736 m
+208 720 l
+224 720 l
+224 736 l
+h
+</path>
+<path stroke="black">
 192 736 m
 192 720 l
 208 720 l
@@ -253,7 +323,6 @@ h
 224 720 l
 h
 </path>
-<text matrix="1 0 0 1 0 4.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$-\infty$</text>
 <use matrix="1 0 0 1 -8 -8" name="mark/disk(sx)" pos="224 736" size="normal" stroke="black"/>
 <path matrix="1 0 0 1 48 0" stroke="black">
 192 736 m
@@ -276,7 +345,7 @@ h
 224 720 l
 h
 </path>
-<text matrix="1 0 0 1 48 4.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$1$</text>
+<text matrix="1 0 0 1 48 4.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$1$</text>
 <use matrix="1 0 0 1 40 -8" name="mark/disk(sx)" pos="224 736" size="normal" stroke="black"/>
 <path stroke="black" arrow="normal/small">
 216 728 m
@@ -303,7 +372,7 @@ h
 224 720 l
 h
 </path>
-<text matrix="1 0 0 1 96 4.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$2$</text>
+<text matrix="1 0 0 1 96 4.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$2$</text>
 <use matrix="1 0 0 1 88 -8" name="mark/disk(sx)" pos="224 736" size="normal" stroke="black"/>
 <path matrix="1 0 0 1 48 0" stroke="black" arrow="normal/small">
 216 728 m
@@ -330,7 +399,7 @@ h
 224 720 l
 h
 </path>
-<text matrix="1 0 0 1 144 4.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$3$</text>
+<text matrix="1 0 0 1 144 4.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$3$</text>
 <use matrix="1 0 0 1 136 -8" name="mark/disk(sx)" pos="224 736" size="normal" stroke="black"/>
 <path matrix="1 0 0 1 96 0" stroke="black" arrow="normal/small">
 216 728 m
@@ -357,7 +426,7 @@ h
 224 720 l
 h
 </path>
-<text matrix="1 0 0 1 192 4.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$4$</text>
+<text matrix="1 0 0 1 192 4.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$4$</text>
 <use matrix="1 0 0 1 184 -8" name="mark/disk(sx)" pos="224 736" size="normal" stroke="black"/>
 <path matrix="1 0 0 1 144 0" stroke="black" arrow="normal/small">
 216 728 m
@@ -384,7 +453,7 @@ h
 224 720 l
 h
 </path>
-<text matrix="1 0 0 1 240 4.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$5$</text>
+<text matrix="1 0 0 1 240 4.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$5$</text>
 <use matrix="1 0 0 1 232 -8" name="mark/disk(sx)" pos="224 736" size="normal" stroke="black"/>
 <path matrix="1 0 0 1 192 0" stroke="black" arrow="normal/small">
 216 728 m
@@ -411,7 +480,7 @@ h
 224 720 l
 h
 </path>
-<text matrix="1 0 0 1 288 4.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$6$</text>
+<text matrix="1 0 0 1 288 4.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$6$</text>
 <use matrix="1 0 0 1 280 -8" name="mark/disk(sx)" pos="224 736" size="normal" stroke="black"/>
 <path matrix="1 0 0 1 240 0" stroke="black" arrow="normal/small">
 216 728 m
@@ -438,7 +507,7 @@ h
 224 720 l
 h
 </path>
-<text matrix="1 0 0 1 336 4.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$7$</text>
+<text matrix="1 0 0 1 336 4.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$7$</text>
 <use matrix="1 0 0 1 328 -8" name="mark/disk(sx)" pos="224 736" size="normal" stroke="black"/>
 <path matrix="1 0 0 1 288 0" stroke="black" arrow="normal/small">
 216 728 m
@@ -641,20 +710,20 @@ h
 456 760 m
 528 760 l
 </path>
-<text matrix="1 0 0 1 -8 20.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$1$</text>
-<text matrix="1 0 0 1 40 20.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$2$</text>
-<text matrix="1 0 0 1 -8 36.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$2$</text>
-<text matrix="1 0 0 1 -8 52.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$2$</text>
-<text matrix="1 0 0 1 -8 68.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$5$</text>
-<text matrix="1 0 0 1 88 20.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$3$</text>
-<text matrix="1 0 0 1 88 36.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$3$</text>
-<text matrix="1 0 0 1 88 52.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$5$</text>
-<text matrix="1 0 0 1 136 20.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$4$</text>
-<text matrix="1 0 0 1 136 36.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$5$</text>
-<text matrix="1 0 0 1 184 20.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$5$</text>
-<text matrix="1 0 0 1 232 20.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$6$</text>
-<text matrix="1 0 0 1 232 36.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$7$</text>
-<text matrix="1 0 0 1 232 52.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$7$</text>
-<text matrix="1 0 0 1 280 20.79" transformations="translations" pos="208 704" stroke="black" type="label" halign="center" valign="baseline">$7$</text>
+<text matrix="1 0 0 1 -8 20.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$1$</text>
+<text matrix="1 0 0 1 40 20.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$2$</text>
+<text matrix="1 0 0 1 -8 36.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$2$</text>
+<text matrix="1 0 0 1 -8 52.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$2$</text>
+<text matrix="1 0 0 1 -8 68.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$5$</text>
+<text matrix="1 0 0 1 88 20.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$3$</text>
+<text matrix="1 0 0 1 88 36.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$3$</text>
+<text matrix="1 0 0 1 88 52.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$5$</text>
+<text matrix="1 0 0 1 136 20.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$4$</text>
+<text matrix="1 0 0 1 136 36.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$5$</text>
+<text matrix="1 0 0 1 184 20.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$5$</text>
+<text matrix="1 0 0 1 232 20.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$6$</text>
+<text matrix="1 0 0 1 232 36.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$7$</text>
+<text matrix="1 0 0 1 232 52.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$7$</text>
+<text matrix="1 0 0 1 280 20.79" transformations="translations" pos="208 704" stroke="black" type="label" width="4.981" height="6.42" depth="0" halign="center" valign="baseline">$7$</text>
 </page>
 </ipe>

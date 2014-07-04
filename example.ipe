@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70005" creator="Ipe 7.1.4">
-<info created="D:20140630113044" modified="D:20140703162023"/>
+<info created="D:20140630113044" modified="D:20140704093302"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -447,31 +447,31 @@ h
 h
 </path>
 <text matrix="1 0 0 1 344 4.79" transformations="translations" pos="208 704" stroke="black" type="label" width="9.963" height="6.42" depth="0" halign="center" valign="baseline">$11$</text>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 216 728 m
 256 728 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 216 744 m
 304 744 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 216 760 m
 304 760 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 216 776 m
 448 776 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 312 760 m
 448 760 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 312 744 m
 352 744 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 312 728 m
 352 728 l
 </path>
@@ -479,27 +479,27 @@ h
 264 728 m
 304 728 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 360 728 m
 400 728 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 360 744 m
 448 744 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 408 728 m
 448 728 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 456 728 m
 496 728 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 456 744 m
 544 744 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" arrow="normal/small">
 456 760 m
 544 760 l
 </path>
