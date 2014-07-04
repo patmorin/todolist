@@ -110,7 +110,7 @@
 
 
 %------------- Use this so pdflatex outputs US letter pages -------------
-\usepackage[dvipsnames]{color}
+\usepackage[dvipsnames]{xcolor}
 \definecolor{linkblue}{named}{Blue}
 \usepackage[letterpaper]{hyperref}
 \hypersetup{
