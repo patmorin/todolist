@@ -633,13 +633,20 @@ longer than todolist insertions.
 
 \section{Conclusion}
 
-If searches are much more frequent than updates, then todolists may
-be the right data structure.  When implemented properly,
-they seem quite difficult to beat in terms of search time.  They
-perform $\log_{2-\eps} n$ comparisons and roughly half these lead to
-a trivial index calculation (incrementing a pointer) to move to the
-next position in an array. Thus, a search in a todolist does only about
-$\frac{1}{2}\log_{2-\eps} n$ pointer dereferencing operations.
+If searches are much more frequent than updates, then todolists may be the
+right data structure to use.  When implemented properly, it's difficult to
+beat their search times.  They perform $\log_{2-\eps} n$ comparisons and
+roughly half these lead to an adjacent array location. Thus, a search
+in a todolist should incurs only about $\frac{1}{2}\log_{2-\eps} n$
+cache misses on average.   $B$-trees \cite{X} and their cache-oblivious
+counterparts \cite{X} can reduce this to $O(\log_B n)$, where $B$ is the
+size of a cache line, but they have considerably higher implementation
+complexity and constants.
+%\footnote{Indeed, red-black trees were
+%designed as a simpler alternative to 2--4-trees and red-black trees
+%are considerably more difficult to implement than todolists. (This
+%is the subject opinion of the second author, but most people who have
+%implemented red-black trees from scratch would agree.)}
 
 On the other hand, todolists leave a lot to be desired in terms of
 insertion and deletion time.  Like other structures that use partial
