@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from __future__ import division
 
 structs={"todolist-0.2", "todolist-0.35", "skiplist", "redblack", "treap",  
