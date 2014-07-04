@@ -8,6 +8,7 @@
 
 \hyphenation{todo-list}
 \hyphenation{skip-list}
+\hyphenation{Sedge-wick}
 
 \newcommand{\eps}{\varepsilon}
 
@@ -59,9 +60,9 @@ including Java's \texttt{TreeMap} and \texttt{TreeSet}, the C++ STL's
 In short, comparison-based dictionaries are so important that any
 new ideas or insights on them are worth exploring.  In this paper,
 we introduce the todolist (\boldx{to}p-\boldx{do}wn skip\boldx{list}),
-a dictionary that is parameterized by a parameter $\eps\in(0,1)$, and
+a dictionary that is parameterized by a parameter $\eps\in(0,1)$, 
 that can execute searches using at most $\log_{2-\eps} n + O(1)$ binary
-comparisons per search and that has amortized update time $O(\eps^{-1}\log
+comparisons per search, and that has amortized update time $O(\eps^{-1}\log
 n)$.  (Note that $\log_{2-\eps} n \le (1+\eps)\log n$ for $\eps < 1/4$.)
 
 As a theoretical result todolists are nothing to get excited about; there
