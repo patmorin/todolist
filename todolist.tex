@@ -23,7 +23,7 @@
   We describe todolists (top-down skiplists), a variant of skiplists
   (Pugh 1990) that can execute searches using at most $\log_{2-\eps} n +
   O(1)$ binary comparisons per search and that have amortized update time
-  $O(\eps^{-1}\log n)$. A variant of todolists, called working-todolists
+  $O(\eps^{-1}\log n)$. A variant of todolists, called working-todolists,
   can execute a search for any element $x$ using $\log_{2-\eps} w(x)
   + o(\log w(x))$ binary comparisons and have amortized search time
   $O(\eps^{-1}\log w(w))$. Here, $w(x)$ is the ``working-set number'' of
@@ -82,7 +82,7 @@ setting we studied, the average depth of a node in a red-black tree
 seems to be $\log n - O(1)$ \cite{sedgewick:left-leaning}.
 
 As a more substantial theoretical contribution, we show that a
-variant of todolists, called working-todolists is able to search for
+variant of todolists, called working-todolists, is able to search for
 an element $x$ using $\log_{2-\eps} w(x)+o(\log w(x))$ comparisons
 in $O(\eps^{-1}\log w(x))$ amortized time.  Here, $w(x)$---the
 working set number of $x$---is loosely defined as the number of
