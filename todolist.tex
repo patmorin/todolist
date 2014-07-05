@@ -86,7 +86,7 @@ variant of todolists, called working-todolists, is able to search for
 an element $x$ using $\log_{2-\eps} w(x)+o(\log w(x))$ comparisons
 in $O(\eps^{-1}\log w(x))$ amortized time.  Here, $w(x)$---the
 working set number of $x$---is loosely defined as the number of
-distinct items accessed since the last time $x$ was accessed. (See
+distinct items accessed since the last time $x$ was accessed (see
 \secref{working-todolist} for a precise definition.)  Previous data
 structures with some variant of this \emph{working-set property}
 include splay trees \cite{sleator.tarjan:self-adjusting}, Iacono's
@@ -120,7 +120,7 @@ a value, $x$, in a todolist is the number of lists in which $x$ appears.
 
 We will assume that the head of each list $L_i$ is a \emph{sentinel} node that does not contain any data. (See \figref{todolist}.)  We will also
 assume that, given a pointer to the node containing $x_j$ in $L_i$, it is
-possible to find, in constant time, the occurence of $x_j$ in $L_{i+1}$.
+possible to find, in constant time, the occurrence of $x_j$ in $L_{i+1}$.
 This can be achieved by maintaining an extra pointer or by maintaing
 all occurrences of $x_j$ in an array. (See \secref{implementation} for
 a detailed description.)
@@ -172,18 +172,18 @@ Adding a new element, $x$, to a todolist is done by searching for it
 using the algorithm outlined above and then splicing $x$ into each of
 the lists $L_0,\ldots,L_h$.  This splicing is easily done in constant
 time per list, since the new nodes containing $x$ appear after the nodes
-$u_0,\ldots,u_h$.  At this point, all of the Properties~2--4 are satisified,
+$u_0,\ldots,u_h$.  At this point, all of the Properties~2--4 are satisfied,
 but Property~1 may be violated since there may be two values in $L_0$.
 
 If there are two values in $L_0$, then we restore Property~1 with the
-following \emph{partial rebuiding} operation: We find the smallest index
+following \emph{partial rebuilding} operation: We find the smallest index
 $i$ such that $|L_i|\le (2-\eps)^i$; such an index always exists since
 $n=|L_h|\le(2-\eps)^h$.  We then rebuild the lists $L_{0},\ldots,L_{i-1}$
 in a bottom up fashion; $L_{i-1}$ gets every second element from $L_i$
 (starting with the second), $L_{i-2}$ gets every second element from
 $L_{i-1}$, and so on down to $L_0$.
 
-Since we take every element from $L_i$ starting with the second element,
+Since we take every other element from $L_i$ starting with the second element,
 after rebuilding we obtain:
 \[
    |L_{i-1}| = \lfloor |L_i|/2 \rfloor \le |L_i|/2
@@ -204,7 +204,8 @@ Adding $x$ to each of $L_0,\ldots,L_h$ increases this potential by
 $C(h+1)=O(C\log n)$.  Rebuilding, if it occurs, takes $O(|L_i|)=O((2-\eps)^i)$
 time, but causes a change in potential of at least
 \begin{align*}
-     \Delta\Phi & = C\sum_{j=0}^i\left(|L_j|/2^{i-j} - (2-\eps)^j\right) \\
+     \Delta\Phi & = C\sum_{j=0}^i\left(|L_j| - (2-\eps)^j\right) \\
+     	& = C\sum_{j=0}^i\left(|L_i|/2^{i-j} - (2-\eps)^j\right) \\ 
           & \le C\sum_{j=0}^{i-1}\left((2-\eps)^i/2^{i-j} - (2-\eps)^j\right) \\
           & \le C\left((2-\eps)^i - \sum_{j=0}^{i-1}(2-\eps)^j\right) \\
           & = C\left((2-\eps)^i - \frac{(2-\eps)^i-(2-\eps)}{1-\eps}\right) \\
@@ -254,12 +255,12 @@ of global rebuilding contribute only $O(1)$ to the amortized cost of
 each insertion and deletion, respectively.  The same potential function
 argument used to study insertion and deletion works to show that the
 second type of global rebuilding contributes only $O(\log n)$ to the
-amortized cost of each insertion or deletion.  (Note that this second
+amortized cost of each insertion or deletion (note that this second
 type of global rebuilding is only required to ensure that the size of
-the data structure remains in $O(n)$.)
+the data structure remains in $O(n)$).
 
 This completes the proof of our first theorem:
-
+{\color{red} We should add something about the running time in this theorem}
 \begin{thm}\thmlabel{todolist}
 For any $\eps >0$, a todolist supports the operations of inserting,
 deleting, and searching using at most $\log_{2-\eps} n + O(1)$ comparisons
