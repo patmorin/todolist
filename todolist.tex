@@ -260,7 +260,6 @@ type of global rebuilding is only required to ensure that the size of
 the data structure remains in $O(n)$).
 
 This completes the proof of our first theorem:
-{\color{red} We should add something about the running time in this theorem}
 \begin{thm}\thmlabel{todolist}
 For any $\eps >0$, a todolist supports the operations of inserting,
 deleting, and searching using at most $\log_{2-\eps} n + O(1)$ comparisons
@@ -385,7 +384,7 @@ rebuilding operation and to study the amortized cost of this partial
 rebuilding.  We accomplish both these goals by studying the sizes of the lists
 $L_0,\ldots,L_i$ after rebuilding.
 
-Let $n_i=|L_i|$. Then,
+Let $n_i=|L_i|$ and recall that $n_i\le (2-\eps/2)^i$. Then,
 the number of elements that make it from $L_i$ into $L_{i-1}$ is 
 \[  |L_{i-1}| \le (2-\eps)^{i-1} + n_i/2 \enspace , \]
 and the number of elements that make it into $L_{i-2}$ is
@@ -395,8 +394,8 @@ and the number of elements that make it into $L_{i-2}$ is
 \end{align*}
 More generally, the number of elements that make it into $L_j$ for any $j\in \{0,\ldots,i-1\}$ is at most
 \begin{align*}
-    |L_j| & \le (2-\eps)^{j} \cdot \sum_{k=0}^{j-i}\left(\frac{2-\eps}{2}\right)^k  + n_i/2^{i-j} \\
-       & \le (2-\eps)^j/\eps + n_j/2^{i-j} \enspace .
+    |L_j| & \le (2-\eps)^{j} \cdot \sum_{k=0}^{i-j-1}\left(\frac{2-\eps}{2}\right)^k  + n_i/2^{i-j} \\
+       & \le (2-\eps)^j/\eps + n_i/2^{i-j} \enspace .
 \end{align*}
 In particular
 \[
@@ -407,7 +406,7 @@ Therefore, Property~1 is satisfied.
 To study the amortized cost of searching for $x$, we use the same
 potential function argument as in \secref{todolist}.  The change in the sizes of the lists is then 
 \begin{align*}
-  \Delta\Phi/C & \le \sum_{j=0}^{i-1}\left((2-\eps)^j/\eps + n_j/2^{i-j} - (2-\eps/2)^j\right) \\
+  \Delta\Phi/C & \le \sum_{j=0}^{i-1}\left((2-\eps)^j/\eps + n_i/2^{i-j} - (2-\eps/2)^j\right) \\
   & \le O((2-\eps)^i/\eps) + n_i - \sum_{j=0}^{i-1}(2-\eps/2)^j \\
   & = O((2-\eps)^i/\eps) + n_i - \frac{(2-\eps/2)^i}{1-\eps/2} + O(1) \\
   & \le O((2-\eps)^i/\eps) + n_i - (1+\eps/2)((2-\eps/2)^i) \\
