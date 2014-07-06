@@ -31,7 +31,14 @@
 \newcommand{\eps}{\varepsilon}
 
 \title{\MakeUppercase{Top-Down Skiplists}}
-\author{Luis Barba and Pat Morin}
+\author{Luis Barba%
+     \thanks{School of Computer Science, Carleton University
+             and Département d'Informatique, 
+             Université Libre de Bruxelles,
+             \email{lbarbafl@ulb.ac.be}}\enspace
+     and Pat Morin%
+     \thanks{School of Computer Science, Carleton University,
+             \email{morin@scs.carleton.ca}}}
 
 \begin{document}
 \begin{titlepage}
@@ -622,7 +629,7 @@ memory location.
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
   \centering{\input{experiments/bigtest-find.tex}}
   \centering{\input{experiments/bigtest-find-norm.tex}}
-  \caption{Search time comparison between different data structures. The top figure shows absolute times, in seconds. The bottom figure shows relative times, normalized by the time taken in the optimal search tree.}
+  \caption{Search time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the time taken in the optimal search tree.}
    \figlabel{bigsearch}
 \end{figure}
 
@@ -654,15 +661,17 @@ longer than todolist insertions.
 
 \section{Conclusion}
 
-If searches are much more frequent than updates, then todolists may be the
-right data structure to use.  When implemented properly, it's difficult to
-beat their search times.  They perform $\log_{2-\eps} n$ comparisons and
-roughly half these lead to an adjacent array location. Thus, a search
-in a todolist should incurs only about $\frac{1}{2}\log_{2-\eps} n$
-cache misses on average.   $B$-trees \cite{X} and their cache-oblivious
-counterparts \cite{X} can reduce this to $O(\log_B n)$, where $B$ is the
-size of a cache line, but they have considerably higher implementation
-complexity and constants.
+If searches are much more frequent than updates, then todolists may
+be the right data structure to use.  When implemented properly, their
+search times are difficult to beat.  They perform $\log_{2-\eps}
+n$ comparisons and roughly half these lead to an adjacent array
+location. Thus, a search in a todolist should incurs only about
+$\frac{1}{2}\log_{2-\eps} n$ cache misses on average.   $B$-trees
+\cite{bayer.mccreight:organization} and their cache-oblivious counterparts
+\cite{bender.demaine.ea:cache-oblivious,bender.duan.ea:locality-preserving}
+can reduce this to $O(\log_B n)$, where $B$ is the size of a cache line,
+but they have considerably higher implementation complexity and running-time
+constants.
 %\footnote{Indeed, red-black trees were
 %designed as a simpler alternative to 2--4-trees and red-black trees
 %are considerably more difficult to implement than todolists. (This
