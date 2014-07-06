@@ -9,7 +9,7 @@ eps=0.2
 
 for n in $ns; do
     for eps in $epsilons; do
-        ../cpp-bin/main -eps=$eps -$n -todolist4 > tmp.dat
+        ./main -eps=$eps -$n -todolist4 > tmp.dat
         grep 'ADD' tmp.dat >> todolist-$eps-add.dat
         grep 'FIND' tmp.dat >> todolist-$eps-find.dat
     done
