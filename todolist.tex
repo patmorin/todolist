@@ -18,9 +18,9 @@
 %\addtolength{\oddsidemargin}{-.25in}
 %\addtolength{\evensidemargin}{-.25in}
 %\addtolength{\textwidth}{.5in}
-\usepackage[nomarkers,nofiglist]{endfloat}
-\renewcommand{\efloatseparator}{\mbox{}}
-\renewcommand{\efloatseparator}{\vfill}
+%\usepackage[nomarkers,nofiglist]{endfloat}
+%\renewcommand{\efloatseparator}{\mbox{}}
+%\renewcommand{\efloatseparator}{\vfill}
 \pagestyle{plain}
 \raggedbottom
 
@@ -149,10 +149,6 @@ possible to find, in constant time, the occurrence of $x_j$ in $L_{i+1}$.
 This can be achieved by maintaining an extra pointer or by maintaing
 all occurrences of $x_j$ in an array. (See \secref{implementation} for
 a detailed description.)
-
-\begin{figure*}
-\section*{Appendix: Figures and Graphs}
-\end{figure*}
 
 \begin{figure}
   \centering{\includegraphics{example}}
@@ -556,6 +552,8 @@ This program was compiled using the command line: \texttt{g++ -Wall -O4
 run on a desktop computer having 16GB DDR3 1600MHz memory and a Intel
 Core i5-4670K processor with 6MB L3 cache and running at 3.4GHz.
 
+\emph{In order to conform with formatting requirements, Figures~\ref{fig:epsilon}--\ref{fig:biginsertion}, which illustrate the data generated in our experiments, are in Appendix~A.}
+
 \subsubsection{Varying $\eps$}
 
 \Figref{epsilon} shows the results of varying the value of $\eps$ from
@@ -578,12 +576,6 @@ use either since they increase the search time and don't decrease the
 insertion time significantly. At some point beyond this---at around
 $\eps=0.45$---increasing $\eps$ increases both the insertion time and
 the search time (since every insertion starts with a search).
-
-\begin{figure}
-  \centering{\input{experiments/epsilon.tex}}
-  \caption{The tradeoff between search time and insertion time as a function of $\eps$.}
-   \figlabel{epsilon}
-\end{figure}
 
 \subsubsection{The Race}
 
@@ -625,14 +617,6 @@ $u$, is typically placed in a memory location adjacent to $u$.  Thus,
 during a random search, roughly half the steps proceed to an adjacent
 memory location.
 
-\begin{figure}
-  %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
-  \centering{\input{experiments/bigtest-find.tex}}
-  \centering{\input{experiments/bigtest-find-norm.tex}}
-  \caption{Search time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the time taken in the optimal search tree.}
-   \figlabel{bigsearch}
-\end{figure}
-
 \paragraph{Insertions: Todolists lose.}
 The timing results for the insertions are shown in
 \figref{biginsertion}. This is where the other shoe drops.  Even with
@@ -650,14 +634,6 @@ little rebuilding in our tests.  In a similar test that inserts elements
 in increasing order, scapegoat tree insertions took approximately 50\%
 longer than todolist insertions.
 
-
-\begin{figure}
-  %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
-  \centering{\input{experiments/bigtest-add.tex}}
-  \centering{\input{experiments/bigtest-add-norm.tex}}
-  \caption{Insertion time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the running time of the red-black tree.}
-   \figlabel{biginsertion}
-\end{figure}
 
 \section{Conclusion}
 
@@ -700,6 +676,33 @@ ever match that of, for example, red-black trees.
 
 \bibliographystyle{plain}
 \bibliography{todolist}
+
+\newpage
+\appendix
+\section{Graphs}
+
+\begin{figure}[hb]
+  \centering{\input{experiments/epsilon.tex}}
+  \caption{The tradeoff between search time and insertion time as a function of $\eps$.}
+   \figlabel{epsilon}
+\end{figure}
+
+\begin{figure}[hb]
+  %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
+  \centering{\input{experiments/bigtest-find.tex}}
+  \centering{\input{experiments/bigtest-find-norm.tex}}
+  \caption{Search time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the time taken in the optimal search tree.}
+   \figlabel{bigsearch}
+\end{figure}
+
+\begin{figure}[hb]
+  %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
+  \centering{\input{experiments/bigtest-add.tex}}
+  \centering{\input{experiments/bigtest-add-norm.tex}}
+  \caption{Insertion time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the running time of the red-black tree.}
+   \figlabel{biginsertion}
+\end{figure}
+
 
 \end{document}
 
