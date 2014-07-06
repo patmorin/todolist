@@ -641,15 +641,17 @@ longer than todolist insertions.
 
 \section{Conclusion}
 
-If searches are much more frequent than updates, then todolists may be the
-right data structure to use.  When implemented properly, it's difficult to
-beat their search times.  They perform $\log_{2-\eps} n$ comparisons and
-roughly half these lead to an adjacent array location. Thus, a search
-in a todolist should incurs only about $\frac{1}{2}\log_{2-\eps} n$
-cache misses on average.   $B$-trees \cite{X} and their cache-oblivious
-counterparts \cite{X} can reduce this to $O(\log_B n)$, where $B$ is the
-size of a cache line, but they have considerably higher implementation
-complexity and constants.
+If searches are much more frequent than updates, then todolists may
+be the right data structure to use.  When implemented properly, their
+search times are difficult to beat.  They perform $\log_{2-\eps}
+n$ comparisons and roughly half these lead to an adjacent array
+location. Thus, a search in a todolist should incurs only about
+$\frac{1}{2}\log_{2-\eps} n$ cache misses on average.   $B$-trees
+\cite{bayer.mccreight:organization} and their cache-oblivious counterparts
+\cite{bender.demaine.ea:cache-oblivious,bender.duan.ea:locality-preserving}
+can reduce this to $O(\log_B n)$, where $B$ is the size of a cache line,
+but they have considerably higher implementation complexity and running-time
+constants.
 %\footnote{Indeed, red-black trees were
 %designed as a simpler alternative to 2--4-trees and red-black trees
 %are considerably more difficult to implement than todolists. (This
