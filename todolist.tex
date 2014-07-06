@@ -24,6 +24,7 @@
 
 \hyphenation{todo-list}
 \hyphenation{skip-list}
+\hyphenation{Sedge-wick}
 
 \newcommand{\eps}{\varepsilon}
 
@@ -38,7 +39,7 @@
   We describe todolists (top-down skiplists), a variant of skiplists
   (Pugh 1990) that can execute searches using at most $\log_{2-\eps} n +
   O(1)$ binary comparisons per search and that have amortized update time
-  $O(\eps^{-1}\log n)$. A variant of todolists, called working-todolists
+  $O(\eps^{-1}\log n)$. A variant of todolists, called working-todolists,
   can execute a search for any element $x$ using $\log_{2-\eps} w(x)
   + o(\log w(x))$ binary comparisons and have amortized search time
   $O(\eps^{-1}\log w(w))$. Here, $w(x)$ is the ``working-set number'' of
@@ -75,9 +76,9 @@ including Java's \texttt{TreeMap} and \texttt{TreeSet}, the C++ STL's
 In short, comparison-based dictionaries are so important that any
 new ideas or insights on them are worth exploring.  In this paper,
 we introduce the todolist (\boldx{to}p-\boldx{do}wn skip\boldx{list}),
-a dictionary that is parameterized by a parameter $\eps\in(0,1)$, and
+a dictionary that is parameterized by a parameter $\eps\in(0,1)$, 
 that can execute searches using at most $\log_{2-\eps} n + O(1)$ binary
-comparisons per search and that has amortized update time $O(\eps^{-1}\log
+comparisons per search, and that has amortized update time $O(\eps^{-1}\log
 n)$.  (Note that $\log_{2-\eps} n \le (1+\eps)\log n$ for $\eps < 1/4$.)
 
 As a theoretical result todolists are nothing to get excited about; there
@@ -97,11 +98,11 @@ setting we studied, the average depth of a node in a red-black tree
 seems to be $\log n - O(1)$ \cite{sedgewick:left-leaning}.
 
 As a more substantial theoretical contribution, we show that a
-variant of todolists, called working-todolists is able to search for
+variant of todolists, called working-todolists, is able to search for
 an element $x$ using $\log_{2-\eps} w(x)+o(\log w(x))$ comparisons
 in $O(\eps^{-1}\log w(x))$ amortized time.  Here, $w(x)$---the
 working set number of $x$---is loosely defined as the number of
-distinct items accessed since the last time $x$ was accessed. (See
+distinct items accessed since the last time $x$ was accessed (see
 \secref{working-todolist} for a precise definition.)  Previous data
 structures with some variant of this \emph{working-set property}
 include splay trees \cite{sleator.tarjan:self-adjusting}, Iacono's
@@ -133,9 +134,9 @@ The value of $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and
 at most $\lceil \log_{2-\varepsilon} n\rceil+1$.  The \emph{height} of
 a value, $x$, in a todolist is the number of lists in which $x$ appears.
 
-We will assume that head of each list $L_i$ is a \emph{sentinel} node that does not contain any data. (See \figref{todolist}.)  We will also
+We will assume that the head of each list $L_i$ is a \emph{sentinel} node that does not contain any data. (See \figref{todolist}.)  We will also
 assume that, given a pointer to the node containing $x_j$ in $L_i$, it is
-possible to find, in constant time, the occurence of $x_j$ in $L_{i+1}$.
+possible to find, in constant time, the occurrence of $x_j$ in $L_{i+1}$.
 This can be achieved by maintaining an extra pointer or by maintaing
 all occurrences of $x_j$ in an array. (See \secref{implementation} for
 a detailed description.)
@@ -172,7 +173,7 @@ the total number of comparisons needed to find the predecessor of $x$
 in $L_h$ is only $h+1$.
 
 \vspace{1ex}
-\noindent{$\textsc{FindSuccessor}(x)$}
+\noindent{$\textsc{FindPredecessor}(x)$}
 \begin{algorithmic}
   \STATE{$u_0\gets \mathtt{sentinel}_0$}
   \FOR{$i=0,\ldots,h$}
@@ -191,18 +192,18 @@ Adding a new element, $x$, to a todolist is done by searching for it
 using the algorithm outlined above and then splicing $x$ into each of
 the lists $L_0,\ldots,L_h$.  This splicing is easily done in constant
 time per list, since the new nodes containing $x$ appear after the nodes
-$u_0,\ldots,u_h$.  At this point, all of the Properties~2--4 are satisified,
+$u_0,\ldots,u_h$.  At this point, all of the Properties~2--4 are satisfied,
 but Property~1 may be violated since there may be two values in $L_0$.
 
 If there are two values in $L_0$, then we restore Property~1 with the
-following \emph{partial rebuiding} operation: We find the smallest index
+following \emph{partial rebuilding} operation: We find the smallest index
 $i$ such that $|L_i|\le (2-\eps)^i$; such an index always exists since
 $n=|L_h|\le(2-\eps)^h$.  We then rebuild the lists $L_{0},\ldots,L_{i-1}$
 in a bottom up fashion; $L_{i-1}$ gets every second element from $L_i$
 (starting with the second), $L_{i-2}$ gets every second element from
 $L_{i-1}$, and so on down to $L_0$.
 
-Since we take every element from $L_i$ starting with the second element,
+Since we take every other element from $L_i$ starting with the second element,
 after rebuilding we obtain:
 \[
    |L_{i-1}| = \lfloor |L_i|/2 \rfloor \le |L_i|/2
@@ -223,7 +224,8 @@ Adding $x$ to each of $L_0,\ldots,L_h$ increases this potential by
 $C(h+1)=O(C\log n)$.  Rebuilding, if it occurs, takes $O(|L_i|)=O((2-\eps)^i)$
 time, but causes a change in potential of at least
 \begin{align*}
-     \Delta\Phi & = C\sum_{j=0}^i\left(|L_j|/2^{i-j} - (2-\eps)^j\right) \\
+     \Delta\Phi & = C\sum_{j=0}^i\left(|L_j| - (2-\eps)^j\right) \\
+     	& = C\sum_{j=0}^i\left(|L_i|/2^{i-j} - (2-\eps)^j\right) \\ 
           & \le C\sum_{j=0}^{i-1}\left((2-\eps)^i/2^{i-j} - (2-\eps)^j\right) \\
           & \le C\left((2-\eps)^i - \sum_{j=0}^{i-1}(2-\eps)^j\right) \\
           & = C\left((2-\eps)^i - \frac{(2-\eps)^i-(2-\eps)}{1-\eps}\right) \\
@@ -231,7 +233,7 @@ time, but causes a change in potential of at least
            & \text{(since $1/(1-\eps)>1+\eps$)} \\
           & = -C\eps(2-\eps)^i + O(C) \\
 \end{align*}
-Therefore, by setting $C=c/\eps$ units for a sufficiently large constant,
+Therefore, by setting $C=c/\eps$ for a sufficiently large constant,
 $c$, the decrease in potential is greater than the cost of rebuilding.
 We conclude that the amortized cost of adding an element $x$ is $O(C\log
 n)=O(\eps^{-1}\log n)$.
@@ -273,12 +275,11 @@ of global rebuilding contribute only $O(1)$ to the amortized cost of
 each insertion and deletion, respectively.  The same potential function
 argument used to study insertion and deletion works to show that the
 second type of global rebuilding contributes only $O(\log n)$ to the
-amortized cost of each insertion or deletion.  (Note that this second
+amortized cost of each insertion or deletion (note that this second
 type of global rebuilding is only required to ensure that the size of
-the data structure remains in $O(n)$.)
+the data structure remains in $O(n)$).
 
 This completes the proof of our first theorem:
-
 \begin{thm}\thmlabel{todolist}
 For any $\eps >0$, a todolist supports the operations of inserting,
 deleting, and searching using at most $\log_{2-\eps} n + O(1)$ comparisons
@@ -403,7 +404,7 @@ rebuilding operation and to study the amortized cost of this partial
 rebuilding.  We accomplish both these goals by studying the sizes of the lists
 $L_0,\ldots,L_i$ after rebuilding.
 
-Let $n_i=|L_i|$. Then,
+Let $n_i=|L_i|$ and recall that $n_i\le (2-\eps/2)^i$. Then,
 the number of elements that make it from $L_i$ into $L_{i-1}$ is 
 \[  |L_{i-1}| \le (2-\eps)^{i-1} + n_i/2 \enspace , \]
 and the number of elements that make it into $L_{i-2}$ is
@@ -413,8 +414,8 @@ and the number of elements that make it into $L_{i-2}$ is
 \end{align*}
 More generally, the number of elements that make it into $L_j$ for any $j\in \{0,\ldots,i-1\}$ is at most
 \begin{align*}
-    |L_j| & \le (2-\eps)^{j} \cdot \sum_{k=0}^{j-i}\left(\frac{2-\eps}{2}\right)^k  + n_i/2^{i-j} \\
-       & \le (2-\eps)^j/\eps + n_j/2^{i-j} \enspace .
+    |L_j| & \le (2-\eps)^{j} \cdot \sum_{k=0}^{i-j-1}\left(\frac{2-\eps}{2}\right)^k  + n_i/2^{i-j} \\
+       & \le (2-\eps)^j/\eps + n_i/2^{i-j} \enspace .
 \end{align*}
 In particular
 \[
@@ -425,7 +426,7 @@ Therefore, Property~1 is satisfied.
 To study the amortized cost of searching for $x$, we use the same
 potential function argument as in \secref{todolist}.  The change in the sizes of the lists is then 
 \begin{align*}
-  \Delta\Phi/C & \le \sum_{j=0}^{i-1}\left((2-\eps)^j/\eps + n_j/2^{i-j} - (2-\eps/2)^j\right) \\
+  \Delta\Phi/C & \le \sum_{j=0}^{i-1}\left((2-\eps)^j/\eps + n_i/2^{i-j} - (2-\eps/2)^j\right) \\
   & \le O((2-\eps)^i/\eps) + n_i - \sum_{j=0}^{i-1}(2-\eps/2)^j \\
   & = O((2-\eps)^i/\eps) + n_i - \frac{(2-\eps/2)^i}{1-\eps/2} + O(1) \\
   & \le O((2-\eps)^i/\eps) + n_i - (1+\eps/2)((2-\eps/2)^i) \\
