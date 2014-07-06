@@ -9,7 +9,7 @@ eps=0.2
 
 for n in $ns; do
     for d in $structs; do
-        ../cpp-bin/main -eps=$eps -$n -$d > tmp.dat
+        ./main -eps=$eps -$n -$d > tmp.dat
         grep 'ADD' tmp.dat >> $d-add.dat
         grep 'FIND' tmp.dat >> $d-find.dat
     done
