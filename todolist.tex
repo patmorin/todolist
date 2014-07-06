@@ -13,7 +13,14 @@
 \newcommand{\eps}{\varepsilon}
 
 \title{\MakeUppercase{Top-Down Skiplists}}
-\author{Luis Barba and Pat Morin}
+\author{Luis Barba%
+     \thanks{School of Computer Science, Carleton University
+             and Département d'Informatique, 
+             Université Libre de Bruxelles,
+             \email{lbarbafl@ulb.ac.be}}\enspace
+     and Pat Morin%
+     \thanks{School of Computer Science, Carleton University,
+             \email{morin@scs.carleton.ca}}}
 
 \begin{document}
 \begin{titlepage}
@@ -600,7 +607,7 @@ memory location.
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
   \centering{\input{experiments/bigtest-find.tex}}
   \centering{\input{experiments/bigtest-find-norm.tex}}
-  \caption{Search time comparison between different data structures. The top figure shows absolute times, in seconds. The bottom figure shows relative times, normalized by the time taken in the optimal search tree.}
+  \caption{Search time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the time taken in the optimal search tree.}
    \figlabel{bigsearch}
 \end{figure}
 
