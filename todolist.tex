@@ -67,7 +67,7 @@ Comparison-based dictionaries supporting the three \emph{basic
 operations} insert, delete and search represent \emph{the} classic
 data-structuring problem in computer science.  Data structures that
 support each of these operations in $O(\log n)$ time have been known
-since the introduction of AVL trees more than half a centry ago
+since the introduction of AVL trees more than half a century ago
 \cite{adelson-velskii.landis:algorithm}.  Since then, many competing
 implementations of dictionaries have been proposed, including
 red-black trees \cite{guibas.sedgewick:dichromatic}, splay trees
@@ -83,7 +83,7 @@ including Java's \texttt{TreeMap} and \texttt{TreeSet}, the C++ STL's
 \texttt{set}, and Python's \texttt{OrderedDict}.
 
 In short, comparison-based dictionaries are so important that any
-new ideas or insights on them are worth exploring.  In this paper,
+new ideas or insights about them are worth exploring.  In this paper,
 we introduce the todolist (\boldx{to}p-\boldx{do}wn skip\boldx{list}),
 a dictionary that is parameterized by a parameter $\eps\in(0,1)$, 
 that can execute searches using at most $\log_{2-\eps} n + O(1)$ binary
@@ -93,7 +93,7 @@ n)$.  (Note that $\log_{2-\eps} n \le (1+\eps)\log n$ for $\eps < 1/4$.)
 As a theoretical result todolists are nothing to get excited about; there
 already exist comparison-based dictionaries with $O(\log n)$ time for all
 operations that perform at most $\lceil\log n\rceil+1$ comparisons per
-operation \cite{andersson.lai:fast,fagerberg:binary}. Here, and throughout,
+operation \cite{andersson.lai:fast,fagerberg:binary}. (Here, and throughout,
 $\log n=\log_2 n$ denotes the binary logarithm of $n$. However, todolists
 are based on a new idea---top-down partial rebuilding of skiplists---and
 our experimental results show that a careful implementation of todolists
@@ -146,7 +146,7 @@ a value, $x$, in a todolist is the number of lists in which $x$ appears.
 We will assume that the head of each list $L_i$ is a \emph{sentinel} node that does not contain any data. (See \figref{todolist}.)  We will also
 assume that, given a pointer to the node containing $x_j$ in $L_i$, it is
 possible to find, in constant time, the occurrence of $x_j$ in $L_{i+1}$.
-This can be achieved by maintaining an extra pointer or by maintaing
+This can be achieved by maintaining an extra pointer or by maintaining
 all occurrences of $x_j$ in an array. (See \secref{implementation} for
 a detailed description.)
 
@@ -363,7 +363,7 @@ time we reach the list $L_{i'}$ for
 
 Once we find $x$ in some list $L_{i'}$, we move it to the front of $Q$;
 this takes only constant time since the node containing $x$ in $L_{i'}$
-is crosslinked with $x$'s occurrence in $Q$.  Next, we insert $x$ into
+is cross-linked with $x$'s occurrence in $Q$.  Next, we insert $x$ into
 $L_0,\ldots,L_{i'-1}$.  As with insertion in a todolist, this takes only
 constant time for each list $L_j$, since we have already seen the predecessor
 of $x$ in $L_j$ while searching for $x$.  
@@ -576,6 +576,7 @@ use either since they increase the search time and don't decrease the
 insertion time significantly. At some point beyond this---at around
 $\eps=0.45$---increasing $\eps$ increases both the insertion time and
 the search time (since every insertion starts with a search).
+
 
 \subsubsection{The Race}
 
