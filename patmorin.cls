@@ -31,7 +31,7 @@
 \ProcessOptions
 
 % Read the article class
-\LoadClass[12pt,letterpaper]{article}
+\LoadClass[11pt,letterpaper]{article}
 \linespread{1.166666667}  % 12pt font with 16.8pt baselineskip
 \RequirePackage{kpfonts}
 \RequirePackage[sf,bf,small,raggedright,compact]{titlesec}
