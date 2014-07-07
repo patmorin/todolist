@@ -106,8 +106,7 @@ found in programming libraries. This is no small feat since, in the
 setting we studied, the average depth of a node in a red-black tree
 seems to be $\log n - O(1)$ \cite{sedgewick:left-leaning}.
 
-As a more substantial theoretical contribution, we show that a
-variant of todolists, called working-todolists, is able to search for
+As a more substantial theoretical contribution, we show that a variant of todolists, called working-todolists, is able to search for
 an element $x$ using $\log_{2-\eps} w(x)+o(\log w(x))$ comparisons
 in $O(\eps^{-1}\log w(x))$ amortized time.  Here, $w(x)$---the
 working set number of $x$---is loosely defined as the number of
@@ -437,7 +436,7 @@ potential function argument as in \secref{todolist}.  The change in the sizes of
   & \le O((2-\eps)^i/\eps) + n_i - (1+\eps/2)((2-\eps/2)^i) \\
   & \le O((2-\eps)^i/\eps) + n_i - (1+\eps/2)n_i \\
   & \le O((2-\eps)^i/\eps) - (\eps/2)n_i \\
-  & \in - \Omega(\eps n_i) & \text{(since $n_i \ge n_{i-1} \ge (2-\eps/2)^{i-1}$)}
+  & = - \Omega(\eps n_i) & \text{(since $n_i \ge n_{i-1} \ge (2-\eps/2)^{i-1}$)}
 \end{align*}
 Since the cost of rebuilding $L_0,\ldots,L_{i-1}$ is $O(n_i)$, this implies that the amortized cost of accessing $x$ is $O(\eps^{-1}\log w(x))$.
 
@@ -453,7 +452,7 @@ the corresponding node in $L_{i+1}$.  However, past experience with
 skiplists suggests (and preliminary experiments confirms) that this is
 neither space-efficient nor fast (see the class \texttt{LinkedTodoList}
 in the source code). Instead, we use an implementation idea that appears in
-Pugh's original paper on skiplists \cite{pugh:skip}.
+Pugh's original paper on skiplists~\cite{pugh:skip}.
 
 \subsection{Nodes as Arrays}
 
@@ -465,7 +464,7 @@ these lists.
 
 One complication occurs in implementing arrays of next pointers in a
 todolist that is not present in a skiplist.  During a partial rebuilding
-operation, the height of elements in a todolist change, which means
+operation, the heights of elements in a todolist change, which means
 that their arrays need to be reallocated.  The cost of reallocating and
 initializing an array is proportional to the length of the array. However,
 the amortization argument used in \secref{insertion}, requires that the
@@ -535,8 +534,8 @@ To test the performance of todolists, we implemented them and tested
 them against other comparison-based dictionaries that are popular, either
 in practice (red-black trees) and/or in textbooks (scapegoat trees,
 treaps, and skiplists).  The implementation was done in C++ and all
-the code was written by the third author.\footnote{The implementations
-of all but todolists were adapted from the third author's textbook
+the code was written by the second author.\footnote{The implementations
+of all but todolists were adapted from the second author's textbook
 \cite{morin:open}.} The code used to generate all the test data in this
 section is available for download at github.\footnote{The source code
 is available at \url{https://github.com/patmorin/todolist}. The final
