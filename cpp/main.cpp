@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iterator>
 #include <set>
+#include <chrono>
 
 #include <unistd.h>
 
@@ -120,15 +121,15 @@ void build(Dict &d, const char *name, size_t n,
 	srand(1);
 	Integer::resetComparisons();
 
-	clock_t start = clock();
+	auto start = std::chrono::high_resolution_clock::now();
 	for (size_t i = 0; i < n; i++)
 		d.add(gen_add(i, n));
-	clock_t stop = clock();
+	auto stop = std::chrono::high_resolution_clock::now();
 
-	double elapsed = ((double)(stop-start))/CLOCKS_PER_SEC;
+	std::chrono::duration<double> elapsed = stop-start;
 	double avg = ((double)Integer::getComparisons()) / n;
 	double c = avg * log(2) / log(d.size());
-	cout << name << " ADD " << n << " " << elapsed
+	cout << name << " ADD " << n << " " << elapsed.count()
 			<< " " << Integer::getComparisons()
 			<< " " << c << endl;
 }
@@ -140,16 +141,16 @@ void search(Dict &d, const char *name, size_t n,
 
 	Integer::resetComparisons();
 	long sum = 0;
-	clock_t start = clock();
+	auto start = std::chrono::high_resolution_clock::now();
 	for (size_t i = 0; i < 5*n; i++)
 		sum += (int)d.find(gen_search(i, n));
-	clock_t stop = clock();
+	auto stop = std::chrono::high_resolution_clock::now();
 
-	double elapsed = ((double)(stop-start))/CLOCKS_PER_SEC;
+	std::chrono::duration<double> elapsed = stop - start;
 	double avg = ((double)Integer::getComparisons()) / (5*n);
 	double c = avg * log(2) / log(d.size());
 
-	cout << name << " FIND " << n << " " << elapsed
+	cout << name << " FIND " << n << " " << elapsed.count()
 			<< " " <<  Integer::getComparisons()
 			<< " " << c << endl;
 
