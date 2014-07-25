@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <set>
 
 #include <unistd.h>
 
@@ -221,6 +222,24 @@ public:
 	T find(T x) { return binarySearch(x, data, n); }
 };
 
+template<class T>
+class StlSet {
+protected:
+public:
+	std::set<T> s;
+
+	bool add(T x) { return s.insert(x).second; }
+
+	int size() { return s.size(); }
+
+	T find(T x) {
+		typename std::set<T>::iterator it = s.lower_bound(x);
+		if (it == s.end()) return (T)0;
+		return *it;
+	}
+
+};
+
 void sanity_tests(size_t n) {
 	{
 		todolist::TodoList4<int> tdl4;
@@ -254,8 +273,13 @@ void sanity_tests(size_t n) {
 	}
 	{
 		todolist::TodoList2<int> tdl2;
+		StlSet<int> s;
+		test_dicts(tdl2, s, n);
+	}
+	{
+		StlSet<int> s;
 		todolist::TodoList4<int> tdl4;
-		test_dicts(tdl2, tdl4, n);
+		test_dicts(s, tdl4, n);
 	}
 	{
 		srand(1);
@@ -293,6 +317,7 @@ void sanity_tests(size_t n) {
 
 }
 
+
 void usage_error(const char *name) {
 	cerr << "Usage: " << name << " <args>+" << endl
 		<< "Possible values of <args> are:" << endl
@@ -306,6 +331,7 @@ void usage_error(const char *name) {
 		<< endl
 		<< " -shuffled   : use shuffled insertions (sqrt(n) groups)" << endl
 		<< " -bst        : test static balanced binary search tree" << endl
+		<< " -set        : test STL set implementation" << endl
 		<< " -redblack   : test red-black tree (Guibas and Sedgewick)" << endl
 		<< " -treap      : test treap (Aragon and Seidel, Vuillemin)" << endl
 		<< " -skiplist   : test skip list (Pugh)" << endl
@@ -347,7 +373,7 @@ int main(int argc, char **argv) {
 		} else if (strcmp(argv[i], "-sanity") == 0) {
 			cout << "I: Doing sanity tests...";
 			cout.flush();
-			sanity_tests(n); // FIXME: reset to n when done testing
+			sanity_tests(n);
 			cout << "done" << endl;
 		} else if (strcmp(argv[i], "-sequential") == 0) {
 			cout << "I: Using sequential data" << endl;
@@ -373,6 +399,9 @@ int main(int argc, char **argv) {
 			ods::BinarySearchTree1<Integer> bst(data, unique);
 			delete[] data;
 			search(bst, "BinarySearchTree", n, gen_search);
+		} else if (strcmp(argv[i], "-set") == 0) {
+			StlSet<Integer> s;
+			build_and_search(s, "STLSet", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-redblack") == 0) {
 			ods::RedBlackTree1<Integer> rbt;
 			build_and_search(rbt, "RedBlackTree", n, gen_data, gen_search);
