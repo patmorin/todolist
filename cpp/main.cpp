@@ -331,7 +331,7 @@ void usage_error(const char *name) {
 		<< endl
 		<< " -shuffled   : use shuffled insertions (sqrt(n) groups)" << endl
 		<< " -bst        : test static balanced binary search tree" << endl
-		<< " -set        : test STL set implementation" << endl
+		<< " -stlset     : test STL set implementation" << endl
 		<< " -redblack   : test red-black tree (Guibas and Sedgewick)" << endl
 		<< " -treap      : test treap (Aragon and Seidel, Vuillemin)" << endl
 		<< " -skiplist   : test skip list (Pugh)" << endl
@@ -399,7 +399,7 @@ int main(int argc, char **argv) {
 			ods::BinarySearchTree1<Integer> bst(data, unique);
 			delete[] data;
 			search(bst, "BinarySearchTree", n, gen_search);
-		} else if (strcmp(argv[i], "-set") == 0) {
+		} else if (strcmp(argv[i], "-stlset") == 0) {
 			StlSet<Integer> s;
 			build_and_search(s, "STLSet", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-redblack") == 0) {

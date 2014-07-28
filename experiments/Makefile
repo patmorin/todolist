@@ -4,7 +4,8 @@ all : bigtest-find.tex epsilon.tex
 
 data : 
 	rm -f *.dat
-	(cd ../cpp ; g++ -O4 -o ../experiments/main main.cpp)
+	(cd ../cpp ; make) 
+	cp ../cpp/main .
 	./test-epsilons.sh
 	./test-all.sh
 	./test-static.sh

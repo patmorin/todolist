@@ -512,23 +512,29 @@ of the tree-based structures.
 \subsection{Experiments}
 \seclabel{experiments}
 
-To test the performance of todolists, we implemented them and tested
-them against other comparison-based dictionaries that are popular, either
-in practice (red-black trees) and/or in textbooks (scapegoat trees,
-treaps, and skiplists).  The implementation was done in C++ and all
-the code was written by the second author.\footnote{The implementations
-of all but todolists were adapted from the second author's textbook
-\cite{morin:open}.} The code used to generate all the test data in this
-section is available for download at github.\footnote{The source code
-is available at \url{https://github.com/patmorin/todolist}. The final
-version of this paper will provide a digital object identifier (DOI)
-that provides a link to the permanent fixed version of the source code
-that was used to generate all data in the final paper.}
+To test the performance of todolists, we implemented them and tested them
+against other comparison-based dictionaries that are popular, either in
+practice (red-black trees) and/or in textbooks (scapegoat trees, treaps,
+and skiplists).  The implementation of all data structures was done in
+C++ and all the code was written by the second author.\footnote{The
+implementations of all but todolists were adapted from the second
+author's textbook \cite{morin:open}.}  To ensure that this code is
+comparable to so-called industrial strength C++ code, the tests also
+include the C++ Standard Template Library \texttt{set} class that comes
+as part of \texttt{libsdc++}.  This \texttt{set} class is implemented
+as a red-black tree and performed indistinguishably from our red-black
+tree implementation.
+
+The code used to generate all the test data in this section is available
+for download at github.\footnote{The source code is available at
+\url{https://github.com/patmorin/todolist}. The final version of this
+paper will provide a digital object identifier (DOI) that provides a
+link to the permanent fixed version of the source code that was used to
+generate all data in the final paper.}
 
 The experimental data in this section was obtained from the program
 \texttt{main.cpp} that can be found in the accompanying source code.
-This program was compiled using the command line: \texttt{g++ -Wall -O4
--o main main.cpp}. The compiler was the \texttt{gcc} compiler, version
+This program was compiled using the command line: \texttt{g++ -std=c++11 -Wall -O4 -o main main.cpp}. The compiler was the \texttt{gcc} compiler, version
 4.8.2 that ships with the Ubuntu 14.04 Linux distribution.  Tests were
 run on a desktop computer having 16GB DDR3 1600MHz memory and a Intel
 Core i5-4670K processor with 6MB L3 cache and running at 3.4GHz.
