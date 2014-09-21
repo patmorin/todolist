@@ -125,23 +125,22 @@ comparisons during a search for $x$.
 \seclabel{todolist}
 
 A \emph{todolist} for the values $x_1<x_2<\cdots<x_n$ consists of a
-nested sequence of $h+1$ sorted singly-linked lists, $L_0,\ldots,L_h$,
-having the following properties:\footnote{Here and throughout, we use set
+nested sequence of $h+1$ sorted singly-linked lists, $L_0,\ldots,L_h$, such that $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and
+at most $\lceil \log_{2-\varepsilon} n\rceil+1$ for some $\varepsilon >0$. 
+Moreover, these lists have the following properties:\footnote{Here and throughout, we use set
 notations like $|\cdot|$, and $\subseteq$ on the lists $L_0,\ldots,L_h$,
 with the obvious interpretations.}
 
 \begin{enumerate}
-  \item $|L_0| \le 1$.
+  \item $|L_0| \le 1$. 
   \item $L_i\subseteq L_{i+1}$ for each $i\in\{0,\ldots,h-1\}$.
   \item For each $i\in\{1,\ldots,h\}$ and each pair $x,y$ of consecutive
         elements in $L_i$, at least one of $x$ or $y$ is in $L_{i-1}$.
   \item $L_h$ contains $x_1,\ldots,x_n$.
 \end{enumerate}
 
-The value of $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and
-at most $\lceil \log_{2-\varepsilon} n\rceil+1$.  The \emph{height} of
+The \emph{height} of
 a value, $x$, in a todolist is the number of lists in which $x$ appears.
-
 We will assume that the head of each list $L_i$ is a \emph{sentinel} node that does not contain any data. (See \figref{todolist}.)  We will also
 assume that, given a pointer to the node containing $x_j$ in $L_i$, it is
 possible to find, in constant time, the occurrence of $x_j$ in $L_{i+1}$.
@@ -201,8 +200,9 @@ but Property~1 may be violated since there may be two values in $L_0$.
 
 If there are two values in $L_0$, then we restore Property~1 with the
 following \emph{partial rebuilding} operation: We find the smallest index
-$i$ such that $|L_i|\le (2-\eps)^i$; such an index always exists since
-$n=|L_h|\le(2-\eps)^h$.  We then rebuild the lists $L_{0},\ldots,L_{i-1}$
+$i$ such that $|L_i|\le (2-\eps)^i$. Because
+$\lceil \log_{2-\varepsilon} n\rceil\leq h$, it holds that $n=|L_h|\le(2-\eps)^h$ and hence, such and index always exists.  
+We then rebuild the lists $L_{0},\ldots,L_{i-1}$
 in a bottom up fashion; $L_{i-1}$ gets every second element from $L_i$
 (starting with the second), $L_{i-2}$ gets every second element from
 $L_{i-1}$, and so on down to $L_0$.
@@ -229,7 +229,7 @@ $C(h+1)=O(C\log n)$.  Rebuilding, if it occurs, takes $O(|L_i|)=O((2-\eps)^i)$
 time, but causes a change in potential of at least
 \begin{align*}
      \Delta\Phi & = C\sum_{j=0}^i\left(|L_j| - (2-\eps)^j\right) \\
-     	& = C\sum_{j=0}^i\left(|L_i|/2^{i-j} - (2-\eps)^j\right) \\ 
+     	& \le C\sum_{j=0}^i\left(|L_i|/2^{i-j} - (2-\eps)^j\right) \\ 
           & \le C\sum_{j=0}^{i-1}\left((2-\eps)^i/2^{i-j} - (2-\eps)^j\right) \\
           & \le C\left((2-\eps)^i - \sum_{j=0}^{i-1}(2-\eps)^j\right) \\
           & = C\left((2-\eps)^i - \frac{(2-\eps)^i-(2-\eps)}{1-\eps}\right) \\
@@ -276,7 +276,11 @@ a partial rebuilding operation on $L_{0},\ldots,L_{h'-1}$.
 
 A standard amortization argument shows that the first and third type
 of global rebuilding contribute only $O(1)$ to the amortized cost of
-each insertion and deletion, respectively.  The same potential function
+each insertion and deletion, respectively.  
+These types of global rebuilding guarantee that $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and
+at most $\lceil \log_{2-\varepsilon} n\rceil+1$ at all times.
+
+The same potential function
 argument used to study insertion and deletion works to show that the
 second type of global rebuilding contributes only $O(\log n)$ to the
 amortized cost of each insertion or deletion (note that this second
@@ -473,14 +477,13 @@ is proportional to the increase in height; promoting an element from
 level $i$ to level $i-c$ should take $O(c)$ time, not $O(h - i + c)$ time.
 
 The work-around for this problem is to use a standard
-doubling trick used to implement dynamic arrays (c.f.,
-Morin~\cite[Section~2.1.2]{morin:open}). When a new array for a node
+doubling trick used to implement dynamic arrays (c.f.,~\cite[Section~2.1.2]{morin:open}). When a new array for a node
 is allocated to hold $r$ values, its size is set to $r'=2^{\lceil\log
 r\rceil}$.  Later, if the height of the node increases, to $r+c$ during
 a partial rebuilding operation, the array only needs to be reallocated
 if $r+c > r'$.  Using this trick, the amortized
 cost of increasing the height of the node is $O(c)$.  This trick does not
-increase the number of pointers in the structure by more than factor of 2.
+increase the number of pointers in the structure by more than factor of~2.
 
 Our initial implementation did exactly this, and performed well-enough
 to execute searches faster than standard skiplists but was still bested
@@ -674,6 +677,7 @@ ever match that of, for example, red-black trees.
 %It's not immediately clear, however, how such a representation could be
 %combined with a tree-balancing scheme.
 
+\newpage
 \bibliographystyle{plain}
 \bibliography{todolist}
 
