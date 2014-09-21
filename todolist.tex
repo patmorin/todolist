@@ -63,7 +63,9 @@
 
 \section{Introduction}
 
-Comparison-based dictionaries supporting the three \emph{basic
+Comparison-based dictionaries\footnote{In some literature, 
+comparison-based dictionaries are called predecessor search structures in order
+to distinguish them from hash tables, which provide no information about searches for elements not stored in the hash table, other than the fact that they are not stored in the hash table.} supporting the three \emph{basic
 operations} insert, delete and search represent \emph{the} classic
 data-structuring problem in computer science.  Data structures that
 support each of these operations in $O(\log n)$ time have been known
@@ -127,8 +129,8 @@ comparisons during a search for $x$.
 A \emph{todolist} for the values $x_1<x_2<\cdots<x_n$ consists of a
 nested sequence of $h+1$ sorted singly-linked lists, $L_0,\ldots,L_h$, such that $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and
 at most $\lceil \log_{2-\varepsilon} n\rceil+1$ for some $\varepsilon >0$. 
-Moreover, these lists have the following properties:\footnote{Here and throughout, we use set
-notations like $|\cdot|$, and $\subseteq$ on the lists $L_0,\ldots,L_h$,
+Moreover, these lists have the following properties:\footnote{Here and throughout, we use set-theoretic
+notations like $|\cdot|$, and $\subseteq$ on the sorted lists $L_0,\ldots,L_h$,
 with the obvious interpretations.}
 
 \begin{enumerate}
