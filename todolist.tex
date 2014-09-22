@@ -343,6 +343,7 @@ The working-todolist is a special kind of todolist that weakens Property~1
 and adds an additional Property~5:
 
 \begin{enumerate}
+\setlength{\itemsep}{0mm}
 \item $|L_0|\le \eps^{-1}+1$.
 \setcounter{enumi}{4}
 \item For each $i\in\{0,\ldots,h\}$, $L_i$ contains all values $x$ such that $w(x)\le (2-\eps)^i$.
@@ -393,8 +394,8 @@ at a node of $Q$ that contains the value $z$ is at most $w(z)$.
 At this point, we are ready to rebuild the lists $L_0,\ldots,L_{i-1}$. To
 build $L_{j-1}$ we walk through $L_j$ and take any value whose label
 (in $Q$) is defined and is at most $(2-\eps)^j$ as well as every
-``second value'' as needed to ensure that Property~3 holds.  Finally,
-once all the lists $L_0,\ldots,L_j$ are rebuilt, we walk through the first
+``second value'' as needed to ensure that Property~3 holds. 
+Once all the lists $L_0,\ldots,L_j$ are rebuilt, we walk through the first
 $(2-\eps)^{i-1}$ nodes of $Q$ and remove their labels so that these labels
 are not incorrectly used during subsequent partial rebuilding operations.
 
@@ -619,10 +620,10 @@ Surprisingly, todolists beat red-black trees because of their memory
 layout, not because they reduce the number of comparisons. In
 these experiments, the average number of comparisons done by
 red-black trees during a search was measured to be $\alpha\log n$
-for $\alpha\in[1.02,1.03]$.\footnote{This incredibly good performance
+for $\alpha\in[1.02,1.03]$.\footnote{The remarkable performance
 of red-black trees created by inserting random data has been observed
 already by Sedgewick \cite{sedgewick:left-leaning}, who conjectures
-that the average depth of a node in a such a red-black tree is $\log
+that the average depth of a node in this case is $\log
 n-1/2$.} This is substantially less than the number of comparisons done
 by todolists, which is about $1.2\log n$ (for $\eps=0.2$) and $1.35\log
 n$ for ($\eps=0.35$). The optimal binary search trees also have a
@@ -636,7 +637,7 @@ memory location.
 \paragraph{Insertions: Todolists lose.}
 The timing results for the insertions are shown in
 \figref{biginsertion}. This is where the other shoe drops.  Even with
-$\eps=0.35$, insertions take about three to four times as long in
+$\eps=0.35$, insertions take three to four times as long in
 a todolist as in a red-black tree.  Profiling the code shows that
 approximately 65\% of this time is spent doing partial rebuilding and
 another 6\% is due to global rebuilding.
@@ -663,12 +664,11 @@ $\frac{1}{2}\log_{2-\eps} n$ cache misses on average.   $B$-trees
 \cite{bender.demaine.ea:cache-oblivious,bender.duan.ea:locality-preserving}
 can reduce this to $O(\log_B n)$, where $B$ is the size of a cache line,
 but they have considerably higher implementation complexity and running-time
-constants.
-%\footnote{Indeed, red-black trees were
-%designed as a simpler alternative to 2--4-trees and red-black trees
-%are considerably more difficult to implement than todolists. (This
-%is the subject opinion of the second author, but most people who have
-%implemented red-black trees from scratch would agree.)}
+constants.\footnote{Indeed, red-black trees were
+originally designed as a simpler alternative to 2--4-trees and red-black trees
+are considerably more difficult to implement than todolists. (This
+is the subjective opinion of the second author, but most people who have
+implemented red-black trees from scratch would agree.)}
 
 On the other hand, todolists leave a lot to be desired in terms of
 insertion and deletion time.  Like other structures that use partial
@@ -678,12 +678,14 @@ insertion algorithm used in our experiments is fairly naïve and could
 probably be improved, but it seems unlikely that its performance will
 ever match that of, for example, red-black trees.
 
-Finally, our experiments and implementation explain why, despite
-being simple to implement and theoretically fast, skiplists do not
-appear in many data structuring libraries: The standard implementation of
-skiplists results in too many cache misses.  Our implementation trick
-of storing the next key value along with each pointer resolves this
-and makes skiplists competitive with tree-based data structures.
+%\addtolength{\pageheight}{1in}
+Finally, we now undestand why, despite
+being simple to implement and theoretically fast, skiplists are not
+used much in practice: Their standard implementation
+results in too many cache misses.  
+Our implementation trick
+of storing the next key value along with each pointer can be used to 
+make skiplists competitive again.
 
 
 %Although it's nice that todolists do a number of comparisons that is
