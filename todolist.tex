@@ -46,37 +46,40 @@
 
 \begin{abstract}
   We describe todolists (top-down skiplists), a variant of skiplists
-  (Pugh 1990) that can execute searches using at most $\log_{2-\eps} n +
-  O(1)$ binary comparisons per search and that have amortized update time
-  $O(\eps^{-1}\log n)$. A variant of todolists, called working-todolists,
-  can execute a search for any element $x$ using $\log_{2-\eps} w(x)
-  + o(\log w(x))$ binary comparisons and have amortized search time
-  $O(\eps^{-1}\log w(w))$. Here, $w(x)$ is the ``working-set number'' of
-  $x$. No previous data structure is known to achieve a bound better
-  than $4\log_2 w(x)$ comparisons. We show through experiments that,
-  if implemented carefully, todolists are comparable to other common
-  dictionary implementations in terms of insertion times and outperform
-  them in terms of search times.
+  (Pugh 1990) that can execute searches using at most $\log_{2-\eps}
+  n + O(1)$ binary comparisons per search and that have amortized
+  update time $O(\eps^{-1}\log n)$. A variant of todolists, called
+  working-todolists, can execute a search for any element $x$ using
+  $\log_{2-\eps} w(x) + o(\log w(x))$ binary comparisons and have
+  amortized search time $O(\eps^{-1}\log w(w))$. Here, $w(x)$ is the
+  ``working-set number'' of $x$. No previous data structure is known to
+  achieve a bound better than $4\log_2 w(x)$ comparisons. We show through
+  experiments that, if implemented carefully, todolists are comparable
+  to other common dictionary implementations---including the C++ STL
+  set implementation---in terms of insertion times and outperform them
+  in terms of search times.
 \end{abstract}
 
 \end{titlepage}
 
 \section{Introduction}
 
-Comparison-based dictionaries\footnote{In some literature, 
-comparison-based dictionaries are called predecessor search structures in order
-to distinguish them from hash tables, which provide no information about searches for elements not stored in the hash table, other than the fact that they are not stored in the hash table.} supporting the three \emph{basic
-operations} insert, delete and search represent \emph{the} classic
-data-structuring problem in computer science.  Data structures that
-support each of these operations in $O(\log n)$ time have been known
-since the introduction of AVL trees more than half a century ago
-\cite{adelson-velskii.landis:algorithm}.  Since then, many competing
-implementations of dictionaries have been proposed, including
-red-black trees \cite{guibas.sedgewick:dichromatic}, splay trees
-\cite{sleator.tarjan:self-adjusting}, general-balanced/scapegoat
-trees \cite{andersson:general,galperin.rivest:scapegoat},
-randomized binary search trees \cite{martinez:randomized},
-energy-balanced trees \cite{goodrich:competitive}, Cartesian trees/treaps
+Comparison-based dictionaries\footnote{In some literature, what we (and
+others \cite{badoiu.cole.ea:unified,bender.duan.ea:locality-preserving,bronnimann.cazals.ea:randomized,goodrich:competitive}) call comparison-based dictionaries are called \emph{predecessor
+search} structures in order to distinguish them from hash tables, which
+provide no information about searches for elements not stored in the hash
+table, other than the fact that they are not stored in the hash table.}
+supporting the three \emph{basic operations} insert, delete and search
+represent \emph{the} classic data-structuring problem in computer science.
+Data structures that support each of these operations in $O(\log n)$
+time have been known since the introduction of AVL trees more than half
+a century ago \cite{adelson-velskii.landis:algorithm}.  Since then,
+many competing implementations of dictionaries have been proposed,
+including red-black trees \cite{guibas.sedgewick:dichromatic}, splay
+trees \cite{sleator.tarjan:self-adjusting}, general-balanced/scapegoat
+trees \cite{andersson:general,galperin.rivest:scapegoat}, randomized
+binary search trees \cite{martinez:randomized}, energy-balanced
+trees \cite{goodrich:competitive}, Cartesian trees/treaps
 \cite{aragon.seidel:randomized,vuillemin:unifying}, skip lists
 \cite{pugh:skip}, jump lists \cite{bronnimann.cazals.ea:randomized},
 and others.  Most major programming environments include one or more
@@ -127,13 +130,15 @@ comparisons during a search for $x$.
 \seclabel{todolist}
 
 A \emph{todolist} for the values $x_1<x_2<\cdots<x_n$ consists of a
-nested sequence of $h+1$ sorted singly-linked lists, $L_0,\ldots,L_h$, such that $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and
-at most $\lceil \log_{2-\varepsilon} n\rceil+1$ for some $\varepsilon >0$. 
-Moreover, these lists have the following properties:\footnote{Here and throughout, we use set-theoretic
-notations like $|\cdot|$, and $\subseteq$ on the sorted lists $L_0,\ldots,L_h$,
-with the obvious interpretations.}
+nested sequence of $h+1$ sorted singly-linked lists, $L_0,\ldots,L_h$,
+such that $h$ is at least $\lceil \log_{2-\varepsilon} n\rceil$ and at
+most $\lceil \log_{2-\varepsilon} n\rceil+1$ for some $\varepsilon >0$.
+Moreover, these lists have the following properties:\footnote{Here and
+throughout, we use set-theoretic notations like $|\cdot|$, and $\subseteq$
+on the sorted lists $L_0,\ldots,L_h$, with the obvious interpretations.}
 
 \begin{enumerate}
+\setlength{\itemsep}{0mm}
   \item $|L_0| \le 1$. 
   \item $L_i\subseteq L_{i+1}$ for each $i\in\{0,\ldots,h-1\}$.
   \item For each $i\in\{1,\ldots,h\}$ and each pair $x,y$ of consecutive
@@ -236,6 +241,7 @@ time, but causes a change in potential of at least
           & \le C\left((2-\eps)^i - \sum_{j=0}^{i-1}(2-\eps)^j\right) \\
           & = C\left((2-\eps)^i - \frac{(2-\eps)^i-(2-\eps)}{1-\eps}\right) \\
           & < C\left((2-\eps)^i - (1+\eps)\left((2-\eps)^i-(2-\eps)\right)\right)
+%\displaybreak
            & \text{(since $1/(1-\eps)>1+\eps$)} \\
           & = -C\eps(2-\eps)^i + O(C) \\
 \end{align*}
@@ -544,7 +550,7 @@ implementations of all but todolists were adapted from the second
 author's textbook \cite{morin:open}.}  To ensure that this code is
 comparable to so-called industrial strength C++ code, the tests also
 include the C++ Standard Template Library \texttt{set} class that comes
-as part of \texttt{libsdc++}.  This \texttt{set} class is implemented
+as part of \texttt{libstdc++}.  This \texttt{set} class is implemented
 as a red-black tree and performed indistinguishably from our red-black
 tree implementation.
 
@@ -554,7 +560,6 @@ for download at github.\footnote{The source code is available at
 paper will provide a digital object identifier (DOI) that provides a
 link to the permanent fixed version of the source code that was used to
 generate all data in the final paper.}
-
 The experimental data in this section was obtained from the program
 \texttt{main.cpp} that can be found in the accompanying source code.
 This program was compiled using the command line: \texttt{g++ -std=c++11 -Wall -O4 -o main main.cpp}. The compiler was the \texttt{gcc} compiler, version
@@ -672,6 +677,13 @@ $\Omega(\log n)$, so is non-negligible.  The implementation of the
 insertion algorithm used in our experiments is fairly naïve and could
 probably be improved, but it seems unlikely that its performance will
 ever match that of, for example, red-black trees.
+
+Finally, our experiments and implementation explain why, despite
+being simple to implement and theoretically fast, skiplists do not
+appear in many data structuring libraries: The standard implementation of
+skiplists results in too many cache misses.  Our implementation trick
+of storing the next key value along with each pointer resolves this
+and makes skiplists competitive with tree-based data structures.
 
 
 %Although it's nice that todolists do a number of comparisons that is
