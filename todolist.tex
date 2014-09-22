@@ -5,6 +5,7 @@
 \usepackage[noend]{algorithmic}
 \usepackage{pat}
 \usepackage{tikz,gnuplot-lua-tikz}
+\usepackage{float}
 \usepackage[mathlines]{lineno}
 \linenumbers
 
@@ -556,14 +557,14 @@ as a red-black tree and performed indistinguishably from our red-black
 tree implementation.
 
 The code used to generate all the test data in this section is available
-for download at github.\footnote{The source code is available at
+for download at github;\footnote{The source code is available at
 \url{https://github.com/patmorin/todolist}. The final version of this
 paper will provide a digital object identifier (DOI) that provides a
 link to the permanent fixed version of the source code that was used to
 generate all data in the final paper.}
-The experimental data in this section was obtained from the program
-\texttt{main.cpp} that can be found in the accompanying source code.
-This program was compiled using the command line: \texttt{g++ -std=c++11 -Wall -O4 -o main main.cpp}. The compiler was the \texttt{gcc} compiler, version
+the experimental data here was obtained from the program
+\texttt{main.cpp}, which was
+compiled using the command line: \texttt{g++ -std=c++11 -Wall -O4 -o main main.cpp}. The compiler was the \texttt{gcc} compiler, version
 4.8.2 that ships with the Ubuntu 14.04 Linux distribution.  Tests were
 run on a desktop computer having 16GB DDR3 1600MHz memory and a Intel
 Core i5-4670K processor with 6MB L3 cache and running at 3.4GHz.
@@ -707,13 +708,21 @@ make skiplists competitive again.
 \appendix
 \section{Graphs}
 
-\begin{figure}[hb]
+\subsection{Experiments with 32 bit keys}
+
+The experiments described in this section were done with 32 bit integer keys.
+
+\subsubsection{Adjusting the value of $\eps$ (32 bit keys)}
+
+\begin{figure}[H]
   \centering{\input{experiments/epsilon.tex}}
   \caption{The tradeoff between search time and insertion time as a function of $\eps$.}
    \figlabel{epsilon}
 \end{figure}
 
-\begin{figure}[hb]
+\subsubsection{Search times (32 bit keys)}
+
+\begin{figure}[H]
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
   \centering{\input{experiments/bigtest-find.tex}}
   \centering{\input{experiments/bigtest-find-norm.tex}}
@@ -721,13 +730,55 @@ make skiplists competitive again.
    \figlabel{bigsearch}
 \end{figure}
 
-\begin{figure}[hb]
+\subsubsection{Insertion times (32 bit keys)}
+
+\begin{figure}[H]
   %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
   \centering{\input{experiments/bigtest-add.tex}}
   \centering{\input{experiments/bigtest-add-norm.tex}}
   \caption{Insertion time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the running time of the red-black tree.}
    \figlabel{biginsertion}
 \end{figure}
+
+\newpage
+
+\subsection{Experiments with 128 bit keys}
+
+The experiments described in this section were done with 128 bit
+integer keys.  These experiments are included mainly in response to
+a referee who felt that the caching behaviour that makes todolists so
+fast might be negated if the key length were increased.  The results in
+this appendix show that this is not the case.  Todolists continue to be
+faster at searching than other data structures.
+
+\subsubsection{Adjusting the value of $\eps$ (128 bit keys)}
+
+\begin{figure}[H]
+  \centering{\input{experiments-wide/epsilon.tex}}
+  \caption{The tradeoff between search time and insertion time as a function of $\eps$.}
+   \figlabel{epsilon}
+\end{figure}
+
+\subsubsection{Search times (128 bit keys)}
+
+\begin{figure}[H]
+  %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
+  \centering{\input{experiments-wide/bigtest-find.tex}}
+  \centering{\input{experiments-wide/bigtest-find-norm.tex}}
+  \caption{Search time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the time taken in the optimal search tree.}
+   \figlabel{bigsearch}
+\end{figure}
+
+\subsubsection{Insertion times (128 bit keys)}
+
+\begin{figure}[H]
+  %\resizebox{\tmpa}{!}{\input{images/bigoh-1.tex}}\\[4ex]
+  \centering{\input{experiments-wide/bigtest-add.tex}}
+  \centering{\input{experiments-wide/bigtest-add-norm.tex}}
+  \caption{Insertion time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the running time of the red-black tree.}
+   \figlabel{biginsertion}
+\end{figure}
+
 
 
 \end{document}
