@@ -2,8 +2,8 @@
 
 from __future__ import division
 
-structs={"todolist-0.2", "todolist-0.35", "skiplist", "redblack", "treap",  
-         "scapegoat", "bst", "sortedarray"}
+structs={"todolist-0.2", "todolist-0.35", "skiplist", "redblack", "stlset",
+         "treap", "scapegoat", "bst", "sortedarray"}
 
 ns = range(25000, 2000001, 25000)
 print 'Reading bst-find.dat'
