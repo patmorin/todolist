@@ -12,6 +12,7 @@
 #include "BinarySearchTree.h"
 #include "ScapegoatTree.h"
 #include "SkiplistSSet.h"
+#include "SkiplistSSet2.h"
 #include "Treap.h"
 #include "SplayTree.h"
 #include "RedBlackTree.h"
@@ -253,8 +254,13 @@ void sanity_tests(size_t n) {
 	}
 	{
 		ods::Treap1<int> t;
+		ods::SkiplistSSet2<int> sl2;
+		test_dicts(t, sl2, n);
+	}
+	{
+		ods::SkiplistSSet2<int> sl2;
 		ods::SkiplistSSet<int> sl;
-		test_dicts(t, sl, n);
+		test_dicts(sl2, sl, n);
 	}
 	{
 		ods::SkiplistSSet<int> sl;
@@ -411,6 +417,9 @@ int main(int argc, char **argv) {
 		} else if (strcmp(argv[i], "-skiplist") == 0) {
 			ods::SkiplistSSet<Integer> sl;
 			build_and_search(sl, "Skiplist", n, gen_data, gen_search);
+		} else if (strcmp(argv[i], "-skiplist2") == 0) {
+			ods::SkiplistSSet2<Integer> sl2;
+			build_and_search(sl2, "Skiplist2", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-scapegoat") == 0) {
 			ods::ScapegoatTree1<Integer> st(1./(2.-epsilon));
 			build_and_search(st, "ScapegoatTree", n, gen_data, gen_search);
