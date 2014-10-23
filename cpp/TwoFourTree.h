@@ -1,8 +1,8 @@
 /**
  * An implementation of 2-4 trees
  */
-#ifndef __REDBLACK_TREE_H
-#define __REDBLACK_TREE_H
+#ifndef __TWOFOUR_TREE_H
+#define __TWOFOUR_TREE_H
 
 #include <stdexcept>
 #include <cstdlib>
@@ -37,6 +37,7 @@ public:
 	TwoFourTree() { root = newNode(); n = 0; }
 
 	bool add(T x);
+	bool remove(T x);
 	T find(T x);
 	size_t size() { return n; }
 
@@ -150,4 +151,4 @@ T TwoFourTree<T>::find(T x) {
 } /* namespace ods */
 
 
-#endif /* __REDBLACK_TREE_H */
+#endif /* __TWOFOUR_TREE_H */

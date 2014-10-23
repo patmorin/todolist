@@ -9,6 +9,7 @@
 
 #include <unistd.h>
 
+#include "B2BTree.h"
 #include "TwoFourTree.h"
 #include "BinarySearchTree.h"
 #include "ScapegoatTree.h"
@@ -435,6 +436,9 @@ int main(int argc, char **argv) {
 		} else if (strcmp(argv[i], "-twofour") == 0) {
 			ods::TwoFourTree<Integer> tf;
 			build_and_search(tf, "24-Tree", n, gen_data, gen_search);
+		} else if (strcmp(argv[i], "-b2b") == 0) {
+			ods::B2BTree<3,Integer> tf;
+			build_and_search(tf, "B2B-Tree", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-skiplist2") == 0) {
 			ods::SkiplistSSet2<Integer> sl2;
 			build_and_search(sl2, "Skiplist2", n, gen_data, gen_search);
