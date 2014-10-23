@@ -137,15 +137,19 @@ typename TwoFourTree<T>::Node* TwoFourTree<T>::split(Node *u) {
 
 template<class T>
 T TwoFourTree<T>::find(T x) {
+	T z = (T)0;
 	Node *u = root;
 	while (u != NULL) {
 		int i;
     	for (i = 0; i < u->type && u->keys[i] < x; i++);
-		if (i < u->type && u->keys[i] == x)
-			return u->keys[i];
+		if (i < u->type) {
+			if (u->keys[i] == x)
+				return u->keys[i];
+			z = u->keys[i];
+		}
 		u = u->children[i];
 	}
-	return (T)0;
+	return z;
 }
 
 } /* namespace ods */

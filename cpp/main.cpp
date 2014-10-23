@@ -255,6 +255,16 @@ void sanity_tests(size_t n) {
 		test_dicts(tdl3, t, n);
 	}
 	{
+		ods::TwoFourTree<int> tft;
+		ods::Treap1<int> t;
+		test_dicts(tft, t, n);
+	}
+	{
+		ods::B2BTree<3, int> tft;
+		ods::Treap1<int> t;
+		test_dicts(tft, t, n);
+	}
+	{
 		ods::Treap1<int> t;
 		ods::SkiplistSSet2<int> sl2;
 		test_dicts(t, sl2, n);
@@ -360,19 +370,19 @@ void usage_error(const char *name) {
 
 
 int main(int argc, char **argv) {
-	/*ods::TwoFourTree<int> t;
-	t.add(2);
-	t.add(4);
-	t.printIt();
-	t.add(1);
-	t.printIt();
-	t.add(0);
-	t.printIt();
-	for (int i = 100; i > 50; i--) {
-		t.add(i);
-		t.printIt();
-	}
-*/
+//	ods::B2BTree<3, int> t;
+//	t.add(2);
+//	t.add(4);
+//	t.printIt();
+//	t.add(1);
+//	t.printIt();
+//	t.add(0);
+//	t.printIt();
+//	for (int i = 100; i > 50; i--) {
+//		t.add(i);
+//		t.printIt();
+//	}
+//	exit(0);
 
 	if (argc < 2)
 		usage_error(argv[0]);
@@ -437,7 +447,7 @@ int main(int argc, char **argv) {
 			ods::TwoFourTree<Integer> tf;
 			build_and_search(tf, "24-Tree", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-b2b") == 0) {
-			ods::B2BTree<3,Integer> tf;
+			ods::B2BTree<10,Integer> tf;
 			build_and_search(tf, "B2B-Tree", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-skiplist2") == 0) {
 			ods::SkiplistSSet2<Integer> sl2;
