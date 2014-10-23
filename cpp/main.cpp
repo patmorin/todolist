@@ -9,6 +9,7 @@
 
 #include <unistd.h>
 
+#include "TwoFourTree.h"
 #include "BinarySearchTree.h"
 #include "ScapegoatTree.h"
 #include "SkiplistSSet.h"
@@ -358,6 +359,20 @@ void usage_error(const char *name) {
 
 
 int main(int argc, char **argv) {
+	/*ods::TwoFourTree<int> t;
+	t.add(2);
+	t.add(4);
+	t.printIt();
+	t.add(1);
+	t.printIt();
+	t.add(0);
+	t.printIt();
+	for (int i = 100; i > 50; i--) {
+		t.add(i);
+		t.printIt();
+	}
+*/
+
 	if (argc < 2)
 		usage_error(argv[0]);
 
@@ -417,6 +432,9 @@ int main(int argc, char **argv) {
 		} else if (strcmp(argv[i], "-skiplist") == 0) {
 			ods::SkiplistSSet<Integer> sl;
 			build_and_search(sl, "Skiplist", n, gen_data, gen_search);
+		} else if (strcmp(argv[i], "-twofour") == 0) {
+			ods::TwoFourTree<Integer> tf;
+			build_and_search(tf, "24-Tree", n, gen_data, gen_search);
 		} else if (strcmp(argv[i], "-skiplist2") == 0) {
 			ods::SkiplistSSet2<Integer> sl2;
 			build_and_search(sl2, "Skiplist2", n, gen_data, gen_search);
