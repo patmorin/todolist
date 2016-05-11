@@ -553,21 +553,22 @@ compiled using the command line: \texttt{g++ -std=c++11 -Wall -O4 -o main main.c
 run on a desktop computer having 16GB DDR3 1600MHz memory and a Intel
 Core i5-4670K processor with 6MB L3 cache and running at 3.4GHz.
 
-\emph{In order to conform with formatting requirements, Figures~\ref{fig:epsilon}--\ref{fig:biginsertion}, which illustrate the data generated in our experiments, are in Appendix~A.}
+%\emph{In order to conform with formatting requirements, Figures~\ref{fig:epsilon}--\ref{fig:biginsertion}, which illustrate the data generated in our experiments, are in Appendix~A.}
 
 \subsubsection{Varying $\eps$}
 
-\Figref{epsilon} shows the results of varying the value of $\eps$ from
-$0.02$ to $0.68$ in increments of $0.01$. In this figure, $n=10^6$
-random integers in the set $\{0, 5,\ldots,5(n-1)\}$ were chosen
-(with replacement) and inserted into a todolist. Since dictionaries
-discard duplicates, the resulting todolist contained $906,086$ values.
-This todolist was then searched $m=5n$ times with random integers chosen,
-with replacement, from $\{-2,\ldots,5n+3\}$.  This figure illustrates
-that todolists do behave roughly as \thmref{todolist} predicts.
-Insertion time increases roughly proportionally to $1/\eps$ and search
-times seem to be of the form $c(d+\eps)$ for some constant $c$ and $d$
-(though there is certainly lots of noise in the search times).
+Figures~\ref{fig:epsilon} and \ref{fig:epsilon-128} show the
+results of varying the value of $\eps$ from $0.02$ to $0.68$ in
+increments of $0.01$. In this figure, $n=10^6$ random integers in
+the set $\{0, 5,\ldots,5(n-1)\}$ were chosen (with replacement) and
+inserted into a todolist. Since dictionaries discard duplicates, the
+resulting todolist contained $906,086$ values.  This todolist was then
+searched $m=5n$ times with random integers chosen, with replacement,
+from $\{-2,\ldots,5n+3\}$.  This figure illustrates that todolists do
+behave roughly as \thmref{todolist} predicts.  Insertion time increases
+roughly proportionally to $1/\eps$ and search times seem to be of the
+form $c(d+\eps)$ for some constant $c$ and $d$ (though there is certainly
+lots of noise in the search times).
 
 In terms of implementation guidance, this figure suggests that values
 of $\eps$ below $0.1$ are hard to justify.  The improvement in search
@@ -593,8 +594,10 @@ pattern as in the previous section and consisted of $n$ insertions
 followed by $5n$ searches.
 
 \paragraph{Searches: Todolists win.}
-The timing results for the searches are shown in \figref{bigsearch}. In
-terms of search times, todolists---with $\eps = 0.2$ and $\eps=0.35$---are
+
+The timing results for the searches are shown in
+Figures~\ref{fig:bigsearch} and \ref{fig:bigsearch-128}. In terms
+of search times, todolists---with $\eps = 0.2$ and $\eps=0.35$---are
 the winners among all the dynamic data structures, and even match the
 performance of statically-built perfectly-balanced binary search trees.
 The next fastest dynamic data structures are red-black trees which,
@@ -620,12 +623,13 @@ during a random search, roughly half the steps proceed to an adjacent
 memory location.
 
 \paragraph{Insertions: Todolists lose.}
+
 The timing results for the insertions are shown in
-\figref{biginsertion}. This is where the other shoe drops.  Even with
-$\eps=0.35$, insertions take three to four times as long in
-a todolist as in a red-black tree.  Profiling the code shows that
-approximately 65\% of this time is spent doing partial rebuilding and
-another 6\% is due to global rebuilding.
+Figures~\ref{fig:biginsertion} and \ref{fig:biginsertion-128}. This
+is where the other shoe drops.  Even with $\eps=0.35$, insertions
+take three to four times as long in a todolist as in a red-black tree.
+Profiling the code shows that approximately 65\% of this time is spent
+doing partial rebuilding and another 6\% is due to global rebuilding.
 
 One perhaps surprising result is that scapegoat trees, which are also
 based on partial rebuilding, outperform todolists in terms of insertions.
@@ -646,19 +650,6 @@ n$ comparisons and roughly half these lead to an adjacent array
 location. Thus, a search in a todolist should incurs only about
 $\frac{1}{2}\log_{2-\eps} n$ cache misses on average.   
 
-$B$-trees \cite{bayer.mccreight:organization}
-and their cache-oblivious counterparts
-\cite{bender.demaine.ea:cache-oblivious,bender.duan.ea:locality-preserving}
-can reduce the number of cache misses to $O(\log_B n)$ per search,
-where $B$ is the size of a cache line.
-
-
-%\footnote{Indeed, red-black trees were
-%originally designed as a simpler alternative to 2--4-trees and red-black trees
-%are considerably more difficult to implement than todolists. (This
-%is the subjective opinion of the second author, but most people who have
-%implemented red-black trees from scratch would agree.)}
-
 On the other hand, todolists leave a lot to be desired in terms of
 insertion and deletion time.  Like other structures that use partial
 rebuilding, the restructuring done during an insertion takes time
@@ -673,10 +664,27 @@ practice: Their standard implementation results in too many cache misses.
 Our implementation trick of storing the next key value along with each
 pointer can be used to make skiplists competitive again.
 
-Our working todo-list shows that it is possible to obtain a data structure
-with $O(\log w(x))$ search time that performs only $(1+\eps)\log w(x) + o(\log w(x))$
-comparisons per search, for any constant $\eps > 0$.  This leaves
-a tantalizing open problem:
+One avenue for future experimental work in
+this area would be to compare the data structures
+presented here to efficient implementations of $B$-trees
+\cite{bayer.mccreight:organization} and their cache-oblivious counterparts
+\cite{bender.demaine.ea:cache-oblivious,bender.duan.ea:locality-preserving},
+which can reduce the number of cache misses to $O(\log_B n)$ per
+search, where $B$ is the size of a cache line.  We are unaware of any
+implementations of cache-oblivious search treees that are competitive
+in RAM.  However, preliminary testing of the Google B-tree C++ containers
+suggests that they outperform the usual STL set implementation by a
+significant margin \cite{macdonald:containers}.
+
+%\footnote{Indeed, red-black trees were
+%originally designed as a simpler alternative to 2--4-trees and red-black trees
+%are considerably more difficult to implement than todolists. (This
+%is the subjective opinion of the second author, but most people who have
+%implemented red-black trees from scratch would agree.)}
+On a more theoretical note, our working todo-list is a data structure
+with, for any constant $\eps>0$, $O(\log w(x))$ search time that performs only $(1+\eps)\log w(x)
++ o(\log w(x))$ comparisons per search.
+This leaves a tantalizing open problem:
 
 \begin{op}
    Is there a comparison-based data structure that has $O(\log w(x))$
@@ -753,7 +761,7 @@ other data structures.
 \begin{figure}[H]
   \centering{\input{experiments-wide/epsilon.tex}}
   \caption{The tradeoff between search time and insertion time as a function of $\eps$.}
-   \figlabel{epsilon}
+   \figlabel{epsilon-128}
 \end{figure}
 
 \subsubsection{Search times (128 bit keys)}
@@ -763,7 +771,7 @@ other data structures.
   \centering{\input{experiments-wide/bigtest-find.tex}}
   \centering{\input{experiments-wide/bigtest-find-norm.tex}}
   \caption{Search time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the time taken in the optimal search tree.}
-   \figlabel{bigsearch}
+   \figlabel{bigsearch-128}
 \end{figure}
 
 \subsubsection{Insertion times (128 bit keys)}
@@ -773,7 +781,7 @@ other data structures.
   \centering{\input{experiments-wide/bigtest-add.tex}}
   \centering{\input{experiments-wide/bigtest-add-norm.tex}}
   \caption{Insertion time comparison between different data structures. The top graph shows absolute times, in seconds. The bottom graph shows relative times, normalized by the running time of the red-black tree.}
-   \figlabel{biginsertion}
+   \figlabel{biginsertion-128}
 \end{figure}
 
 
