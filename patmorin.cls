@@ -32,7 +32,11 @@
 
 % Read the article class
 \LoadClass[11pt,letterpaper]{article}
-\linespread{1.166666667}  % 12pt font with 16.8pt baselineskip
+%\linespread{1.166666667}  % 12pt font with 16.8pt baselineskip
+\RequirePackage{setspace}
+\onehalfspacing
+\RequirePackage{parskip}
+
 \RequirePackage{kpfonts}
 \RequirePackage[sf,bf,small,raggedright,compact]{titlesec}
 
@@ -45,7 +49,7 @@
 \setlength{\headheight}{0.200in}
 \setlength{\headsep}{0.4in}
 \setlength{\footskip}{0.500in}
-\setlength{\parskip}{1ex}
+%\setlength{\parskip}{1ex}
 \setlength{\parindent}{1.25cm}
 %\flushbottom
 
@@ -122,6 +126,25 @@
   menucolor=linkblue, 
   urlcolor=linkblue
 } 
+
+\usepackage[mathlines]{lineno}
+\newcommand*\patchAmsMathEnvironmentForLineno[1]{%
+  \expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname
+  \expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname
+  \renewenvironment{#1}%
+     {\linenomath\csname old#1\endcsname}%
+     {\csname oldend#1\endcsname\endlinenomath}}% 
+\newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%
+  \patchAmsMathEnvironmentForLineno{#1}%
+  \patchAmsMathEnvironmentForLineno{#1*}}%
+\AtBeginDocument{%
+\patchBothAmsMathEnvironmentsForLineno{equation}%
+\patchBothAmsMathEnvironmentsForLineno{align}%
+\patchBothAmsMathEnvironmentsForLineno{flalign}%
+\patchBothAmsMathEnvironmentsForLineno{alignat}%
+\patchBothAmsMathEnvironmentsForLineno{gather}%
+\patchBothAmsMathEnvironmentsForLineno{multline}%
+}
 
 
 
