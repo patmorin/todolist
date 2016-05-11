@@ -6,22 +6,6 @@
 \usepackage{pat}
 \usepackage{tikz,gnuplot-lua-tikz}
 \usepackage{float}
-\usepackage[mathlines]{lineno}
-\linenumbers
-
-% SODA space-saving crap
-\setlength{\parskip}{0pt}
-\addtolength{\topmargin}{-.5in}
-%\addtolength{\topskip}{-.25in}
-\setlength{\topskip}{0in}
-\addtolength{\textheight}{1in}
-%\addtolength{\leftmargin}{-.25in}
-%\addtolength{\oddsidemargin}{-.25in}
-%\addtolength{\evensidemargin}{-.25in}
-%\addtolength{\textwidth}{.5in}
-%\usepackage[nomarkers,nofiglist]{endfloat}
-%\renewcommand{\efloatseparator}{\mbox{}}
-%\renewcommand{\efloatseparator}{\vfill}
 \pagestyle{plain}
 \raggedbottom
 
@@ -139,7 +123,7 @@ throughout, we use set-theoretic notations like $|\cdot|$, and $\subseteq$
 on the sorted lists $L_0,\ldots,L_h$, with the obvious interpretations.}
 
 \begin{enumerate}
-\setlength{\itemsep}{0mm}
+%\setlength{\itemsep}{0mm}
   \item $|L_0| \le 1$. 
   \item $L_i\subseteq L_{i+1}$ for each $i\in\{0,\ldots,h-1\}$.
   \item For each $i\in\{1,\ldots,h\}$ and each pair $x,y$ of consecutive
@@ -344,7 +328,7 @@ The working-todolist is a special kind of todolist that weakens Property~1
 and adds an additional Property~5:
 
 \begin{enumerate}
-\setlength{\itemsep}{0mm}
+%\setlength{\itemsep}{0mm}
 \item $|L_0|\le \eps^{-1}+1$.
 \setcounter{enumi}{4}
 \item For each $i\in\{0,\ldots,h\}$, $L_i$ contains all values $x$ such that $w(x)\le (2-\eps)^i$.
@@ -410,10 +394,10 @@ this stage is
      \log_{2-\eps} w(x) + O\left(\eps^{-1} + \sqrt{\log w(x)}\right) \enspace .
 \]
 The $O(\eps^{-1})$ term is the cost of searching in $L_0$ and the
-$O(\sqrt{\log w(x)})$ term accounts for one comparison at each of the lists
-$L_{\lceil\log_{2-\eps} w(x)\rceil},\ldots,L_i$ as well as the extra
-comparison performed in each of the lists $L_j$ where $j\in\{0,\ldots,i\}$
-is a perfect square.
+$O(\sqrt{\log w(x)})$ term accounts for one comparison at each of the
+lists $L_{\lceil\log_{2-\eps} w(x)\rceil},\ldots,L_i$ as well as the
+extra comparison (equality test) performed in each of the lists $L_j$
+where $j\in\{0,\ldots,i\}$ is a perfect square.
 
 After finding $x$ in $L_i$, the algorithm then updates
 $L_0,\ldots,L_{i-1}$ in such a way that Properties~2--5 are maintained.
@@ -660,16 +644,20 @@ be the right data structure to use.  When implemented properly, their
 search times are difficult to beat.  They perform $\log_{2-\eps}
 n$ comparisons and roughly half these lead to an adjacent array
 location. Thus, a search in a todolist should incurs only about
-$\frac{1}{2}\log_{2-\eps} n$ cache misses on average.   $B$-trees
-\cite{bayer.mccreight:organization} and their cache-oblivious counterparts
+$\frac{1}{2}\log_{2-\eps} n$ cache misses on average.   
+
+$B$-trees \cite{bayer.mccreight:organization}
+and their cache-oblivious counterparts
 \cite{bender.demaine.ea:cache-oblivious,bender.duan.ea:locality-preserving}
-can reduce this to $O(\log_B n)$, where $B$ is the size of a cache line,
-but they have considerably higher implementation complexity and running-time
-constants.\footnote{Indeed, red-black trees were
-originally designed as a simpler alternative to 2--4-trees and red-black trees
-are considerably more difficult to implement than todolists. (This
-is the subjective opinion of the second author, but most people who have
-implemented red-black trees from scratch would agree.)}
+can reduce the number of cache misses to $O(\log_B n)$ per search,
+where $B$ is the size of a cache line.
+
+
+%\footnote{Indeed, red-black trees were
+%originally designed as a simpler alternative to 2--4-trees and red-black trees
+%are considerably more difficult to implement than todolists. (This
+%is the subjective opinion of the second author, but most people who have
+%implemented red-black trees from scratch would agree.)}
 
 On the other hand, todolists leave a lot to be desired in terms of
 insertion and deletion time.  Like other structures that use partial
@@ -679,14 +667,23 @@ insertion algorithm used in our experiments is fairly naïve and could
 probably be improved, but it seems unlikely that its performance will
 ever match that of, for example, red-black trees.
 
-%\addtolength{\pageheight}{1in}
-Finally, we now undestand why, despite
-being simple to implement and theoretically fast, skiplists are not
-used much in practice: Their standard implementation
-results in too many cache misses.  
-Our implementation trick
-of storing the next key value along with each pointer can be used to 
-make skiplists competitive again.
+Our experimental results also explain why, despite being simple
+to implement and theoretically fast, skiplists are not used much in
+practice: Their standard implementation results in too many cache misses.
+Our implementation trick of storing the next key value along with each
+pointer can be used to make skiplists competitive again.
+
+Our working todo-list shows that it is possible to obtain a data structure
+with $O(\log w(x))$ search time that performs only $(1+\eps)\log w(x) + o(\log w(x))$
+comparisons per search, for any constant $\eps > 0$.  This leaves
+a tantalizing open problem:
+
+\begin{op}
+   Is there a comparison-based data structure that has $O(\log w(x))$
+   search time and that performs $\log w(x)+o(\log w(x))$ comparisons
+   per search?
+\end{op}
+
 
 
 %Although it's nice that todolists do a number of comparisons that is
@@ -744,12 +741,12 @@ The experiments described in this section were done with 32 bit integer keys.
 
 \subsection{Experiments with 128 bit keys}
 
-The experiments described in this section were done with 128 bit
-integer keys.  These experiments are included mainly in response to
-a referee who felt that the caching behaviour that makes todolists so
-fast might be negated if the key length were increased.  The results in
-this appendix show that this is not the case.  Todolists continue to be
-faster at searching than other data structures.
+The experiments described in this section were done with 128 bit integer
+keys.  These experiments are included mainly to exclude the possibility
+that the caching behaviour that makes todolists so fast might be negated
+if the key length were increased.  The results in this appendix show that
+this is not the case.  Todolists continue to be faster at searching than
+other data structures.
 
 \subsubsection{Adjusting the value of $\eps$ (128 bit keys)}
 

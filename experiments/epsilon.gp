@@ -158,5 +158,5 @@ set key at 0.65,1.5
 set key spacing 2
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2
-plot 'epsilon-find.dat' using 7:4 with lines linestyle 1 title 'search time', 'epsilon-add.dat' using 7:4 axes x1y2 with lines linestyle 2 title 'insertion time'
+plot 'epsilon-find.dat' using 7:4 with lines linestyle 1 lw 3 title 'search time', 'epsilon-add.dat' using 7:4 axes x1y2 with lines linestyle 2 lw 3 title 'insertion time'
 #    EOF
